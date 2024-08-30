@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,11 +25,11 @@ Route::middleware([
     'verified'
 ])->group(function () {
 
-
-
     Route::get('/bienvenido', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::resource('usuarios', UserController::class);
 });
 
 Auth::routes();

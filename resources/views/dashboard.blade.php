@@ -25,11 +25,11 @@
     <div class="col-lg-4 col-sm-12 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>Productividad</h3>
-                <p>Porductividad total</p>
+                <h3>Afiliaciones</h3>
+                <p>Afiliaciones totales</p>
             </div>
             <div class="icon">
-                <i class="fas fa-tasks"></i>
+                <i class="fas fa-handshake"></i>
             </div>
             <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
         </div>
