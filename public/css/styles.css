@@ -1,0 +1,67 @@
+.card.dark-blur-bg {
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro translúcido */
+    color: #fff; /* Color del texto blanco para contrastar */
+    backdrop-filter: blur(95%); /* Desenfoque de 10px al fondo */
+    border-radius: 20px; /* Bordes redondeados */
+}
+
+.button-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Estilos personalizados para la paginación dark */
+.pagination .page-item .page-link {
+    background-color: #c6c8ca; /* Color oscuro secundario */
+    border-color: #c6c8ca; /* Borde oscuro secundario */
+    color: #343a40; /* Texto blanco */
+}
+
+/* Estilos para el botón activo de la paginación dark */
+.pagination .page-item.active .page-link {
+    background-color: #343a40; /* Fondo activo más fuerte */
+    border-color: #343a40; /* Borde activo más fuerte */
+    color: #fff; /* Texto blanco */
+}
+
+/* Estilos para el botón de página previa y siguiente dark */
+.pagination .page-item.disabled .page-link {
+    background-color: #c6c8ca; /* Color oscuro secundario */
+    border-color: #c6c8ca; /* Borde oscuro secundario */
+    color: #343a40; /* Texto blanco */
+}
+
+/* Estilos para el botón de página previa y siguiente dark cuando están activos */
+.pagination .page-item.disabled .page-link:hover {
+    background-color: #c6c8ca; /* Color oscuro secundario */
+    border-color: #c6c8ca; /* Borde oscuro secundario */
+}
+
+.required {
+    color: red;
+    margin-left: 5px;
+}
+
+.custom-file-input {
+    display: none;
+}
+
+.custom-file-label::after {
+    content: "Seleccionar";
+}
+
+.custom-file-label.selected::after {
+    content: "Cambiar";
+}
+
+.custom-file-input:focus + .custom-file-label {
+    border-color: #80bdff;
+    box-shadow: 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+select[multiple].form-control {
+    height: auto;
+    padding: 0.375rem 0.75rem;
+}

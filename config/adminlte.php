@@ -308,19 +308,51 @@ return [
         ],
         ['header' => 'FUNCIONALIDADES'],
         [
-            'text' => 'Aseguradoras',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-shield-alt',
+            'text' => 'Utilidades',
+            'url' => '#',
+            'icon' => 'fa fa-file-archive',
+        ],
+        [
+            'text' => 'Reportes',
+            'url' => '#',
+            'icon' => 'fa fa-folder-open',
         ],
         [
             'text' => 'Afiliaciones',
-            'url' => 'admin/settings',
             'icon' => 'fas fa-handshake',
+            'submenu' => [
+                [
+                    'text' => 'Incapacidades',
+                    'url' => '#',
+                    'icon' => 'fa fa-blind',
+                ],
+            ],
         ],
         [
-            'text' => 'Usuarios',
-            'url' => 'usuarios',
-            'icon' => 'fas fa-fw fa-users',
+            'text' => 'Datos generales',
+            'icon' => 'fas fa-clipboard-list',
+            'submenu' => [
+                [
+                    'text' => 'Ciudades',
+                    'url' => 'ciudades',
+                    'icon' => 'fa fa-city',
+                ],
+                [
+                    'text' => 'Aseguradoras',
+                    'url' => 'aseguradoras',
+                    'icon' => 'fa fa-shield-alt',
+                ],
+                [
+                    'text' => 'Bancos',
+                    'url' => 'bancos',
+                    'icon' => 'fa fa-university',
+                ],
+                [
+                    'text' => 'Empresas',
+                    'url' => 'empresas',
+                    'icon' => 'fa fa-building',
+                ],
+            ],
         ],
         ['header' => 'ADMINISTRACIÓN'],
         [
@@ -340,14 +372,9 @@ return [
             ],
         ],
         [
-            'text' => 'Parametrización',
-            'icon' => 'fas fa-cog',
-            'submenu' => [
-                [
-                    'text' => 'Ciudades',
-                    'url' => '#',
-                ],
-            ],
+            'text' => 'Usuarios',
+            'url' => 'usuarios',
+            'icon' => 'fas fa-fw fa-users',
         ],
     ],
 

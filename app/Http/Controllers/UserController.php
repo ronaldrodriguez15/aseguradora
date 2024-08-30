@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -28,7 +29,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
@@ -39,7 +40,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = $this->getValidationRules();
+        $messages = $this->getValidationMessages();
+
+        $request->validate($rules, $messages);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->document = $request->document;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+        $user->birthdate = $request->birthdate;
+        $user->password = Hash::make($request->password);
+        $user->status = 1; //1: Activo, 0: Inactivo
+        $user->save();
+
+        return redirect()->route('usuarios.index')->with('success', 'Excelente!!, El usuario ha sido creado.');
     }
 
     /**
@@ -61,7 +77,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $usuario = User::find($id);
+
+        return view('users.edit', compact('usuario'));
     }
 
     /**
@@ -73,7 +91,22 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules = $this->getValidationRules();
+        $messages = $this->getValidationMessages();
+
+        $request->validate($rules, $messages);
+
+        $user = User::find($id);
+        $user->name = $request->get('name');
+        $user->document = $request->get('document');
+        $user->phone = $request->get('phone');
+        $user->email = $request->get('email');
+        $user->birthdate = $request->get('birthdate');
+        $user->password = Hash::make($request->get('password'));
+        $user->status = 1; //1: Activo, 0: Inactivo
+        $user->save();
+
+        return redirect()->route('usuarios.index')->with('success', 'Excelente!!, El usuario ha sido actualizado.');
     }
 
     /**
@@ -84,6 +117,40 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        $user->status = 0;
+        $user->save();
+
+        return redirect()->route('usuarios.index')->with('success', 'Excelente!!, El usuario ha sido inactivado correctamente.');
+    }
+
+    private function getValidationRules()
+    {
+        return [
+            'name' => 'required',
+            'document' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'emailConfirm' => 'required|email|same:email',
+            'birthdate' => 'required|date',
+            'password' => 'required',
+        ];
+    }
+
+    private function getValidationMessages()
+    {
+        return [
+            'name.required' => 'El campo Nombres es obligatorio.',
+            'document.required' => 'El campo Documento es obligatorio.',
+            'phone.required' => 'El campo Celular es obligatorio.',
+            'email.required' => 'El campo Correo electrónico es obligatorio.',
+            'email.email' => 'El campo Correo electrónico debe ser una dirección de correo válida.',
+            'emailConfirm.required' => 'El campo Confirmación correo electrónico es obligatorio.',
+            'emailConfirm.email' => 'El campo Confirmación correo electrónico debe ser una dirección de correo válida.',
+            'emailConfirm.same' => 'Los correos electrónicos no coinciden.',
+            'birthdate.required' => 'El campo Nacimiento es obligatorio.',
+            'birthdate.date' => 'El campo Nacimiento debe ser una fecha válida.',
+            'password.required' => 'El campo Contraseña es obligatorio.',
+        ];
     }
 }

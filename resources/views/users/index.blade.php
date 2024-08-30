@@ -11,14 +11,14 @@
 <br><br><br>
 
 <div class="row justify-content-center">
-    <div class="col-md-10 text-right mb-2">
+    <div class="col-md-12 text-right mb-4">
         <!-- Controller response -->
         <a class="btn btn-success" href="{{ route('usuarios.create') }}">
             <i class="fas fa-plus-circle mr-2"></i>Nuevo usuario
         </a>
     </div>
 
-    <div class="col-md-10">
+    <div class="col-md-12">
         @if (session()->get('success'))
         <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
             {{ session()->get('success') }}
@@ -28,14 +28,13 @@
         </div>
         @endif
     </div>
-    <div class="col-md-10">
+    <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="datatable" class="table">
                         <thead class="text-center">
                             <tr class="table-dark text-white">
-                                <th>#</th>
                                 <th>Nombres y apellidos</th>
                                 <th>Celular</th>
                                 <th>Correo electrónico</th>
@@ -48,7 +47,6 @@
                         <tbody class="text-center">
                             @foreach ($usuarios as $usuario)
                             <tr>
-                                <td><b>{{ $usuario['id'] }}</b></td>
                                 <td>{{ $usuario['name'] }}</td>
                                 <td>{{ $usuario['phone'] }}</td>
                                 <td>{{ $usuario['email'] }}</td>
@@ -71,8 +69,8 @@
                                         <form action="{{ route('usuarios.destroy', $usuario['id']) }}" method="POST" id="formDelete-{{ $usuario['id'] }}">
                                             @method('DELETE')
                                             @csrf
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ $usuario['id'] }}" title="Eliminar">
-                                                <i class="fas fa-trash-alt" onclick="confirmDelete(this)"></i>
+                                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ $usuario['id'] }}" onclick="confirmDelete(this)" title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -89,7 +87,7 @@
     </div>
 </div>
 @stop
-
+ 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
