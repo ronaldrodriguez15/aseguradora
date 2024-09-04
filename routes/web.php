@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\InabilityController;
 use App\Http\Controllers\InsurerController;
 
 /*
@@ -42,6 +43,7 @@ Route::middleware([
     Route::resource('aseguradoras', InsurerController::class);
 
     // Affiliations
+    Route::resource('afiliaciones/incapacidades', InabilityController::class);
 });
 
 Auth::routes();

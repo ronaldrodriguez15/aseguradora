@@ -13000,7 +13000,7 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 
 .sidebar-dark-danger .nav-sidebar > .nav-item > .nav-link.active,
 .sidebar-light-danger .nav-sidebar > .nav-item > .nav-link.active {
-  background-color: #dc3545;
+  background-color: #c2542d !important;
   color: #fff;
 }
 

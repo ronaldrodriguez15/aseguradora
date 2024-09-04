@@ -197,7 +197,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-dark-danger elevation-4',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-dark navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
@@ -306,6 +306,11 @@ return [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
+        [
+            'text' => 'Panel',
+            'url' => 'bienvenido',
+            'icon' => 'fa fa-columns',
+        ],
         ['header' => 'FUNCIONALIDADES'],
         [
             'text' => 'Utilidades',
@@ -323,7 +328,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Incapacidades',
-                    'url' => '#',
+                    'url' => 'afiliaciones/incapacidades',
                     'icon' => 'fa fa-blind',
                 ],
             ],

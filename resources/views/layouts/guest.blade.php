@@ -24,4 +24,12 @@
     </div>
 </body>
 
+<style>
+    .sidebar-dark-danger .nav-sidebar>.nav-item>.nav-link.active,
+    .sidebar-light-danger .nav-sidebar>.nav-item>.nav-link.active {
+        background-color: #c2542d !important;
+        color: #fff;
+    }
+</style>
+
 </html>
