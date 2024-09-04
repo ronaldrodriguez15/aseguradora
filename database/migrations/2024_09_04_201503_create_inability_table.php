@@ -115,7 +115,6 @@ class CreateInabilityTable extends Migration
             $table->string('enf_colageno')->nullable();
             $table->string('enf_hematologicas')->nullable();
             $table->string('descripcion_de_enfermedades')->nullable();
-            $table->string('perdida_funcional_anatomica')->nullable();
 
             //REFERENCIAS LABORALES STEP 7
             $table->string('nombres_apellidos_r1')->nullable();
