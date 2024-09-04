@@ -65,3 +65,10 @@ select[multiple].form-control {
     height: auto;
     padding: 0.375rem 0.75rem;
 }
+
+.error-message {
+    color: red;
+    font-size: small;
+    display: none; /* Inicialmente oculto */
+}
+

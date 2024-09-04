@@ -79,7 +79,9 @@ class BankController extends Controller
      */
     public function edit($id)
     {
-        //
+        $bank = Bank::find($id);
+
+        return view('general.banks.edit', compact('bank'));
     }
 
     /**

@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-<p>En este modulo puedes ver todo el registro de los banoos, asimismo, puedes crear uno nuevo o editar los ya creados.</p>
+<p>En este modulo puedes ver todo el registro de los bancos, asimismo, puedes crear uno nuevo o editar los ya creados.</p>
 <br><br><br>
 
 <div class="row justify-content-center">
@@ -67,6 +67,7 @@
                                 <td>
                                     @if($bank['status'] === 1)
                                     <div class="button-container">
+                                        <a class="btn btn-success btn-sm" href="{{ route('bancos.edit', $bank['id']) }}" title="Editar"><i class="fas fa-edit"></i></a>
                                         <form action="{{ route('bancos.destroy', $bank['id']) }}" method="POST" id="formDelete-{{ $bank['id'] }}">
                                             @method('DELETE')
                                             @csrf
@@ -103,14 +104,14 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="name">Entidad <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Introduce el nombre de la ciudad" required>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Introduce el nombre de la entidad" required>
                             @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="type_entity">Tipo de entidad <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('type_entity') is-invalid @enderror" id="type_entity" name="type_entity" placeholder="Introduce el nombre de la ciudad" required>
+                            <input type="text" class="form-control @error('type_entity') is-invalid @enderror" id="type_entity" name="type_entity" placeholder="Introduce el tipo de la entidad" required>
                             @error('type_entity')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -135,14 +136,14 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="employment">Cargo <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('employment') is-invalid @enderror" id="employment" name="employment" placeholder="Introduce el cargo" required>
+                            <input type="text" class="form-control @error('employment') is-invalid @enderror" id="employment" name="employment" placeholder="Describe el cargo" required>
                             @error('employment')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="phone">Télefono <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Nùmero tèlefonico" required>
+                            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Número túlefonico" required>
                             @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
