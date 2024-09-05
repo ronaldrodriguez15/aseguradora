@@ -11,6 +11,7 @@ class Insurer extends Model
 
     protected $fillable = [
         'name',
+        'no_poliza',
         'document_path',
         'status'
     ];

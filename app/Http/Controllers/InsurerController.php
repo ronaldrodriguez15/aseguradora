@@ -42,10 +42,13 @@ class InsurerController extends Controller
     {
         // Validación del formulario por backend
         $rules = [
+            'no_poliza' => 'required',
             'name' => 'required|string|max:255',
             'document_path' => 'nullable|file|mimes:pdf,PDF|max:2048',
         ];
         $messages = [
+            'poliza.required' => 'El campo poliza es obligatorio.',
+
             'name.required' => 'El campo nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
             'name.max' => 'El nombre no debe exceder los 255 caracteres.',
@@ -63,6 +66,7 @@ class InsurerController extends Controller
         }
 
         $insurer = new Insurer();
+        $insurer->no_poliza = $request->no_poliza;
         $insurer->name = $request->name;
         $insurer->document_path = $document_path;
         $insurer->status = 1; //Activo 1, Inactivo 2
@@ -104,10 +108,13 @@ class InsurerController extends Controller
     {
         // Validación del formulario por backend
         $rules = [
+            'no_poliza' => 'required',
             'name' => 'required|string|max:255',
             'document_path' => 'nullable|file|mimes:pdf,PDF|max:2048',
         ];
         $messages = [
+            'poliza.required' => 'El campo poliza es obligatorio.',
+
             'name.required' => 'El campo nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
             'name.max' => 'El nombre no debe exceder los 255 caracteres.',
@@ -131,6 +138,7 @@ class InsurerController extends Controller
             $insurer->document_path = $request->file('document_path')->store('insurers', 'public');
         }
 
+        $insurer->no_poliza = $request->no_poliza;
         $insurer->name = $request->name;
         $insurer->document_path = $document_path;
         $insurer->status = 1; //Activo 1, Inactivo 2

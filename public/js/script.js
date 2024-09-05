@@ -106,8 +106,11 @@ function confirmDelete(icon) {
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("formNuevaAseguradora");
+    const polizaInput = document.getElementById("no_poliza");
     const nameInput = document.getElementById("name");
     const documentInput = document.getElementById("document_path");
+
+    const polizaError = document.getElementById("poliza-error");
     const nameError = document.getElementById("name-error");
     const documentError = document.getElementById("document_path-error");
     const documentLabel = document.querySelector('label[for="document_path"]');
@@ -116,8 +119,15 @@ document.addEventListener("DOMContentLoaded", function () {
         let isValid = true;
 
         // Limpiar errores anteriores
+        polizaError.style.display = "none";
         nameError.style.display = "none";
         documentError.style.display = "none";
+
+        // Validar campo de nombre
+        if (!polizaInput.value.trim()) {
+            polizaError.style.display = "block";
+            isValid = false;
+        }
 
         // Validar campo de nombre
         if (!nameInput.value.trim()) {

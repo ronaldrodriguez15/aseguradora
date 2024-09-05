@@ -7,12 +7,13 @@
 @stop
 
 @section('content')
-    <p>En este modulo puedes ver todo el registro de las Incapacidades, asimismo, puedes ver los detalles de las ya creadas.</p>
+    <p>En este modulo puedes ver todo el registro de las Incapacidades, asimismo, puedes ver los detalles de las ya creadas.
+    </p>
     <br><br><br>
 
     <div class="row justify-content-center">
-        <div class="col-md-12 text-right mb-5">
-            <a class="btn btn-success" id="btnNuevaCiudad">
+        <div class="col-md-12 text-right mb-4">
+            <a class="btn btn-success" href="{{ route('incapacidades.create') }}">
                 <i class="fas fa-plus-circle mr-2"></i>Nueva afiliación
             </a>
         </div>
@@ -34,16 +35,23 @@
                         <table id="datatable" class="table">
                             <thead class="text-center">
                                 <tr class="table-dark text-white">
-                                    <th>Nombres</th>
-                                    <th>Fecha creación</th>
-                                    <th>Estado</th>
+                                    <th>No Solicitud</th>
+                                    <th>Aseguradora</th>
+                                    <th>Asesor</th>
+                                    <th>Asegurado</th>
+                                    <th>EPS del segurado</th>
+                                    <th>Fecha diligenciamiento</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center">
                                 @foreach ($inabilities as $inability)
                                     <tr>
-                                        <td>{{ $inability['name'] }}</td>
+                                        <td>{{ $inability['no_solicitud'] }}</td>
+                                        <td>{{ $inability['aseguradora'] }}</td>
+                                        <td>{{ $inability['nombre_asesor'] }}</td>
+                                        <td>{{ $inability['nombres_completos'] }}</td>
+                                        <td>{{ $inability['tipo_identificaciòn'] }}</td>
                                         <td>{{ $inability['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
                                             @if ($inability['status'] === 1)

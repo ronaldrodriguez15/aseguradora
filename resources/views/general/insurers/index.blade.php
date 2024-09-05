@@ -35,6 +35,7 @@
                         <table id="datatable" class="table">
                             <thead class="text-center">
                                 <tr class="table-dark text-white">
+                                    <th>No Poliza</th>
                                     <th>Nombres</th>
                                     <th>Documento</th>
                                     <th>Fecha creación</th>
@@ -45,6 +46,7 @@
                             <tbody class="text-center">
                                 @foreach ($insurers as $insurer)
                                     <tr>
+                                        <td>{{ $insurer['no_poliza'] }}</td>
                                         <td>{{ $insurer['name'] }}</td>
                                         <td>
                                             @if ($insurer['document_path'])
@@ -108,12 +110,18 @@
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-12">
+                                <label for="no_poliza">No Poliza <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="no_poliza" name="no_poliza"
+                                    placeholder="Introduce el número de la poliza">
+                                <div id="poliza-error" class="error-message">La poliza es obligatorio</div>
+                            </div>
+                            <div class="form-group col-md-12">
                                 <label for="name">Nombre <span class="required">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name"
                                     placeholder="Introduce el nombre de la aseguradora">
                                 <div id="name-error" class="error-message">El nombre es obligatorio</div>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-12 mt-3">
                                 <div class="input-group mb-3">
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" name="document_path"

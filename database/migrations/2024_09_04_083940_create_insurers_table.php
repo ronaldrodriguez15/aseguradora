@@ -16,6 +16,7 @@ class CreateInsurersTable extends Migration
         Schema::create('insurers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('no_poliza');
             $table->string('document_path')->nullable();
             $table->unsignedInteger('status')->default(1);
             $table->timestamps();
