@@ -357,6 +357,11 @@ return [
                     'url' => 'empresas',
                     'icon' => 'fa fa-building',
                 ],
+                [
+                    'text' => 'Asesores',
+                    'url' => 'asesores',
+                    'icon' => 'fa fa-user-friends',
+                ],
             ],
         ],
         ['header' => 'ADMINISTRACIÓN'],

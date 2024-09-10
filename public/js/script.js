@@ -43,7 +43,7 @@ function printModalContent(modalId) {
 }
 
 function confirmDelete(icon) {
-    const userId = icon.parentElement.getAttribute("data-id");
+    const userId = icon.getAttribute("data-id");
     Swal.fire({
         title: "¿Estás seguro de inactivar el registro?",
         text: "¡No podrás revertir esto!",
@@ -83,25 +83,6 @@ function printModalContent(modalId) {
     printWindow.document.close();
     printWindow.print();
     printWindow.close();
-}
-
-function confirmDelete(icon) {
-    const userId = icon.parentElement.getAttribute("data-id");
-    Swal.fire({
-        title: "¿Estás seguro de inactivar el registro?",
-        text: "¡No podrás revertir esto!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sí, eliminar!",
-        cancelButtonText: "Cancelar",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Si el usuario confirma, envía el formulario de eliminación
-            document.getElementById(`formDelete-${userId}`).submit();
-        }
-    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {

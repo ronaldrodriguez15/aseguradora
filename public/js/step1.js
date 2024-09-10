@@ -8,3 +8,12 @@ document.getElementById('aseguradora').addEventListener('change', function() {
     // Asignar el número de póliza al campo correspondiente
     document.getElementById('no_poliza').value = noPoliza;
 });
+
+document.getElementById('asesor_code').addEventListener('change', function() {
+
+    const selectedOption = this.options[this.selectedIndex];
+
+    const asesorName = selectedOption.getAttribute('data-name');
+
+    document.getElementById('nombre_asesor').value = asesorName ? asesorName : '';;
+});

@@ -21,7 +21,18 @@
 
                 <div class="card-body">
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-3">
+                            <label for="no_solicitud">No de Solicitud <span class="required">*</span></label>
+                            <input type="number" class="form-control @error('no_solicitud') is-invalid @enderror"
+                                id="no_solicitud" name="no_solicitud" placeholder="Introduce el número de solicitud"
+                                required>
+                            @error('no_solicitud')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
                             <label for="aseguradora">Aseguradora <span class="required">*</span></label>
                             <select class="form-control @error('aseguradora') is-invalid @enderror" id="aseguradora"
                                 name="aseguradora" required>
@@ -37,24 +48,47 @@
                             @enderror
                         </div>
 
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-4">
                             <label for="no_poliza">No de Poliza <span class="required">*</span></label>
                             <input type="text" class="form-control @error('no_poliza') is-invalid @enderror"
-                                id="no_poliza" name="no_poliza" placeholder="Introduce el número de poliza" required>
+                                id="no_poliza" name="no_poliza" placeholder="Número de poliza" required disabled readonly>
                             @error('no_poliza')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-3">
-                            <label for="no_solicitud">No de Solicitud <span class="required">*</span></label>
-                            <input type="number" class="form-control @error('no_solicitud') is-invalid @enderror"
-                                id="no_solicitud" name="no_solicitud" placeholder="Introduce el número de solicitud"
-                                required>
-                            @error('no_solicitud')
+                    </div>
+                    <br>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="asesor_code">Código del asesor <span class="required">*</span></label>
+                            <select class="form-control @error('asesor_code') is-invalid @enderror" id="asesor_code"
+                                name="asesor_code" required>
+                                <option value="">Selecciona el còdigo del asesor</option>
+                                @foreach ($asesors as $asesor)
+                                    <option value="{{ $asesor['asesor_code'] }}" data-name="{{ $asesor['name'] }}">
+                                        {{ $asesor['asesor_code'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="nombre_asesor">Nombre del asesor <span class="required">*</span></label>
+                            <input type="text" class="form-control @error('nombre_asesor') is-invalid @enderror"
+                                id="nombre_asesor" name="nombre_asesor" placeholder="Nombre del asesor" required disabled
+                                readonly>
+                            @error('nombre_asesor')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-body">
                     <br>
                     <div class="form-row">
                         <div class="form-group col-md-4">
@@ -99,7 +133,8 @@
                             <label for="email_corporativo">Correo electronico corporativo <span
                                     class="required">*</span></label>
                             <input type="email" class="form-control @error('email_corporativo') is-invalid @enderror"
-                                id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com" required>
+                                id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com"
+                                required>
                             @error('email_corporativo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -110,7 +145,8 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
-                                <input type="text" class="form-control" name="descuento_eps" id="descuento_eps" required>
+                                <input type="text" class="form-control" name="descuento_eps" id="descuento_eps"
+                                    required>
                             </div>
 
                             @error('password')
@@ -146,7 +182,6 @@
                             <input type="number" class="form-control is-valid" readonly disabled>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="row">
