@@ -23,6 +23,8 @@ class Inability extends Model
         'email_corporativo',
         'descuento_eps',
         'numero_dias',
+        'edad',
+        'tu_pierdes',
         'valor_ibc_basico',
         'valor_adicional',
         'total',

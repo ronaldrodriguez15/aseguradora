@@ -39,19 +39,24 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        // Validación del formulario por backend
-        $rules = [
-            'name' => 'required',
-        ];
-        $messages = [
-            'name.required' => 'El campo nombre es obligatorio.',
-        ];
-        $this->validate($request, $rules, $messages);
+        $rules = $this->getValidationRules();
+        $messages = $this->getValidationMessages();
 
-        $city = new Company();
-        $city->name = $request->name;
-        $city->status = 1; //Activo 1, Inactivo 2
-        $city->save();
+        $request->validate($rules, $messages);
+
+
+        $company = new Company();
+        $company->name = $request->name;
+        $company->type_entity = $request->type_entity;
+        $company->area = $request->area;
+        $company->official_in_charge = $request->official_in_charge;
+        $company->employment = $request->employment;
+        $company->phone = $request->phone;
+        $company->mobile = $request->mobile;
+        $company->email = $request->email;
+        $company->address = $request->address;
+        $company->status = 1; //Activo 1, Inactivo 2
+        $company->save();
 
         return redirect()->route('empresas.index')->with('success', 'Excelente!!, La empresa ha sido creada.');
     }
@@ -75,7 +80,9 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
-        //
+        $company = Company::find($id);
+
+        return view('general.companies.edit', compact('company'));
     }
 
     /**
@@ -87,21 +94,26 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validación del formulario por backend
-        $rules = [
-            'name' => 'required',
-        ];
-        $messages = [
-            'name.required' => 'El campo nombre es obligatorio.',
-        ];
-        $this->validate($request, $rules, $messages);
+        $rules = $this->getValidationRules();
+        $messages = $this->getValidationMessages();
 
-        $city = Company::find($id);
-        $city->name = $request->name;
-        $city->status = 1; //Activo 1, Inactivo 2
-        $city->save();
+        $request->validate($rules, $messages);
 
-        return redirect()->route('empresas.index')->with('success', 'El registro ha sido editado.');
+        $company = Company::find($id);
+        $company->name = $request->name;
+        $company->name = $request->name;
+        $company->type_entity = $request->type_entity;
+        $company->area = $request->area;
+        $company->official_in_charge = $request->official_in_charge;
+        $company->employment = $request->employment;
+        $company->phone = $request->phone;
+        $company->mobile = $request->mobile;
+        $company->email = $request->email;
+        $company->address = $request->address;
+        $company->status = 1; //Activo 1, Inactivo 2
+        $company->save();
+
+        return redirect()->route('empresas.index')->with('success', 'El registro ha sido editado correctamente.');
     }
 
     /**
@@ -112,9 +124,40 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        $city = Company::find($id);
-        $city->delete();
+        $company = Company::find($id);
+        $company->delete();
 
-        return redirect()->route('ciudades.index')->with('success', 'Excelente!!, La empresa ha sido eliminada.');
+        return redirect()->route('ciudades.index')->with('success', 'La empresa ha sido eliminada.');
+    }
+
+    private function getValidationRules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'type_entity' => 'required|string|max:255',
+            'area' => 'required|string|max:255',
+            'official_in_charge' => 'required|string|max:255',
+            'employment' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'mobile' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'address' => 'required|string|max:255',
+        ];
+    }
+
+    private function getValidationMessages()
+    {
+        return [
+            'name.required' => 'El campo Nombres es obligatorio.',
+            'type_entity.required' => 'El campo Tipo de Entidad es obligatorio.',
+            'area.required' => 'El campo Área es obligatorio.',
+            'official_in_charge.required' => 'El campo Funcionario a Cargo es obligatorio.',
+            'employment.required' => 'El campo Cargo es obligatorio.',
+            'phone.required' => 'El campo Teléfono es obligatorio.',
+            'mobile.required' => 'El campo Móvil es obligatorio.',
+            'email.required' => 'El campo Correo electrónico es obligatorio.',
+            'email.email' => 'El campo Correo electrónico debe ser una dirección de correo válida.',
+            'address.required' => 'El campo Dirección es obligatorio.',
+        ];
     }
 }

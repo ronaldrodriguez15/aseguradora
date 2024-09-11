@@ -8,6 +8,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InabilityController;
 use App\Http\Controllers\InsurerController;
+use App\Http\Controllers\EpsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +42,11 @@ Route::middleware([
     Route::resource('bancos', BankController::class);
     Route::resource('empresas', CompanyController::class);
     Route::resource('aseguradoras', InsurerController::class);
+    Route::resource('eps', EpsController::class);
 
     // Affiliations
     Route::resource('afiliaciones/incapacidades', InabilityController::class);
+    Route::post('/incapacidades/step2', [InabilityController::class, 'formStepTwo'])->name('incapacidades.formStepTwo');
 });
 
 Auth::routes();

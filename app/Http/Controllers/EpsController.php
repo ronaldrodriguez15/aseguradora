@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Inability;
-use App\Models\Insurer;
+use App\Models\Eps;
 
-class InabilityController extends Controller
+class EpsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,11 +14,11 @@ class InabilityController extends Controller
      */
     public function index()
     {
-        $inabilities = Inability::orderBy('status', 'DESC')
+        $epss = Eps::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
             ->paginate();
 
-        return view('affiliations.inabilities.index', compact('inabilities'));
+        return view('general.eps.index', compact('epss'));
     }
 
     /**
@@ -29,9 +28,7 @@ class InabilityController extends Controller
      */
     public function create()
     {
-        $insurers = Insurer::where('status', 1)->get();
-
-        return view('affiliations.inabilities.step1', compact('insurers'));
+        //
     }
 
     /**
@@ -42,7 +39,21 @@ class InabilityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validación del formulario por backend
+        $rules = [
+            'name' => 'required',
+        ];
+        $messages = [
+            'name.required' => 'El campo nombre es obligatorio.',
+        ];
+        $this->validate($request, $rules, $messages);
+
+        $eps = new Eps();
+        $eps->name = $request->name;
+        $eps->status = 1; //Activo 1, Inactivo 2
+        $eps->save();
+
+        return redirect()->route('eps.index')->with('success', 'La eps ha sido creada correctamente.');
     }
 
     /**
@@ -76,7 +87,21 @@ class InabilityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Validación del formulario por backend
+        $rules = [
+            'name' => 'required',
+        ];
+        $messages = [
+            'name.required' => 'El campo nombre es obligatorio.',
+        ];
+        $this->validate($request, $rules, $messages);
+
+        $eps = Eps::find($id);
+        $eps->name = $request->name;
+        $eps->status = 1; //Activo 1, Inactivo 2
+        $eps->save();
+
+        return redirect()->route('eps.index')->with('success', 'La eps ha sido actualizada correctamente.');
     }
 
     /**
@@ -87,11 +112,9 @@ class InabilityController extends Controller
      */
     public function destroy($id)
     {
-        //
-    }
+        $eps = Eps::find($id);
+        $eps->delete();
 
-    public function formStepTwo(Request $request)
-    {
-        return view('affiliations.inabilities.step2');
+        return redirect()->route('eps.index')->with('success', 'Excelente!!, La eps ha sido eliminada.');
     }
 }

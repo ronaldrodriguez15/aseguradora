@@ -29,6 +29,8 @@ class CreateInabilitiesTable extends Migration
             $table->string('email_corporativo')->unique();
             $table->string('descuento_eps', 20);
             $table->integer('numero_dias');
+            $table->integer('edad');
+            $table->string('tu_pierdes', 5);
             $table->decimal('valor_ibc_basico', 20, 2); // Cambiado a decimal
             $table->string('valor_adicional', 10);
             $table->string('total', 50);

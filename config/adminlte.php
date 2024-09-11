@@ -357,6 +357,11 @@ return [
                     'url' => 'empresas',
                     'icon' => 'fa fa-building',
                 ],
+                [
+                    'text' => 'Eps',
+                    'url' => 'eps',
+                    'icon' => 'fa fa-clinic-medical',
+                ],
             ],
         ],
         ['header' => 'ADMINISTRACIÓN'],

@@ -11,14 +11,6 @@ class Bank extends Model
 
     protected $fillable = [
         'name',
-        'type_entity',
-        'area',
-        'official_in_charge',
-        'employment',
-        'phone',
-        'mobile',
-        'email',
-        'address',
         'status'
     ];
 }
