@@ -8,6 +8,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InabilityController;
 use App\Http\Controllers\InsurerController;
+use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\EpsController;
 
 /*
@@ -43,6 +44,7 @@ Route::middleware([
     Route::resource('empresas', CompanyController::class);
     Route::resource('aseguradoras', InsurerController::class);
     Route::resource('eps', EpsController::class);
+    Route::resource('asesores', AsesorController::class);
 
     // Affiliations
     Route::resource('afiliaciones/incapacidades', InabilityController::class);

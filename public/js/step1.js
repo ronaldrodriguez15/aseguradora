@@ -6,31 +6,14 @@ document.getElementById("aseguradora").addEventListener("change", function () {
     var noPoliza = selectedOption.getAttribute("data-poliza");
 
     // Asignar el número de póliza al campo correspondiente
-    document.getElementById("no_poliza").value = noPoliza;
+    document.getElementById('no_poliza').value = noPoliza;
 });
 
-const birthDateInput = document.getElementById("fecha_nacimiento_asesor");
-const ageInput = document.getElementById("edad");
+document.getElementById('asesor_code').addEventListener('change', function() {
 
-birthDateInput.addEventListener("change", function () {
-    const birthDate = new Date(birthDateInput.value);
-    const age = calculateAge(birthDate);
-    ageInput.value = age;
+    const selectedOption = this.options[this.selectedIndex];
+
+    const asesorName = selectedOption.getAttribute('data-name');
+
+    document.getElementById('nombre_asesor').value = asesorName ? asesorName : '';;
 });
-
-// Función para calcular la edad
-function calculateAge(birthDate) {
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-
-    // Ajustar la edad si el cumpleaños no ha pasado aún en el año actual
-    if (
-        monthDifference < 0 ||
-        (monthDifference === 0 && today.getDate() < birthDate.getDate())
-    ) {
-        age--;
-    }
-    return age;
-}

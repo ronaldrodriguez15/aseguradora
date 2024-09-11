@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asesor;
 use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
@@ -30,8 +31,9 @@ class InabilityController extends Controller
     public function create()
     {
         $insurers = Insurer::where('status', 1)->get();
+        $asesors = Asesor::where('status', 1)->get();
 
-        return view('affiliations.inabilities.step1', compact('insurers'));
+        return view('affiliations.inabilities.step1', compact('insurers', 'asesors'));
     }
 
     /**

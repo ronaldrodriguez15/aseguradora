@@ -362,6 +362,11 @@ return [
                     'url' => 'eps',
                     'icon' => 'fa fa-clinic-medical',
                 ],
+                [
+                    'text' => 'Asesores',
+                    'url' => 'asesores',
+                    'icon' => 'fa fa-user-friends',
+                ],
             ],
         ],
         ['header' => 'ADMINISTRACIÓN'],
