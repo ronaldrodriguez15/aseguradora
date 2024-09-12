@@ -15,6 +15,8 @@ class CreateEpsTable extends Migration
     {
         Schema::create('eps', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->unsignedInteger('status')->default(1);
             $table->timestamps();
         });
     }

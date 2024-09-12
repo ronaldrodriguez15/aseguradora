@@ -143,7 +143,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="phone">Télefono <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Número túlefonico" required>
+                            <input type="number" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Número túlefonico" required>
                             @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -152,7 +152,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="mobile">Celular <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="mobile" name="mobile" placeholder="Nùmero celular" required>
+                            <input type="number" class="form-control @error('mobile') is-invalid @enderror" id="mobile" name="mobile" placeholder="Nùmero celular" required>
                             @error('mobile')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

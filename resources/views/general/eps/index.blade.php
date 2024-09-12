@@ -86,12 +86,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form autocomplete="off" action="{{ route('ciudades.store') }}" method="post">
+                <form autocomplete="off" action="{{ route('eps.store') }}" method="post">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="name">Nombre <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Introduce el nombre de la ciudad" required>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Introduce el nombre de la EPS" required>
                             @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -100,7 +100,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" type="button" class="btn btn-success">
-                    <i class="fas fa-save mr-2"></i> Guardar Ciudad
+                    <i class="fas fa-save mr-2"></i> Guardar Eps
                 </button>
                 </form>
             </div>

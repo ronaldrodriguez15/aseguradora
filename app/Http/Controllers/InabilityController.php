@@ -6,6 +6,7 @@ use App\Models\Asesor;
 use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
+use App\Models\Eps;
 
 class InabilityController extends Controller
 {
@@ -32,8 +33,9 @@ class InabilityController extends Controller
     {
         $insurers = Insurer::where('status', 1)->get();
         $asesors = Asesor::where('status', 1)->get();
+        $epss = Eps::where('status', 1)->get();
 
-        return view('affiliations.inabilities.step1', compact('insurers', 'asesors'));
+        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss'));
     }
 
     /**
