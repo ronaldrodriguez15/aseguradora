@@ -17,36 +17,38 @@ class CreateInabilitiesTable extends Migration
             $table->id();
 
             //STEP 1
-            $table->unsignedInteger('insurer_id');
-            $table->string('no_poliza', 18);
-            $table->string('aseguradora', 10);
-            $table->date('fecha_diligenciamiento');
             $table->string('no_solicitud', 12);
+            $table->unsignedInteger('insurer_id');
+            $table->string('aseguradora', 10);
+            $table->string('no_poliza', 18);
+            $table->date('fecha_diligenciamiento');
             $table->string('codigo_asesor', 30);
-            $table->string('nombre_asesor', 50); // Reducido
-            $table->string('nombre_eps', 50); // Reducido
+            $table->string('nombre_asesor', 50);
+            $table->string('nombre_eps', 50);
             $table->date('fecha_nacimiento_asesor');
             $table->string('email_corporativo')->unique();
             $table->string('descuento_eps', 20);
             $table->integer('numero_dias');
             $table->integer('edad');
-            $table->string('tu_pierdes', 5);
-            $table->decimal('valor_ibc_basico', 20, 2); // Cambiado a decimal
-            $table->string('valor_adicional', 10);
+            $table->string('tu_pierdes', 20);
+            $table->string('te_pagamos', 20);
+            $table->decimal('valor_ibc_basico', 20, 2);
+            $table->string('desea_valor', 5);
+            $table->string('valor_adicional', 20);
             $table->string('total', 50);
             $table->string('amparo_basico', 30);
             $table->string('val_prevexequial_eclusivo', 30);
-            $table->string('forma_pago', 30);
+            $table->string('prima_pago_prima_seguro', 30);
+            $table->string('gastos_administrativos', 30)->nullable();
+            $table->decimal('val_total_desc_mensual', 20, 2)->nullable();
 
             //INFORMACION DEBITO AUTOMATICO STEP 2
+            $table->string('forma_pago', 30)->nullable();
             $table->string('tipo_cuenta', 30)->nullable();
             $table->string('no_cuenta', 40)->nullable();
             $table->unsignedInteger('bank_id')->nullable();
             $table->string('banco', 50)->nullable();
             $table->string('ciudad_banco', 50)->nullable();
-            $table->string('gastos_administrativos', 30)->nullable();
-            $table->unsignedInteger('edad_funcionario')->nullable();
-            $table->decimal('val_total_desc_mensual', 20, 2)->nullable();
 
             //DATOS DEL ASEGURADO STEP 3
             $table->string('primer_apellido', 70)->nullable();
@@ -66,7 +68,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('eps_asegurado', 70)->nullable();
             $table->string('entidad_pagadora_sucursal', 150)->nullable();
 
-            //BENEFICIARIOS DEL SOLICITANTE STEP 4
+            //BENEFICIARIOS DEL SOLICITANTE STEP 3
             $table->string('nombres_s1', 70)->nullable();
             $table->string('apellidos_s1', 70)->nullable();
             $table->string('genero_s1', 70)->nullable();
@@ -89,7 +91,7 @@ class CreateInabilitiesTable extends Migration
             $table->integer('porcentaje_s3')->nullable();
             $table->string('tipo_identidad_s3', 70)->nullable();
 
-            //PRODUCTOS DEL FUNCIONARIO STEP 5
+            //PRODUCTOS DEL FUNCIONARIO STEP 4
             $table->string('servicios_prevision_exequial', 8)->nullable();
             $table->string('beneficiario_diario_inc_temp', 8)->nullable();
             $table->string('serv_prevision_exequial_mascotas', 8)->nullable();
@@ -97,7 +99,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('otro', 8)->nullable();
             $table->string('cual', 100)->nullable();
 
-            //DECLARACION DE ASEGURABILIDAD STEP 6
+            //DECLARACION DE ASEGURABILIDAD STEP 4
             $table->string('cancer', 8)->nullable();
             $table->string('corazon', 8)->nullable();
             $table->string('diabetes', 8)->nullable();
@@ -120,7 +122,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('enf_hematologicas', 8)->nullable();
             $table->text('descripcion_de_enfermedades')->nullable();
 
-            // REFERENCIAS LABORALES STEP 7
+            // REFERENCIAS LABORALES STEP 4
             $table->string('nombres_apellidos_r1', 70)->nullable();
             $table->string('telefono_r1', 15)->nullable();
             $table->string('entidad_r1', 70)->nullable();
@@ -131,7 +133,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('telefono_r3', 15)->nullable();
             $table->string('entidad_r3', 70)->nullable();
 
-            // AFILIACION MASCOTAS STEP 8
+            // AFILIACION MASCOTAS STEP 5
             $table->string('tienes_mascotas', 3)->nullable();
             $table->string('proteger_mascotas', 3)->nullable();
             $table->string('nombre_m1', 50)->nullable();

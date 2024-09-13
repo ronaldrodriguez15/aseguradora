@@ -8,12 +8,12 @@
 @stop
 @section('content')
 <div class="container">
-    <form autocomplete="off" action="{{ route('usuarios.store') }}" method="post">
+    <form autocomplete="off" action="{{ route('incapacidades.formStepTree') }}" method="post" id="formStep2">
         @csrf
         <div class="card">
             <div class="card-header pastel-blue-color">
                 <div class="row">
-                    <div class="col-md-6"><span>Datos generales de la afiliación</span></div>
+                    <div class="col-md-6"><span>Información de debito automatico</span></div>
                     <div class="col-md-6 text-right"><span>{{ now()->format('d/m/Y') }}</span><i
                             class="fas fa-calendar-week ml-2"></i></div>
                 </div>
@@ -21,100 +21,123 @@
 
             <div class="card-body">
                 <div class="form-row">
-                <div class="form-group col-md-6">
-                        <label for="no_poliza">Valor IBC basico <span class="required">*</span></label>
-                        <input type="text" class="form-control @error('no_poliza') is-invalid @enderror"
-                            id="no_poliza" name="no_poliza" placeholder="Introduce el número de poliza" required>
-                        @error('no_poliza')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="form-group col-md-3">
+                        <label for="tu_pierdes" class="text-danger">Tu pierdes!!!</label>
+                        <input type="text" class="form-control form-control-lg is-invalid"
+                            id="tu_pierdes" name="tu_pierdes" placeholder="000000" value="{{ $tu_pierdes }}" disabled required>
                     </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="no_poliza">¿Desea valor adicional? <span class="required">*</span></label>
-                        <input type="text" class="form-control @error('no_poliza') is-invalid @enderror"
-                            id="no_poliza" name="no_poliza" placeholder="Introduce el número de poliza" required>
-                        @error('no_poliza')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="form-group col-md-3">
+                        <label for="te_pagamos" class="text-info">Nosotros te pagamos!!!</label>
+                        <input type="text" class="form-control form-control-lg border-info"
+                            id="te_pagamos" name="te_pagamos" placeholder="000000" value="{{ $te_pagamos }}" disabled required>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="no_solicitud">Valor adicional <span class="required">*</span></label>
-                        <input type="number" class="form-control @error('no_solicitud') is-invalid @enderror"
-                            id="no_solicitud" name="no_solicitud" placeholder="Introduce el número de solicitud"
-                            required>
-                        @error('no_solicitud')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="form-group col-md-4">
+                        <label for="val_total_desc_mensual" class="text-warning">Valor total de descuento mensual</label>
+                        <input type="text" class="form-control form-control-lg is-warning"
+                            id="val_total_desc_mensual" name="val_total_desc_mensual" placeholder="000000" value="{{ $val_total_desc_mensual }}" disabled required>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="edad" class="text-success">Edad del funcionario</label>
+                        <input type="text" class="form-control form-control-lg is-valid"
+                            id="edad" name="edad" placeholder="000000" value="{{ $edad }}" disabled required>
                     </div>
                 </div>
+                <br><br>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="phone">Total <span class="required">*</span></label>
-                        <input type="number" class="form-control @error('phone') is-invalid @enderror" id="phone"
-                            name="phone" placeholder="Introduce el código" required>
-                        @error('phone')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="email">Amparo basico (muerte por cualquier causa) <span class="required">*</span></label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                            name="email" placeholder="Introduce el Nombre completo" required>
-                        @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="nombre_eps">Valor previ-exequial exclusivo <span class="required">*</span></label>
-                        <input type="nombre_eps" class="form-control @error('nombre_eps') is-invalid @enderror"
-                            id="nombre_eps" name="nombre_eps" placeholder="Escribe el nombre de la EPS" required>
-                        @error('nombre_eps')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="fecha_nacimiento_asesor">Prima de pago y prima de seguro <span class="required">*</span></label>
-                        <input type="date"
-                            class="form-control @error('fecha_nacimiento_asesor') is-invalid @enderror"
-                            id="fecha_nacimiento_asesor" name="fecha_nacimiento_asesor"
-                            placeholder="Selecciona la fecha del cliente" required>
-                        @error('fecha_nacimiento_asesor')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="email_corporativo">Forma de pago <span
-                                class="required">*</span></label>
-                        <input type="email" class="form-control @error('email_corporativo') is-invalid @enderror"
-                            id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com" required>
-                        @error('email_corporativo')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="password">Descuento EPS <span class="required">*</span></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">$</span>
-                            </div>
-                            <input type="text" class="form-control" name="descuento_eps" id="descuento_eps" required>
-                        </div>
-
-                        @error('password')
+                        <label for="forma_pago">Forma de pago <span class="required">*</span></label>
+                        <select class="form-control @error('forma_pago') is-invalid @enderror" id="forma_pago"
+                            name="forma_pago" required>
+                            <option value="">Selecciona la forma de pago</option>
+                            <option value="debito_automatico">Debito automatico</option>
+                            <option value="mensual_libranza">Mensual Libranza</option>
+                        </select>
+                        @error('forma_pago')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">
+        <br>
+        <div class="card" id="debito_automatico_fields" style="display: none">
+            <div class="card-body">
+                <br>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tipo_cuenta">Tipo de cuenta <span class="required">*</span></label>
+                        <select class="form-control @error('tipo_cuenta') is-invalid @enderror" id="tipo_cuenta"
+                            name="tipo_cuenta">
+                            <option value="ahorros">Ahorros</option>
+                            <option value="corriente">Corriente</option>
+                        </select>
+                        @error('tipo_cuenta')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="no_cuenta">Número de cuenta <span class="required">*</span></label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" class="form-control" name="no_cuenta" id="no_cuenta" placeholder="Escribe el N de cuenta" required>
+                        </div>
+                        <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="r_no_cuenta">Repite el número de cuenta <span class="required">*</span></label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" class="form-control" name="r_no_cuenta" id="r_no_cuenta" placeholder="Repite el N de cuenta" required>
+                        </div>
+                        <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="banco">Banco <span class="required">*</span></label>
+                        <select class="form-control @error('banco') is-invalid @enderror" id="banco"
+                            name="banco" required>
+                            <option value="">Selecciona el banco</option>
+                            @foreach ($banks as $bank)
+                            <option value="{{ $bank['id'] }}">
+                                {{ $bank['name'] }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('banco')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ciudad_banco">Ciudad del Banco <span class="required">*</span></label>
+                        <select class="form-control @error('bank_id') is-invalid @enderror" id="ciudad_banco"
+                            name="ciudad_banco" required>
+                            <option value="">Selecciona el banco</option>
+                            @foreach ($cities as $city)
+                            <option value="{{ $city['name'] }}">
+                                {{ $city['name'] }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('ciudad_banco')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 text-right mb-5">
+            </div>
+            <div class="col-md-6 text-right mb-5">
+                <button type="submit" class="btn btn-success" id="submitBtn">
                     Siguiente<i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </div>
@@ -139,5 +162,5 @@
         $('input').attr('autocomplete', 'off');
     });
 </script>
-<script src="{{ asset('js/step1.js') }}"></script>
+<script src="{{ asset('js/step2.js') }}"></script>
 @stop

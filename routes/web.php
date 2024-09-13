@@ -48,7 +48,9 @@ Route::middleware([
 
     // Affiliations
     Route::resource('afiliaciones/incapacidades', InabilityController::class);
-    Route::post('/incapacidades/step2', [InabilityController::class, 'formStepTwo'])->name('incapacidades.formStepTwo');
+    Route::post('afiliaciones/incapacidades/step2', [InabilityController::class, 'formStepTwo'])->name('incapacidades.formStepTwo');
+    Route::post('afiliaciones/incapacidades/step3', [InabilityController::class, 'formStepTree'])->name('incapacidades.formStepTree');
+    Route::post('afiliaciones/incapacidades/step4', [InabilityController::class, 'formStepFour'])->name('incapacidades.formStepFour');
 });
 
 Auth::routes();

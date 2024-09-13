@@ -92,3 +92,7 @@ select[multiple].form-control {
     background: #343a40;
     color: white;
 }
+
+.border-warning-custom {
+    border: 1px solid #ffc107; /* Color de advertencia (amarillo de Bootstrap) */
+}
