@@ -16,7 +16,7 @@ class EpsController extends Controller
     {
         $epss = Eps::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
 
         return view('general.eps.index', compact('epss'));
     }

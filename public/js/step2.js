@@ -27,25 +27,27 @@ document.getElementById("forma_pago").addEventListener("change", function () {
     }
 });
 
-// Ejecutar el script al cargar la página para mostrar los campos correctos por defecto
-document.getElementById("forma_pago").dispatchEvent(new Event("change"));
+document.addEventListener('DOMContentLoaded', function () {
+    const noCuenta = document.getElementById('no_cuenta');
+    const rNoCuenta = document.getElementById('r_no_cuenta');
 
-const noCuenta = document.getElementById("no_cuenta");
-const rNoCuenta = document.getElementById("r_no_cuenta");
-const submitBtn = document.getElementById("submitBtn");
-
-// Función para validar los números de cuenta
-function validarCuentas() {
-    if (noCuenta.value !== rNoCuenta.value) {
-        noCuenta.classList.add("is-invalid");
-        rNoCuenta.classList.add("is-invalid");
-        return false; // Las cuentas no coinciden
-    } else {
-        noCuenta.classList.remove("is-invalid");
-        rNoCuenta.classList.remove("is-invalid");
-        return true; // Las cuentas coinciden
+    // Función para validar si los campos coinciden
+    function validarCuentas() {
+        if (noCuenta.value !== rNoCuenta.value) {
+            // Si no coinciden, mostrar error
+            noCuenta.classList.add('is-invalid');
+            rNoCuenta.classList.add('is-invalid');
+        } else {
+            // Si coinciden, remover error
+            noCuenta.classList.remove('is-invalid');
+            rNoCuenta.classList.remove('is-invalid');
+        }
     }
-}
+
+    // Validar en tiempo real mientras el usuario escribe
+    noCuenta.addEventListener('input', validarCuentas);
+    rNoCuenta.addEventListener('input', validarCuentas);
+});
 
 // CONFIRMACION ENVIO DE FORMULARIO
 var form = document.getElementById("formStep2"); // Selecciona tu formulario

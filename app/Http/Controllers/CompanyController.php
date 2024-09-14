@@ -16,7 +16,7 @@ class CompanyController extends Controller
     {
         $companies = Company::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
 
         return view('general.companies.index', compact('companies'));
     }

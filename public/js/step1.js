@@ -187,6 +187,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var valorIbcBasicoField = document.getElementById("valor_ibc_basico");
     var totalField = document.getElementById("total");
 
+    const valorIbcBasico = document.getElementById('valor_ibc_basico');
+    const descuentoEps = document.getElementById('descuento_eps');
+
     // Función para habilitar o deshabilitar el campo de valor adicional
     function toggleValorAdicional() {
         if (selectField.value === "si") {
@@ -197,6 +200,22 @@ document.addEventListener("DOMContentLoaded", function () {
             valorAdicionalField.value = "0"; // Establece el valor en 0 cuando se deshabilita
         }
     }
+
+    function calcularDescuento() {
+        // Obtener el valor del campo y eliminar caracteres no numéricos
+        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ''));
+        if (!isNaN(valor)) {
+            // Calcular el descuento (4%)
+            const descuento = valor * 0.04;
+            // Mostrar el descuento en el campo correspondiente
+            descuentoEps.value = descuento.toFixed(2); // Formato a dos decimales
+        } else {
+            descuentoEps.value = ''; // Vaciar el campo si el valor no es válido
+        }
+    }
+
+    // Calcular en tiempo real mientras se escribe en el campo
+    valorIbcBasico.addEventListener('input', calcularDescuento);
 
     // Inicializa el estado del campo "Valor adicional" según la selección actual
     toggleValorAdicional();

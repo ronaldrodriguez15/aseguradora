@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         $usuarios = User::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->paginate(50);
 
         return view('users.index', compact('usuarios'));
     }

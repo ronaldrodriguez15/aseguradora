@@ -171,7 +171,7 @@ class InabilityController extends Controller
 
         $insurer = Insurer::find($request->aseguradora);
         $inability->aseguradora = $insurer->name;
-
+        
         $inability->no_poliza = $request->no_poliza;
         $inability->fecha_diligenciamiento = Carbon::now();
         $inability->codigo_asesor = $request->codigo_asesor;

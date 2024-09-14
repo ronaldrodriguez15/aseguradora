@@ -16,7 +16,7 @@ class BankController extends Controller
     {
         $banks = Bank::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
 
         return view('general.banks.index', compact('banks'));
     }

@@ -16,7 +16,8 @@ class CityController extends Controller
     {
         $cities = City::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
+
 
         return view('general.cities.index', compact('cities'));
     }

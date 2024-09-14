@@ -19,7 +19,7 @@ class CreateInabilitiesTable extends Migration
             //STEP 1
             $table->string('no_solicitud', 12);
             $table->unsignedInteger('insurer_id');
-            $table->string('aseguradora', 10);
+            $table->string('aseguradora', 50);
             $table->string('no_poliza', 18);
             $table->date('fecha_diligenciamiento');
             $table->string('codigo_asesor', 30);
