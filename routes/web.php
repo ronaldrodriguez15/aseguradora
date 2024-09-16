@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\BankController;
-use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InabilityController;
 use App\Http\Controllers\InsurerController;
 use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EpsController;
 
 /*
@@ -41,7 +41,7 @@ Route::middleware([
     Route::resource('usuarios', UserController::class);
     Route::resource('ciudades', CityController::class);
     Route::resource('bancos', BankController::class);
-    Route::resource('empresas', CompanyController::class);
+    Route::resource('entidades', EntityController::class);
     Route::resource('aseguradoras', InsurerController::class);
     Route::resource('eps', EpsController::class);
     Route::resource('asesores', AsesorController::class);

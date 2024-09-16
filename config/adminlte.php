@@ -327,9 +327,9 @@ return [
             'icon' => 'fas fa-handshake',
             'submenu' => [
                 [
-                    'text' => 'Incapacidades',
+                    'text' => 'Pago incapacidades',
                     'url' => 'afiliaciones/incapacidades',
-                    'icon' => 'fa fa-blind',
+                    'icon' => 'fa fa-money-check-alt',
                 ],
             ],
         ],
@@ -353,8 +353,8 @@ return [
                     'icon' => 'fa fa-university',
                 ],
                 [
-                    'text' => 'Empresas',
-                    'url' => 'empresas',
+                    'text' => 'Entidades',
+                    'url' => 'entidades',
                     'icon' => 'fa fa-building',
                 ],
                 [

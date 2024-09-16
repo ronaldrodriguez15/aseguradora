@@ -72,274 +72,169 @@ function calcularEdad(fechaNacimiento) {
     return edad;
 }
 
-// Calculo de TU PIERDES!!! y NOSOTROS TE PAGAMOS!!!
-
-function calcularPerdida() {
-    // Obtener los valores de los inputs
-    var numeroDias = parseFloat(document.getElementById("numero_dias").value);
-    var valorIBC = parseFloat(
-        document.getElementById("valor_ibc_basico").value
-    );
-
-    // Verificar que los valores sean válidos
-    if (isNaN(numeroDias) || isNaN(valorIBC) || numeroDias <= 2) {
-        document.getElementById("resultadoPierdes").innerText = "$0";
-        document.getElementById("resultadoPierdesInput").value = "0";
-    } else {
-        // Realizar el cálculo: = (valorIBC / 90) * (numeroDias - 2)
-        var resultado = (valorIBC / 90) * (numeroDias - 2);
-
-        // Redondear el resultado y formatear como valor monetario en COP sin decimales
-        var resultadoFormateado = Math.round(resultado).toLocaleString(
-            "es-CO",
-            {
-                style: "currency",
-                currency: "COP",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            }
-        );
-
-        // Mostrar el resultado en el modal
-        document.getElementById("resultadoPierdes").innerText =
-            resultadoFormateado;
-
-        // Actualizar el campo oculto con el valor numérico
-        document.getElementById("resultadoPierdesInput").value =
-            Math.round(resultado);
-    }
-
-    // Hacer visible el botón "NOSOTROS TE PAGAMOS!!!"
-    document.getElementById("botonTePagamos").style.display = "flex";
-}
-
-function calcularPagamos() {
-    // Obtener los valores de los inputs
-    var numeroDias = parseFloat(document.getElementById("numero_dias").value);
-    var resultadoPierdes = parseFloat(
-        document.getElementById("resultadoPierdesInput").value
-    );
-
-    // Verificar que los valores sean válidos
-    if (isNaN(numeroDias) || isNaN(resultadoPierdes) || numeroDias <= 2) {
-        document.getElementById("resultadoPagamos").innerText = "$0";
-        document.getElementById("resultadoPagamosInput").value = "0";
-    } else {
-        // Realizar el cálculo: = resultadoPierdes * 1.3
-        var resultado = resultadoPierdes * 1.3;
-
-        // Redondear el resultado y formatear como valor monetario en COP sin decimales
-        var resultadoFormateado = Math.round(resultado).toLocaleString(
-            "es-CO",
-            {
-                style: "currency",
-                currency: "COP",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            }
-        );
-
-        // Mostrar el resultado en el modal
-        document.getElementById("resultadoPagamos").innerText =
-            resultadoFormateado;
-
-        // Actualizar el campo oculto con el valor numérico
-        document.getElementById("resultadoPagamosInput").value =
-            Math.round(resultado);
-    }
-}
-
-function verificarCampos() {
-    var numeroDias = parseFloat(
-        document.getElementById("numero_dias").value.trim()
-    );
-    var valorIBC = parseFloat(
-        document.getElementById("valor_ibc_basico").value.trim()
-    );
-
-    var esNumeroDiasValido = !isNaN(numeroDias) && numeroDias > 0;
-    var esValorIBCValido = !isNaN(valorIBC) && valorIBC > 0;
-
-    // Habilitar o deshabilitar el botón basado en las verificaciones (TU PIERDES)
-    var botonTuPierdes = document.getElementById("botonTuPierdes");
-    if (esNumeroDiasValido && esValorIBCValido) {
-        botonTuPierdes.style.display = "flex"; // Habilitar el botón
-    } else {
-        botonTuPierdes.style.display = "none"; // Deshabilitar el botón
-    }
-}
-
-// Añadir event listeners para verificar los campos en tiempo real
-document
-    .getElementById("numero_dias")
-    .addEventListener("input", verificarCampos);
-document
-    .getElementById("valor_ibc_basico")
-    .addEventListener("input", verificarCampos);
-
-// Ejecutar la función al cargar la página
-window.onload = verificarCampos;
-
-// LOGICA PARA LOS CAMPOS DE VALORES ADICIONALES
-document.addEventListener("DOMContentLoaded", function () {
-    var selectField = document.getElementById("desea_valor");
-    var valorAdicionalField = document.getElementById("valor_adicional");
-    var valorIbcBasicoField = document.getElementById("valor_ibc_basico");
-    var totalField = document.getElementById("total");
-
-    const valorIbcBasico = document.getElementById('valor_ibc_basico');
-    const descuentoEps = document.getElementById('descuento_eps');
-
-    // Función para habilitar o deshabilitar el campo de valor adicional
-    function toggleValorAdicional() {
-        if (selectField.value === "si") {
-            valorAdicionalField.disabled = false;
-            valorAdicionalField.value = ""; // Limpia el valor cuando se habilita
-        } else {
-            valorAdicionalField.disabled = true;
-            valorAdicionalField.value = "0"; // Establece el valor en 0 cuando se deshabilita
-        }
-    }
-
-    function calcularDescuento() {
-        // Obtener el valor del campo y eliminar caracteres no numéricos
-        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ''));
-        if (!isNaN(valor)) {
-            // Calcular el descuento (4%)
-            const descuento = valor * 0.04;
-            // Mostrar el descuento en el campo correspondiente
-            descuentoEps.value = descuento.toFixed(2); // Formato a dos decimales
-        } else {
-            descuentoEps.value = ''; // Vaciar el campo si el valor no es válido
-        }
-    }
-
-    // Calcular en tiempo real mientras se escribe en el campo
-    valorIbcBasico.addEventListener('input', calcularDescuento);
-
-    // Inicializa el estado del campo "Valor adicional" según la selección actual
-    toggleValorAdicional();
-
-    // Agrega un event listener al select para manejar cambios
-    selectField.addEventListener("change", toggleValorAdicional);
-
-    // Función para calcular y actualizar el campo "Total"
-    function actualizarTotal() {
-        var valorIbcBasico =
-            parseFloat(valorIbcBasicoField.value.replace(/[^0-9.]/g, "")) || 0;
-        var valorAdicional =
-            parseFloat(valorAdicionalField.value.replace(/[^0-9.]/g, "")) || 0;
-
-        // Calcula el total
-        var total = valorIbcBasico + valorAdicional;
-
-        // Actualiza el campo "Total"
-        totalField.value = total.toLocaleString("en-US"); // Muestra el número con formato de miles
-    }
-
-    // Inicializa el campo "Total" al cargar la página
-    actualizarTotal();
-
-    // Agrega event listeners a los campos para actualizar el total cuando cambien
-    valorIbcBasicoField.addEventListener("input", actualizarTotal);
-    valorAdicionalField.addEventListener("input", actualizarTotal);
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    var descuentoEpsField = document.getElementById("descuento_eps");
-    var totalField = document.getElementById("total");
-    var valAdicionalField = document.getElementById("valor_adicional");
-
-    function limpiarValor(valor) {
-        return parseFloat(
-            valor
-                .replace(/,/g, "") // Elimina las comas
-                .replace(/\./g, ".") // Asegura que los puntos se mantengan como decimales
-        );
-    }
-
-    function calcularPrimaPago() {
-        var descuentoEPS = limpiarValor(descuentoEpsField.value);
-        var valorTotal = limpiarValor(totalField.value);
-
-        if (!isNaN(descuentoEPS) && !isNaN(valorTotal)) {
-            var resultado = "";
-
-            if (valorTotal <= 2681240) {
-                resultado = 14000;
-            } else {
-                resultado = valorTotal * 0.004712 + 1366;
-                // Redondear al múltiplo superior más cercano de 500
-                resultado = Math.ceil(resultado / 500) * 500;
-            }
-
-            // Formatear el resultado como pesos colombianos
-            document.getElementById("prima_pago_prima_seguro").value =
-                resultado.toLocaleString("es-CO", {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                });
-        } else {
-            document.getElementById("prima_pago_prima_seguro").value = "";
-        }
-    }
-
-    // Agrega event listeners a los campos para actualizar la prima cuando cambien
-    descuentoEpsField.addEventListener("input", calcularPrimaPago);
-    totalField.addEventListener("input", calcularPrimaPago);
-    valAdicionalField.addEventListener("input", calcularPrimaPago);
-});
-
 // VALOR TOTAL DE DESCUENTO TOTAL
 document.addEventListener("DOMContentLoaded", function () {
-    var valPrevexequialField = document.getElementById(
+    const valorIbcBasico = document.getElementById("valor_ibc_basico");
+    const descuentoEps = document.getElementById("descuento_eps");
+    const deseaValor = document.getElementById("desea_valor");
+    const valorAdicional = document.getElementById("valor_adicional");
+    const valPrevexequialExclusivo = document.getElementById(
         "val_prevexequial_eclusivo"
     );
-    var primaPagoField = document.getElementById("prima_pago_prima_seguro");
-    var gastosAdministrativosField = document.getElementById(
+    const total = document.getElementById("total");
+    const primaPagoPrimaSeguro = document.getElementById(
+        "prima_pago_prima_seguro"
+    );
+    const gastosAdministrativos = document.getElementById(
         "gastos_administrativos"
     );
-    var totalDescuentoField = document.getElementById("val_total_desc_mensual");
-    var valAdicionalField = document.getElementById("valor_adicional");
+    const valTotalDescMensual = document.getElementById(
+        "val_total_desc_mensual"
+    );
+    const numeroDias = document.getElementById("numero_dias");
+    const resultadoPierdes = document.getElementById("resultadoPierdes");
+    const resultadoPagamos = document.getElementById("resultadoPagamos");
+    const resultadoPierdesInput = document.getElementById(
+        "resultadoPierdesInput"
+    );
+    const resultadoPagamosInput = document.getElementById(
+        "resultadoPagamosInput"
+    );
+    const botonTePagamos = document.getElementById('botonTePagamos');
+    const modal = new bootstrap.Modal(document.getElementById('tePagamosModal'));
 
-    function limpiarValor(valor) {
-        return parseFloat(
-            valor
-                .replace(/\./g, "") // Elimina los puntos
-                .replace(/,/g, ".") // Reemplaza las comas con puntos
+    // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
+    function calcularValores() {
+        // Obtén el valor IBC básico y realiza el cálculo del descuento
+        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ""));
+        const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
+
+        // Calcular el descuento
+        let descuento = 0;
+        if (!isNaN(valor)) {
+            descuento = valor * 0.04;
+            descuentoEps.value = descuento.toLocaleString("es-CO", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        } else {
+            descuentoEps.value = "";
+        }
+
+        // Calcular el valor adicional
+        let adicional = 0;
+        if (deseaValorAdicional && !isNaN(valor)) {
+            adicional = valor * 0.3;
+            valorAdicional.value = adicional.toLocaleString("es-CO", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        } else {
+            valorAdicional.value = "";
+        }
+
+        // Calcular el total
+        let totalValue = 0;
+        if (!isNaN(valor)) {
+            totalValue = valor + adicional;
+            total.value = totalValue.toLocaleString("es-CO", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        } else {
+            total.value = "";
+        }
+
+        // Calcular el valor previ-exequial exclusivo
+        if (descuento > 0) {
+            valPrevexequialExclusivo.value = "2400";
+        } else {
+            valPrevexequialExclusivo.value = "";
+        }
+
+        // Calcular la prima de pago prima de seguro
+        let prima;
+        if (descuento > 0) {
+            if (totalValue <= 2681240) {
+                prima = 14000;
+            } else {
+                const calculo = totalValue * 0.004712 + 1366;
+                prima = Math.ceil(calculo / 500) * 500; // Redondea hacia arriba al múltiplo más cercano de 500
+            }
+            primaPagoPrimaSeguro.value = prima.toLocaleString("es-CO", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        } else {
+            primaPagoPrimaSeguro.value = "";
+        }
+
+        // Calcular el valor total de descuento mensual
+        const gastos = parseFloat(
+            gastosAdministrativos.value.replace(/[^0-9.-]/g, "")
         );
+        if (!isNaN(totalValue) && !isNaN(prima) && !isNaN(gastos)) {
+            const valorTotalDescMensual =
+                (parseFloat(
+                    valPrevexequialExclusivo.value.replace(/[^0-9.-]/g, "")
+                ) || 0) +
+                prima +
+                gastos;
+            valTotalDescMensual.value = valorTotalDescMensual.toLocaleString(
+                "es-CO",
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+            );
+        } else {
+            valTotalDescMensual.value = "";
+        }
     }
 
-    function calcularTotalDescuento() {
-        var valPrevexequial = limpiarValor(valPrevexequialField.value) || 0;
-        var primaPago = limpiarValor(primaPagoField.value) || 0;
-        var gastosAdministrativos =
-            limpiarValor(gastosAdministrativosField.value) || 0;
+    // Calcular en tiempo real mientras se escribe en los campos y se cambia el select
+    valorIbcBasico.addEventListener("input", calcularValores);
+    deseaValor.addEventListener("change", calcularValores);
+    gastosAdministrativos.addEventListener("input", calcularValores);
 
-        // Calcula el total sumando los tres valores
-        var totalDescuento =
-            valPrevexequial + primaPago + gastosAdministrativos;
+    // Vincula la función al evento click del botón
+    botonTePagamos.addEventListener('click', calcularResultados);
 
-        // Formatear el resultado como pesos colombianos y mostrarlo en el campo correspondiente
-        totalDescuentoField.value = totalDescuento.toLocaleString("es-CO", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
+    function calcularResultados() {
+        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ""));
+        const dias = parseInt(numeroDias.value, 10);
+
+        // Validar el rango de días
+        if (dias < 3 || dias > 45) {
+            Swal.fire({
+                icon: "warning",
+                title: "Número de días fuera de rango",
+                text: "Por favor, ingrese un número de días entre 3 y 45.",
+                confirmButtonText: "Aceptar",
+            }).then(() => {
+                // Si el número de días está fuera del rango, no se abre el modal.
+                return; // Salir de la función para evitar el cálculo y la apertura del modal
+            });
+        }
+
+        // Calcular "Tu Pierdes"
+        let tuPierdes = 0;
+        if (!isNaN(valor) && !isNaN(dias) && dias > 2) {
+            tuPierdes = (valor / 90) * (dias - 2);
+        }
+        resultadoPierdes.textContent = tuPierdes.toLocaleString("es-CO", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
+
+        // Calcular "Nosotros Te Pagamos"
+        const pagamos = tuPierdes * 1.3;
+        resultadoPagamos.textContent = pagamos.toLocaleString("es-CO", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        // Almacenar los resultados en los campos ocultos
+        resultadoPierdesInput.value = tuPierdes.toFixed(2);
+        resultadoPagamosInput.value = pagamos.toFixed(2);
     }
-
-    // Agrega event listeners a los campos que intervienen en el cálculo
-    gastosAdministrativosField.addEventListener(
-        "input",
-        calcularTotalDescuento
-    );
-
-    // Si "prima_pago_prima_seguro" se actualiza dinámicamente, llama la función después de su cálculo
-    primaPagoField.addEventListener("input", calcularTotalDescuento);
-    valAdicionalField.addEventListener("input", calcularTotalDescuento);
-    gastosAdministrativosField.addEventListener(
-        "input",
-        calcularTotalDescuento
-    );
 
     // CONFIRMACION ENVIO DE FORMULARIO
     var form = document.getElementById("formStep1"); // Selecciona tu formulario

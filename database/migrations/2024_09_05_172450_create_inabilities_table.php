@@ -40,7 +40,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('val_prevexequial_eclusivo', 30);
             $table->string('prima_pago_prima_seguro', 30);
             $table->string('gastos_administrativos', 30)->nullable();
-            $table->decimal('val_total_desc_mensual', 20, 2)->nullable();
+            $table->string('val_total_desc_mensual', 50)->nullable();
 
             //INFORMACION DEBITO AUTOMATICO STEP 2
             $table->string('forma_pago', 30)->nullable();

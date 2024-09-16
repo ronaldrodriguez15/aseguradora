@@ -13,7 +13,7 @@
             <div class="card">
                 <div class="card-header pastel-blue-color">
                     <div class="row">
-                        <div class="col-md-6"><span>Información de debito automatico</span></div>
+                        <div class="col-md-6"><span>Información forma de pago</span></div>
                         <div class="col-md-6 text-right"><span>{{ now()->format('d/m/Y') }}</span><i
                                 class="fas fa-calendar-week ml-2"></i></div>
                     </div>

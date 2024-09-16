@@ -3,11 +3,11 @@
 @section('title', 'Incapacidades')
 
 @section('content_header')
-    <h1>Incapacidades</h1>
+    <h1>Pago de incapacidades</h1>
 @stop
 
 @section('content')
-    <p>En este modulo puedes ver todo el registro de las Incapacidades, asimismo, puedes ver los detalles de las ya creadas.
+    <p>En este modulo puedes ver todo el registro de afiliaciones, asi mismo, puedes ver los detalles de las ya creadas.
     </p>
     <br><br><br>
 

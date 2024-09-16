@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
 use App\Models\Eps;
-use App\Models\Company;
+use App\Models\Entity;
 use Illuminate\Support\Carbon;
 
 class InabilityController extends Controller
@@ -100,70 +100,69 @@ class InabilityController extends Controller
 
     public function formStepTwo(Request $request)
     {
-        $rules = [
-            'no_solicitud' => 'required|string',
-            'aseguradora' => 'required|numeric',
-            'no_poliza' => 'required|string',
-            'codigo_asesor' => 'required|string',
-            'nombre_asesor' => 'required|string|max:255',
-            'nombre_eps' => 'required|string',
-            'fecha_nacimiento_asesor' => 'required|date',
-            'email_corporativo' => 'required|email|max:255',
-            'descuento_eps' => 'required|numeric',
-            'numero_dias' => 'required|numeric|min:1',
-            'valor_ibc_basico' => 'required|numeric',
-            'desea_valor' => 'required|in:si,no',
-            'valor_adicional' => 'nullable|numeric',
-            'total' => 'required|string',
-            'amparo_basico' => 'nullable|numeric',
-            'val_prevexequial_eclusivo' => 'required|numeric',
-            'prima_pago_prima_seguro' => 'required|string',
-            'gastos_administrativos' => 'nullable|numeric',
-            'val_total_desc_mensual' => 'required|numeric',
-            'tu_pierdes' => 'required|numeric',
-            'te_pagamos' => 'required|numeric',
-        ];
+        // $rules = [
+        //     'no_solicitud' => 'required|string',
+        //     'aseguradora' => 'required|numeric',
+        //     'no_poliza' => 'required|string',
+        //     'codigo_asesor' => 'required|string',
+        //     'nombre_asesor' => 'required|string|max:255',
+        //     'nombre_eps' => 'required|string',
+        //     'fecha_nacimiento_asesor' => 'required|date',
+        //     'email_corporativo' => 'required|email|max:255',
+        //     'descuento_eps' => 'required|numeric',
+        //     'numero_dias' => 'required|numeric|min:1',
+        //     'valor_ibc_basico' => 'required|numeric',
+        //     'desea_valor' => 'required|in:si,no',
+        //     'valor_adicional' => 'nullable|numeric',
+        //     'total' => 'required|string',
+        //     'amparo_basico' => 'nullable|numeric',
+        //     'val_prevexequial_eclusivo' => 'required|numeric',
+        //     'prima_pago_prima_seguro' => 'required|string',
+        //     'gastos_administrativos' => 'nullable|numeric',
+        //     'val_total_desc_mensual' => 'required|numeric',
+        //     'tu_pierdes' => 'required|numeric',
+        //     'te_pagamos' => 'required|numeric',
+        // ];
 
-        $messages = [
-            'no_solicitud.required' => 'El campo número de solicitud es obligatorio.',
-            'aseguradora.required' => 'El campo aseguradora es obligatorio.',
-            'aseguradora.numeric' => 'El campo aseguradora debe ser numérico.',
-            'no_poliza.required' => 'El campo número de póliza es obligatorio.',
-            'codigo_asesor.required' => 'El campo código de asesor es obligatorio.',
-            'nombre_asesor.required' => 'El campo nombre del asesor es obligatorio.',
-            'nombre_asesor.max' => 'El nombre del asesor no debe exceder los 255 caracteres.',
-            'nombre_eps.required' => 'El campo nombre de la EPS es obligatorio.',
-            'fecha_nacimiento_asesor.required' => 'El campo fecha de nacimiento del asesor es obligatorio.',
-            'fecha_nacimiento_asesor.date' => 'El campo fecha de nacimiento debe ser una fecha válida.',
-            'email_corporativo.required' => 'El campo correo corporativo es obligatorio.',
-            'email_corporativo.email' => 'El campo correo corporativo debe ser una dirección de correo válida.',
-            'email_corporativo.max' => 'El campo correo corporativo no debe exceder los 255 caracteres.',
-            'descuento_eps.required' => 'El campo descuento EPS es obligatorio.',
-            'descuento_eps.numeric' => 'El campo descuento EPS debe ser un número.',
-            'numero_dias.required' => 'El campo número de días es obligatorio.',
-            'numero_dias.numeric' => 'El campo número de días debe ser un número.',
-            'numero_dias.min' => 'El campo número de días debe ser al menos 1.',
-            'valor_ibc_basico.required' => 'El campo valor IBC básico es obligatorio.',
-            'valor_ibc_basico.numeric' => 'El campo valor IBC básico debe ser numérico.',
-            'desea_valor.required' => 'El campo desea valor es obligatorio.',
-            'desea_valor.in' => 'El campo desea valor debe ser "si" o "no".',
-            'valor_adicional.numeric' => 'El campo valor adicional debe ser numérico.',
-            'total.required' => 'El campo total es obligatorio.',
-            'amparo_basico.numeric' => 'El campo amparo básico debe ser numérico.',
-            'val_prevexequial_eclusivo.required' => 'El campo valor previ-exequial exclusivo es obligatorio.',
-            'val_prevexequial_eclusivo.numeric' => 'El campo valor previ-exequial exclusivo debe ser numérico.',
-            'prima_pago_prima_seguro.required' => 'El campo prima de pago prima de seguro es obligatorio.',
-            'gastos_administrativos.numeric' => 'El campo gastos administrativos debe ser numérico.',
-            'val_total_desc_mensual.required' => 'El campo valor total descuento mensual es obligatorio.',
-            'val_total_desc_mensual.numeric' => 'El campo valor total descuento mensual debe ser numérico.',
-            'tu_pierdes.required' => 'El campo tú pierdes es obligatorio.',
-            'tu_pierdes.numeric' => 'El campo tú pierdes debe ser numérico.',
-            'te_pagamos.required' => 'El campo te pagamos es obligatorio.',
-            'te_pagamos.numeric' => 'El campo te pagamos debe ser numérico.',
-        ];
+        // $messages = [
+        //     'no_solicitud.required' => 'El campo número de solicitud es obligatorio.',
+        //     'aseguradora.required' => 'El campo aseguradora es obligatorio.',
+        //     'aseguradora.numeric' => 'El campo aseguradora debe ser numérico.',
+        //     'no_poliza.required' => 'El campo número de póliza es obligatorio.',
+        //     'codigo_asesor.required' => 'El campo código de asesor es obligatorio.',
+        //     'nombre_asesor.required' => 'El campo nombre del asesor es obligatorio.',
+        //     'nombre_asesor.max' => 'El nombre del asesor no debe exceder los 255 caracteres.',
+        //     'nombre_eps.required' => 'El campo nombre de la EPS es obligatorio.',
+        //     'fecha_nacimiento_asesor.required' => 'El campo fecha de nacimiento del asesor es obligatorio.',
+        //     'fecha_nacimiento_asesor.date' => 'El campo fecha de nacimiento debe ser una fecha válida.',
+        //     'email_corporativo.required' => 'El campo correo corporativo es obligatorio.',
+        //     'email_corporativo.email' => 'El campo correo corporativo debe ser una dirección de correo válida.',
+        //     'email_corporativo.max' => 'El campo correo corporativo no debe exceder los 255 caracteres.',
+        //     'descuento_eps.required' => 'El campo descuento EPS es obligatorio.',
+        //     'descuento_eps.numeric' => 'El campo descuento EPS debe ser un número.',
+        //     'numero_dias.required' => 'El campo número de días es obligatorio.',
+        //     'numero_dias.numeric' => 'El campo número de días debe ser un número.',
+        //     'numero_dias.min' => 'El campo número de días debe ser al menos 1.',
+        //     'valor_ibc_basico.required' => 'El campo valor IBC básico es obligatorio.',
+        //     'valor_ibc_basico.numeric' => 'El campo valor IBC básico debe ser numérico.',
+        //     'desea_valor.required' => 'El campo desea valor es obligatorio.',
+        //     'desea_valor.in' => 'El campo desea valor debe ser "si" o "no".',
+        //     'valor_adicional.numeric' => 'El campo valor adicional debe ser numérico.',
+        //     'total.required' => 'El campo total es obligatorio.',
+        //     'amparo_basico.numeric' => 'El campo amparo básico debe ser numérico.',
+        //     'val_prevexequial_eclusivo.required' => 'El campo valor previ-exequial exclusivo es obligatorio.',
+        //     'val_prevexequial_eclusivo.numeric' => 'El campo valor previ-exequial exclusivo debe ser numérico.',
+        //     'prima_pago_prima_seguro.required' => 'El campo prima de pago prima de seguro es obligatorio.',
+        //     'gastos_administrativos.numeric' => 'El campo gastos administrativos debe ser numérico.',
+        //     'val_total_desc_mensual.required' => 'El campo valor total descuento mensual es obligatorio.',
+        //     'val_total_desc_mensual.numeric' => 'El campo valor total descuento mensual debe ser numérico.',
+        //     'tu_pierdes.required' => 'El campo tú pierdes es obligatorio.',
+        //     'tu_pierdes.numeric' => 'El campo tú pierdes debe ser numérico.',
+        //     'te_pagamos.required' => 'El campo te pagamos es obligatorio.',
+        //     'te_pagamos.numeric' => 'El campo te pagamos debe ser numérico.',
+        // ];
 
-        $this->validate($request, $rules, $messages);
-
+        // $this->validate($request, $rules, $messages);
 
         $inability = new Inability();
         $inability->no_solicitud = $request->no_solicitud;
@@ -171,7 +170,7 @@ class InabilityController extends Controller
 
         $insurer = Insurer::find($request->aseguradora);
         $inability->aseguradora = $insurer->name;
-        
+
         $inability->no_poliza = $request->no_poliza;
         $inability->fecha_diligenciamiento = Carbon::now();
         $inability->codigo_asesor = $request->codigo_asesor;
@@ -244,7 +243,7 @@ class InabilityController extends Controller
         $edad = $inability->edad;
         $cities = City::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
-        $companies = Company::where('status', 1)->get();
+        $companies = Entity::where('status', 1)->get();
 
         return view('affiliations.inabilities.step3', compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'epss', 'companies'))
             ->with('success', 'La información se guardó correctamente.');
