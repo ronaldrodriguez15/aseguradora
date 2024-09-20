@@ -39,8 +39,11 @@
                                     <th>Aseguradora</th>
                                     <th>Asesor</th>
                                     <th>Asegurado</th>
-                                    <th>EPS del segurado</th>
+                                    <th>EPS del asegurado</th>
+                                    <th>Edad</th>
+                                    <th>Forma de pago</th>
                                     <th>Fecha diligenciamiento</th>
+                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -51,17 +54,19 @@
                                         <td>{{ $inability['aseguradora'] }}</td>
                                         <td>{{ $inability['nombre_asesor'] }}</td>
                                         <td>{{ $inability['nombres_completos'] }}</td>
-                                        <td>{{ $inability['tipo_identificaciòn'] }}</td>
+                                        <td>{{ $inability['nombre_eps'] }}</td>
+                                        <td>{{ $inability['edad'] }}</td>
+                                        <td>{{ $inability['forma_pago'] }}</td>
                                         <td>{{ $inability['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
-                                            @if ($inability['status'] === 1)
+                                            @if ($inability['status'] === "1")
                                                 <span class="badge badge-success">Activo</span>
                                             @else
                                                 <span class="badge badge-danger">Inactivo</span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($inability['status'] === 1)
+                                            @if ($inability['status'] === "1")
                                                 <div class="button-container">
                                                     <form action="{{ route('aseguradoras.destroy', $inability['id']) }}"
                                                         method="POST" id="formDelete-{{ $inability['id'] }}">

@@ -8,6 +8,34 @@
 @stop
 @section('content')
 <div class="container">
+    <!-- Línea de progreso -->
+    <div class="progress" style="position: relative; width: 100%; height: 30px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger rounded" role="progressbar" aria-valuenow="16.6" aria-valuemin="0" aria-valuemax="100" style="width: 16.6%; height: 100%;"></div>
+        <div class="progress-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000000; font-weight: bold; font-size: 18px;">
+            Paso 1 de 6
+        </div>
+    </div>
+    <br>
+    <div class="mt-2 mb-2">
+        <!-- Controller response -->
+        @if (session()->get('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session()->get('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+
+        @if (session()->get('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session()->get('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+    </div>
     <form autocomplete="off" action="{{ route('incapacidades.formStepTwo') }}" method="post" id="formStep1">
         @csrf
         <div class="card">
@@ -123,23 +151,15 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="email_corporativo">Correo electronico <span
-                                class="required">*</span></label>
-                        <input type="email" class="form-control @error('email_corporativo') is-invalid @enderror"
-                            id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com" required>
-                        @error('email_corporativo')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <label for="email_corporativo">Correo electrónico <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com" required>
+                        <div class="invalid-feedback">Los correos electrónicos no coinciden.</div>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="email_corporativo">Confirmación del correo electronico <span
-                                class="required">*</span></label>
-                        <input type="email" class="form-control @error('email_corporativo') is-invalid @enderror"
-                            id="email_corporativo" name="email_corporativo" placeholder="alguien@example.com" required>
-                        @error('email_corporativo')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <label for="email_confirmacion">Confirmación del correo electrónico <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="email_confirmacion" name="email_confirmacion" placeholder="alguien@example.com" required>
+                        <div class="invalid-feedback">Los correos electrónicos no coinciden.</div>
                     </div>
                 </div>
                 <div class="form-row">

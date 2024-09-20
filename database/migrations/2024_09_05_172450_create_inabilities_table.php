@@ -26,7 +26,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('nombre_asesor', 50);
             $table->string('nombre_eps', 50);
             $table->date('fecha_nacimiento_asesor');
-            $table->string('email_corporativo')->unique();
+            $table->string('email_corporativo');
             $table->string('descuento_eps', 20);
             $table->integer('numero_dias');
             $table->integer('edad');
@@ -76,6 +76,7 @@ class CreateInabilitiesTable extends Migration
             $table->unsignedInteger('edad_s1')->nullable();
             $table->integer('porcentaje_s1')->nullable();
             $table->string('tipo_identidad_s1', 70)->nullable();
+            $table->string('n_identificacion_s1', 40)->nullable();
             $table->string('nombres_s2', 70)->nullable();
             $table->string('apellidos_s2', 70)->nullable();
             $table->string('genero_s2', 70)->nullable();
@@ -83,6 +84,7 @@ class CreateInabilitiesTable extends Migration
             $table->unsignedInteger('edad_s2')->nullable();
             $table->integer('porcentaje_s2')->nullable();
             $table->string('tipo_identidad_s2', 70)->nullable();
+            $table->string('n_identificacion_s2', 40)->nullable();
             $table->string('nombres_s3', 70)->nullable();
             $table->string('apellidos_s3', 70)->nullable();
             $table->string('genero_s3', 70)->nullable();
@@ -90,6 +92,7 @@ class CreateInabilitiesTable extends Migration
             $table->unsignedInteger('edad_s3')->nullable();
             $table->integer('porcentaje_s3')->nullable();
             $table->string('tipo_identidad_s3', 70)->nullable();
+            $table->string('n_identificacion_s3', 40)->nullable();
 
             //PRODUCTOS DEL FUNCIONARIO STEP 4
             $table->string('servicios_prevision_exequial', 8)->nullable();
@@ -143,6 +146,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('genero_m1', 10)->nullable();
             $table->string('edad_m1', 5)->nullable();
             $table->decimal('valor_prima_m1', 10, 2)->nullable();
+
             $table->string('nombre_m2', 50)->nullable();
             $table->string('tipo_m2', 30)->nullable();
             $table->string('raza_m2', 30)->nullable();

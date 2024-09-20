@@ -100,8 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const resultadoPagamosInput = document.getElementById(
         "resultadoPagamosInput"
     );
-    const botonTePagamos = document.getElementById('botonTePagamos');
-    const modal = new bootstrap.Modal(document.getElementById('tePagamosModal'));
+    const botonTePagamos = document.getElementById("botonTePagamos");
+    const modal = new bootstrap.Modal(
+        document.getElementById("tePagamosModal")
+    );
 
     // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
     function calcularValores() {
@@ -195,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gastosAdministrativos.addEventListener("input", calcularValores);
 
     // Vincula la función al evento click del botón
-    botonTePagamos.addEventListener('click', calcularResultados);
+    botonTePagamos.addEventListener("click", calcularResultados);
 
     function calcularResultados() {
         const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ""));
@@ -242,19 +244,77 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (event) {
         event.preventDefault(); // Detiene el envío del formulario inicialmente
 
-        Swal.fire({
-            title: "¿Estás seguro de continuar?",
-            text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#28a745",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, continuar",
-            cancelButtonText: "Cancelar",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit(); // Envía el formulario si el usuario confirma
-            }
-        });
+        // Obtén los valores de los correos electrónicos
+        var email = document.getElementById("email_corporativo").value;
+        var emailConfirm = document.getElementById("email_confirmacion").value;
+
+        // Verifica si los correos electrónicos coinciden
+        if (email !== emailConfirm) {
+            Swal.fire({
+                title: "Campos no coinciden",
+                text: "Los correos electrónicos no coinciden. Por favor, revisa los campos.",
+                icon: "error",
+                confirmButtonColor: "#28a745",
+                confirmButtonText: "Aceptar",
+            });
+            // Marca los campos como inválidos
+            document
+                .getElementById("email_corporativo")
+                .classList.add("is-invalid");
+            document
+                .getElementById("email_confirm")
+                .classList.add("is-invalid");
+        } else {
+            // Muestra la confirmación si los correos coinciden
+            Swal.fire({
+                title: "¿Estás seguro de continuar?",
+                text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, continuar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Envía el formulario si el usuario confirma
+                }
+            });
+        }
     });
+});
+
+// validación de correos electronicos
+document.addEventListener("DOMContentLoaded", function () {
+    const emailInput = document.getElementById("email_corporativo");
+    const confirmEmailInput = document.getElementById("email_confirmacion");
+
+    // Deshabilitar copiar y pegar en el campo de confirmación
+    confirmEmailInput.addEventListener("paste", function (e) {
+        e.preventDefault();
+    });
+
+    confirmEmailInput.addEventListener("copy", function (e) {
+        e.preventDefault();
+    });
+
+    // Validación en caliente
+    function validateEmails() {
+        if (emailInput.value && confirmEmailInput.value) {
+            if (emailInput.value === confirmEmailInput.value) {
+                emailInput.classList.remove("is-invalid");
+                confirmEmailInput.classList.remove("is-invalid");
+            } else {
+                emailInput.classList.add("is-invalid");
+                confirmEmailInput.classList.add("is-invalid");
+            }
+        } else {
+            // Cuando uno de los campos está vacío, no se aplica el estado 'is-invalid'
+            emailInput.classList.remove("is-invalid");
+            confirmEmailInput.classList.remove("is-invalid");
+        }
+    }
+
+    emailInput.addEventListener("input", validateEmails);
+    confirmEmailInput.addEventListener("input", validateEmails);
 });

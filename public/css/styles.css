@@ -71,7 +71,7 @@
     content: "Cambiar";
 }
 
-.custom-file-input:focus+.custom-file-label {
+.custom-file-input:focus + .custom-file-label {
     border-color: #80bdff;
     box-shadow: 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
