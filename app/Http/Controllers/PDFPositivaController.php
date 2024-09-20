@@ -173,27 +173,27 @@ class PDFPositivaController extends Controller
 
                 // ------------------ Referido 1 
                 // nombres y apellidos
-                $pdf->SetXY(30, 121.5);
-                $pdf->Write(0, $inability->nombres_);
+                $pdf->SetXY(48, 141);
+                $pdf->Write(0, $inability->nombres_completos);
 
                 // parentesco
-                $pdf->SetXY(80, 124.8);
+                $pdf->SetXY(100, 141);
                 $pdf->Write(0, convertToISO88591($inability->telefono_r1));
 
                 // %
-                $pdf->SetXY(100, 128);
+                $pdf->SetXY(121.5, 141);
                 $pdf->Write(0, '50');
 
                 // calidad  
-                $pdf->SetXY(110, 128);
-                $pdf->Write(0, convertToISO88591($inability->entidad_r1));
+                $pdf->SetXY(136.5, 141);
+                $pdf->Write(0, 'est');
 
                 // tipo identidad
-                $pdf->SetXY(130, 128);
+                $pdf->SetXY(152, 141);
                 $pdf->Write(0, convertToISO88591($inability->tipo_identificacion));
 
                 // no identificacion
-                $pdf->SetXY(150, 128);
+                $pdf->SetXY(179.5, 141);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
             }
         }
