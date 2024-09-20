@@ -468,17 +468,14 @@ class InabilityController extends Controller
         $rules = [
             'nombres_apellidos_r1' => 'required',
             'telefono_r1' => 'required',
-            'entidad_r1' => 'required',
             'seleccion_opcion_r1' => 'required',
 
             'nombres_apellidos_r2' => 'required',
             'telefono_r2' => 'required',
-            'entidad_r2' => 'nullable',
             'seleccion_opcion_r2' => 'required',
 
             'nombres_apellidos_r3' => 'required',
             'telefono_r3' => 'required',
-            'entidad_r3' => 'required',
             'seleccion_opcion_r3' => 'required',
 
             'tienes_mascotas' => 'required',
@@ -488,17 +485,14 @@ class InabilityController extends Controller
         $messages = [
             'nombres_apellidos_r1.required' => 'El nombre y apellido del primer registro es obligatorio.',
             'telefono_r1.required' => 'El teléfono del primer registro es obligatorio.',
-            'entidad_r1.required' => 'La entidad del primer registro es obligatoria.',
             'seleccion_opcion_r1.required' => 'Debes seleccionar una opción en el primer registro.',
 
             'nombres_apellidos_r2.required' => 'El nombre y apellido del segundo registro es obligatorio.',
             'telefono_r2.required' => 'El teléfono del segundo registro es obligatorio.',
-            'entidad_r2.required' => 'La entidad del segundo registro es obligatoria.',
             'seleccion_opcion_r2.required' => 'Debes seleccionar una opción en el segundo registro.',
 
             'nombres_apellidos_r3.required' => 'El nombre y apellido del tercer registro es obligatorio.',
             'telefono_r3.required' => 'El teléfono del tercer registro es obligatorio.',
-            'entidad_r3.required' => 'La entidad del tercer registro es obligatoria.',
             'seleccion_opcion_r3.required' => 'Debes seleccionar una opción en el tercer registro.',
 
             'tienes_mascotas.required' => 'El campo de mascotas es obligatorio.',
@@ -506,6 +500,7 @@ class InabilityController extends Controller
         ];
 
         $this->validate($request, $rules, $messages);
+
 
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');

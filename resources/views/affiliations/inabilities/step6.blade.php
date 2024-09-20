@@ -64,15 +64,18 @@
         </div>
     </div>
     <br>
-    <div class="card mb-5">
+    <div class="card mb-6">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-4">
                     <a class="btn btn-info" href="#">
                         Volver a inicio <i class="fas fa-home mrl-2"></i>
                     </a>
                 </div>
-                <div class="col-md-3 text-right">
+                <div class="col-md-4">
+            
+                </div>
+                <div class="col-md-4 text-right">
                     <!-- <a class="btn btn-primary btn-lg" href="#">
                         <i class="fas fa-signature mr-2"></i>Iniciar firmado con Via Firma
                     </a> -->
@@ -80,7 +83,7 @@
                         <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Estasseguro)
                     </a>
                     @if ($aseguradora === "Positiva Seguros")
-                    <a class="btn btn-danger mb-4" href="#" target="_blank">
+                    <a class="btn btn-danger mb-4" href="{{ route('incapacidades.generarPDFpositiva', $inabilityId) }}" target="_blank">
                         <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Positiva)
                     </a>
                     @elseif ($aseguradora === "Confianza Seguros")

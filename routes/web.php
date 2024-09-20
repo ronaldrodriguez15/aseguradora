@@ -11,6 +11,7 @@ use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EpsController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PDFPositivaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,7 @@ Route::middleware([
     Route::post('afiliaciones/incapacidades/step5', [InabilityController::class, 'formStepFive'])->name('incapacidades.formStepFive');
     Route::post('afiliaciones/incapacidades/step6', [InabilityController::class, 'formStepSix'])->name('incapacidades.formStepSix');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdf', [PDFController::class, 'generarPDF'])->name('incapacidades.generarPDF');
+    Route::get('afiliaciones/incapacidades/{inabilityId}/pdfPositiva', [PDFPositivaController::class, 'generarPDF'])->name('incapacidades.generarPDFpositiva');
 });
 
 Auth::routes();
