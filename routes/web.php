@@ -12,6 +12,8 @@ use App\Http\Controllers\EntityController;
 use App\Http\Controllers\EpsController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PDFPositivaController;
+use App\Http\Controllers\PDFDebitoController;
+use App\Http\Controllers\PDFLibranzaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +59,8 @@ Route::middleware([
     Route::post('afiliaciones/incapacidades/step6', [InabilityController::class, 'formStepSix'])->name('incapacidades.formStepSix');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdf', [PDFController::class, 'generarPDF'])->name('incapacidades.generarPDF');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfPositiva', [PDFPositivaController::class, 'generarPDF'])->name('incapacidades.generarPDFpositiva');
+    Route::get('afiliaciones/incapacidades/{inabilityId}/pdfLibranza', [PDFLibranzaController::class, 'generarPDF'])->name('incapacidades.generarPDFLibranza');
+    Route::get('afiliaciones/incapacidades/{inabilityId}/pdfDebito', [PDFDebitoController::class, 'generarPDF'])->name('incapacidades.generarPDFdebito');
 });
 
 Auth::routes();

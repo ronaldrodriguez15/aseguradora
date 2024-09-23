@@ -32,7 +32,7 @@ class CreateInabilitiesTable extends Migration
             $table->integer('edad');
             $table->string('tu_pierdes', 20);
             $table->string('te_pagamos', 20);
-            $table->decimal('valor_ibc_basico', 20, 2);
+            $table->string('valor_ibc_basico', 30);
             $table->string('desea_valor', 5);
             $table->string('valor_adicional', 20);
             $table->string('total', 50);
@@ -161,6 +161,10 @@ class CreateInabilitiesTable extends Migration
             $table->string('genero_m3', 10)->nullable();
             $table->string('edad_m3', 5)->nullable();
             $table->decimal('valor_prima_m3', 10, 2)->nullable();
+
+            $table->text('path_estasseguro', 30)->nullable();
+            $table->text('path_aseguradora', 30)->nullable();
+            $table->text('path_pago', 30)->nullable();
 
             $table->string('status', 10)->default('1');
             $table->timestamps();

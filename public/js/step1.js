@@ -108,7 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
     function calcularValores() {
         // Obtén el valor IBC básico y realiza el cálculo del descuento
-        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ""));
+        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
+        const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
 
         // Calcular el descuento
@@ -200,7 +201,8 @@ document.addEventListener("DOMContentLoaded", function () {
     botonTePagamos.addEventListener("click", calcularResultados);
 
     function calcularResultados() {
-        const valor = parseFloat(valorIbcBasico.value.replace(/[^0-9.-]/g, ""));
+        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
+        const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const dias = parseInt(numeroDias.value, 10);
 
         // Validar el rango de días
@@ -317,4 +319,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
     emailInput.addEventListener("input", validateEmails);
     confirmEmailInput.addEventListener("input", validateEmails);
+});
+
+document.getElementById('valor_ibc_basico').addEventListener('input', function (e) {
+    let input = e.target.value;
+
+    // Eliminar cualquier caracter que no sea número
+    input = input.replace(/[\D\s\._\-]+/g, "");
+
+    // Si el input está vacío, no hacer nada
+    if (input === "") {
+        e.target.value = "";
+        return;
+    }
+
+    // Convertir el valor a entero para eliminar cualquier posible error
+    let inputNumber = parseInt(input, 10);
+
+    // Aplicar el formato de moneda con separadores de miles sin decimales
+    e.target.value = new Intl.NumberFormat('es-CO', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(inputNumber);
+});
+
+//campo identificador
+document.getElementById('aseguradora').addEventListener('change', function () {
+    // Get the selected option
+    var selectedOption = this.options[this.selectedIndex];
+
+    // Get the value of the 'data-identificador' attribute
+    var identificador = selectedOption.getAttribute('data-identificador');
+
+    // Set the value of the 'identificador' field
+    var identificadorInput = document.getElementById('identificador');
+    identificadorInput.value = identificador || '';
+
+    // Apply or remove 'is-valid' class based on the field value
+    if (identificadorInput.value) {
+        identificadorInput.classList.add('is-valid');
+        identificadorInput.classList.remove('is-invalid');
+    } else {
+        identificadorInput.classList.remove('is-valid');
+        identificadorInput.classList.add('is-invalid');
+    }
 });
