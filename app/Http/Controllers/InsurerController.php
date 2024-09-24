@@ -45,9 +45,11 @@ class InsurerController extends Controller
             'no_poliza' => 'required',
             'name' => 'required|string|max:255',
             'document_path' => 'nullable|file|mimes:pdf,PDF|max:2048',
+            'identificador' => 'required',
         ];
         $messages = [
             'poliza.required' => 'El campo poliza es obligatorio.',
+            'identificador.required' => 'El campo código es obligatorio.',
 
             'name.required' => 'El campo nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
@@ -67,6 +69,7 @@ class InsurerController extends Controller
 
         $insurer = new Insurer();
         $insurer->no_poliza = $request->no_poliza;
+        $insurer->identificador = $request->identificador;
         $insurer->name = $request->name;
         $insurer->document_path = $document_path;
         $insurer->status = 1; //Activo 1, Inactivo 2
@@ -111,9 +114,11 @@ class InsurerController extends Controller
             'no_poliza' => 'required',
             'name' => 'required|string|max:255',
             'document_path' => 'nullable|file|mimes:pdf,PDF|max:2048',
+            'identificador' => 'required',
         ];
         $messages = [
             'poliza.required' => 'El campo poliza es obligatorio.',
+            'identificador.required' => 'El campo código es obligatorio.',
 
             'name.required' => 'El campo nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
@@ -139,6 +144,7 @@ class InsurerController extends Controller
         }
 
         $insurer->no_poliza = $request->no_poliza;
+        $insurer->identificador = $request->identificador;
         $insurer->name = $request->name;
         $insurer->document_path = $document_path;
         $insurer->status = 1; //Activo 1, Inactivo 2

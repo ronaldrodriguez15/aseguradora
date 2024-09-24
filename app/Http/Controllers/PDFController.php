@@ -199,7 +199,7 @@ class PDFController extends Controller
 
                 // valor IBC basico 
                 $pdf->SetXY(91, 123.5);
-                $pdf->Write(0, number_format($inability->valor_ibc_basico, 2, ',', '.'));
+                $pdf->Write(0, $inability->valor_ibc_basico);
 
                 // entidad donde labora 
                 $pdf->SetXY(70.5, 127);

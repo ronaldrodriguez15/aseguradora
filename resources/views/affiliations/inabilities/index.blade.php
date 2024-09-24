@@ -68,7 +68,7 @@
                                         <td>
                                             @if ($inability['status'] === "1")
                                                 <div class="button-container">
-                                                    <form action="{{ route('aseguradoras.destroy', $inability['id']) }}"
+                                                    <form action="{{ route('incapacidades.destroy', $inability['id']) }}"
                                                         method="POST" id="formDelete-{{ $inability['id'] }}">
                                                         @method('DELETE')
                                                         @csrf

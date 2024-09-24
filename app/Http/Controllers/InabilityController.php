@@ -96,7 +96,10 @@ class InabilityController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $inability = Inability::find($id);
+        $inability->delete();
+
+        return redirect()->route('incapacidades.index')->with('success', 'La afiliación ha sido eliminada.');
     }
 
     public function formStepTwo(Request $request)
@@ -561,10 +564,11 @@ class InabilityController extends Controller
         $edad = $inability->edad;
         $message = "La información se guardó correctamente.";
         $aseguradora = $inability->aseguradora;
+        $pago = $inability->forma_pago;
 
         return view(
             'affiliations.inabilities.step6',
-            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'message', 'inabilityId', 'aseguradora')
+            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'message', 'inabilityId', 'aseguradora', 'pago')
         );
     }
 }

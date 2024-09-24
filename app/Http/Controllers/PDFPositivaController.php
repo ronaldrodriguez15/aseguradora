@@ -42,8 +42,10 @@ class PDFPositivaController extends Controller
 
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
             $tplIdx = $pdf->importPage($pageNo);
-            $pdf->AddPage();
+
+            $pdf->AddPage('P', 'Legal');
             $pdf->useTemplate($tplIdx);
+            $pdf->SetAutoPageBreak(false);
 
             // Pagina 1
             if ($pageNo == 1) {
@@ -52,7 +54,7 @@ class PDFPositivaController extends Controller
 
                 //Fecha diligenciamiento
                 $pdf->SetXY(57, 25);
-                $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));;
+                $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 // Nombre asesor
                 $pdf->SetXY(57, 43);
@@ -64,7 +66,7 @@ class PDFPositivaController extends Controller
 
                 // Valor IBC basico
                 $pdf->SetXY(100, 64);
-                $pdf->Write(0, '$ ' . number_format($inability->valor_ibc_basico, 2, ',', '.'));
+                $pdf->Write(0, '$ ' . $inability->valor_ibc_basico);
 
                 // valor adicional
                 $pdf->SetXY(138, 64);
@@ -76,11 +78,11 @@ class PDFPositivaController extends Controller
 
                 // amparo basico
                 $pdf->SetXY(100, 69.5);
-                $pdf->Write(0, '$ ' . number_format($inability->amparo_basico, 2, ',', '.'));
+                $pdf->Write(0, '$ ' . $inability->amparo_basico);
 
                 // amparo basico
                 $pdf->SetXY(170, 69.5);
-                $pdf->Write(0, '$ ' . number_format($inability->amparo_basico, 2, ',', '.'));
+                $pdf->Write(0, '$ ' . $inability->amparo_basico);
 
                 // prima pago prima seguro
                 $pdf->SetXY(172, 75.5);
@@ -165,7 +167,7 @@ class PDFPositivaController extends Controller
 
                 // descuento eps
                 $pdf->SetXY(175, 112.5);
-                $pdf->Write(0, '$ '.$inability->descuento_eps);
+                $pdf->Write(0, '$ ' . $inability->descuento_eps);
 
                 // email corporativo
                 $pdf->SetXY(58, 116.5);
@@ -174,27 +176,261 @@ class PDFPositivaController extends Controller
                 // ------------------ Referido 1 
                 // nombres y apellidos
                 $pdf->SetXY(48, 141);
-                $pdf->Write(0, $inability->nombres_completos);
+                $pdf->Write(0, convertToISO88591($inability->nombres_s1 . ' ' . $inability->apellidos_s1));
 
                 // parentesco
                 $pdf->SetXY(100, 141);
-                $pdf->Write(0, convertToISO88591($inability->telefono_r1));
+                $pdf->Write(0, convertToISO88591($inability->parentesco_s1));
 
                 // %
                 $pdf->SetXY(121.5, 141);
-                $pdf->Write(0, '50');
+                $pdf->Write(0, $inability->porcentaje_s1);
 
                 // calidad  
-                $pdf->SetXY(136.5, 141);
-                $pdf->Write(0, 'est');
+                if ($inability->nombres_s1 !== null) {
+                    $pdf->SetXY(134, 141);
+                    $pdf->Write(0, 'Gratuito');
+                }
 
                 // tipo identidad
                 $pdf->SetXY(152, 141);
-                $pdf->Write(0, convertToISO88591($inability->tipo_identificacion));
+                $pdf->Write(0, convertToISO88591($inability->tipo_identidad_s1));
 
                 // no identificacion
                 $pdf->SetXY(179.5, 141);
+                $pdf->Write(0, convertToISO88591($inability->n_identificacion_s1));
+
+                // ------------------ Referido 2 
+                // nombres y apellidos
+                $pdf->SetXY(48, 144.3);
+                $pdf->Write(0, convertToISO88591($inability->nombres_s2 . ' ' . $inability->apellidos_s2));
+
+                // parentesco
+                $pdf->SetXY(100, 144.3);
+                $pdf->Write(0, convertToISO88591($inability->parentesco_s2));
+
+                // %
+                $pdf->SetXY(121.5, 144.3);
+                $pdf->Write(0, $inability->porcentaje_s2);
+
+                // calidad  
+                if ($inability->nombres_s2 !== null) {
+                    $pdf->SetXY(134, 144.3);
+                    $pdf->Write(0, 'Gratuito');
+                }
+
+                // tipo identidad
+                $pdf->SetXY(152, 144.3);
+                $pdf->Write(0, convertToISO88591($inability->tipo_identidad_s2));
+
+                // no identificacion
+                $pdf->SetXY(179.5, 144.3);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s2));
+
+                // ------------------ Referido 3 
+                // nombres y apellidos
+                $pdf->SetXY(48, 147.3);
+                $pdf->Write(0, convertToISO88591($inability->nombres_s3 . ' ' . $inability->apellidos_s3));
+
+                // parentesco
+                $pdf->SetXY(100, 147.3);
+                $pdf->Write(0, convertToISO88591($inability->parentesco_s3));
+
+                // calidad  
+                if ($inability->nombres_s3 !== null) {
+                    $pdf->SetXY(134, 147.3);
+                    $pdf->Write(0, 'Gratuito');
+                }
+
+                // tipo identidad
+                $pdf->SetXY(152, 147.3);
+                $pdf->Write(0, convertToISO88591($inability->tipo_identidad_s3));
+
+                // no identificacion
+                $pdf->SetXY(179.5, 147.3);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s3));
+
+                // ------------------ Declaraciòn de asegurabilidad
+
+                // cancer
+                if ($inability->cancer === 'si') {
+                    $pdf->SetXY(46.5, 166);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(59.8, 166);
+                    $pdf->Write(0, 'X');
+                }
+
+                // corazon
+                if ($inability->corazon === 'si') {
+                    $pdf->SetXY(46.5, 170);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(59.8, 170);
+                    $pdf->Write(0, 'X');
+                }
+
+                // diabetes
+                if ($inability->diabetes === 'si') {
+                    $pdf->SetXY(46.5, 173.5);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(59.8, 173.5);
+                    $pdf->Write(0, 'X');
+                }
+
+                // enfermedades hepaticas
+                if ($inability->enf_hepaticas === 'no') {
+                    $pdf->SetXY(114.5, 166);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(125, 166);
+                    $pdf->Write(0, 'X');
+                }
+                // enfermedades neurológicas
+                if ($inability->enf_neurologicas === 'no') {
+                    $pdf->SetXY(114.5, 170);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(125, 170);
+                    $pdf->Write(0, 'X');
+                }
+
+                // pulmones
+                if ($inability->pulmones === 'no') {
+                    $pdf->SetXY(114.5, 173.5);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(125, 173.5);
+                    $pdf->Write(0, 'X');
+                }
+
+                // presion arterial
+                if ($inability->presion_arterial === 'si') {
+                    $pdf->SetXY(179, 166);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 166);
+                    $pdf->Write(0, 'X');
+                }
+
+                // riñones
+                if ($inability->rinones === 'si') {
+                    $pdf->SetXY(179, 170);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 170);
+                    $pdf->Write(0, 'X');
+                }
+
+                // infecciones vih
+                if ($inability->infeccion_vih === 'si') {
+                    $pdf->SetXY(179, 173.5);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 173.5);
+                    $pdf->Write(0, 'X');
+                }
+
+                // perdida funcional anatomica
+                if ($inability->perdida_funcional_anatomica === 'si') {
+                    $pdf->SetXY(179, 177.2);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 177.2);
+                    $pdf->Write(0, 'X');
+                }
+
+                // accidentes laborales
+                if ($inability->accidentes_labores_ocupacion === 'si') {
+                    $pdf->SetXY(179, 180.7);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 180.7);
+                    $pdf->Write(0, 'X');
+                }
+
+                // hospitalizacion intervencion quirurgica
+                if ($inability->hospitalizacion_intervencion_quirurgica === 'si') {
+                    $pdf->SetXY(179, 184.5);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 184.5);
+                    $pdf->Write(0, 'X');
+                }
+
+                // enfermedad diferente
+                if ($inability->enfermedad_diferente === 'si') {
+                    $pdf->SetXY(179, 188.2);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(188.5, 188.2);
+                    $pdf->Write(0, 'X');
+                }
+
+                // descripcion enfermedades
+                if ($inability->descripcion_de_enfermedades !== null) {
+                    $pdf->SetXY(84, 195);
+                    $pdf->Write(0, convertToISO88591($inability->descripcion_de_enfermedades));
+                }
+
+                // fecha
+                $pdf->SetXY(32, 269);
+                $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
+
+                // entidad pagadora
+                $pdf->SetXY(147, 269);
+                $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
+
+                // valor a descontar
+                $pdf->SetXY(65, 274.8);
+                $pdf->Write(0, convertToISO88591($inability->prima_pago_prima_seguro));
+
+                // nombres
+                $pdf->SetXY(38, 287);
+                $pdf->Write(0, convertToISO88591($inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido));
+
+                // cedula
+                $pdf->SetXY(130, 287);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                // ciudad expedicion
+                $pdf->SetXY(170, 287);
+                $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
+
+                // ocupacion
+                $pdf->SetXY(39, 291);
+                $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
+
+                // documento identidad
+                $pdf->SetXY(100, 328);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                // telefono
+                $pdf->SetXY(140, 328);
+                $pdf->Write(0, convertToISO88591($inability->celular));
+
+                // primer apellido
+                $pdf->SetXY(30, 336);
+                $pdf->Write(0, convertToISO88591($inability->primer_apellido));
+
+                // segundo apellido
+                $pdf->SetXY(74, 336);
+                $pdf->Write(0, convertToISO88591($inability->segundo_apellido));
+
+                // nombres completos
+                $pdf->SetXY(117, 336);
+                $pdf->Write(0, convertToISO88591($inability->nombres_completos));
+            }
+
+            if ($pageNo == 2) {
+                // n documento
+                $pdf->SetXY(85, 194.5);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                // lugar expedicion
+                $pdf->SetXY(114, 194.5);
+                $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
             }
         }
 
