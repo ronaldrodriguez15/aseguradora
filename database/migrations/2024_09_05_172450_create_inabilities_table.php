@@ -162,7 +162,7 @@ class CreateInabilitiesTable extends Migration
             $table->string('edad_m3', 5)->nullable();
             $table->decimal('valor_prima_m3', 10, 2)->nullable();
 
-            $table->string('status', 10)->default('1');
+            $table->unsignedInteger('status')->default(1);
             $table->timestamps();
         });
     }

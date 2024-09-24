@@ -17,7 +17,6 @@
             <i class="fas fa-plus-circle mr-2"></i>Nuevo usuario
         </a>
     </div>
-
     <div class="col-md-12">
         @if (session()->get('success'))
         <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
@@ -87,7 +86,7 @@
     </div>
 </div>
 @stop
- 
+
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
