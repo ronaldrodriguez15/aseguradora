@@ -96,3 +96,12 @@ select[multiple].form-control {
 .border-warning-custom {
     border: 1px solid #ffc107; /* Color de advertencia (amarillo de Bootstrap) */
 }
+
+@media (max-width: 576px) {
+    .progress {
+        height: 25px;
+    }
+    .progress-text {
+        font-size: 12px; /* Reducir el tamaño del texto */
+    }
+}

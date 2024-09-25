@@ -45,7 +45,7 @@ class PDFDebitoController extends Controller
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
             $tplIdx = $pdf->importPage($pageNo);
 
-            $pdf->AddPage('P', 'Legal');
+            $pdf->AddPage('P', 'Letter');
             $pdf->useTemplate($tplIdx);
             $pdf->SetAutoPageBreak(false);
             if ($pageNo == 1) {
@@ -127,6 +127,26 @@ class PDFDebitoController extends Controller
                     $pdf->SetXY(109.5, 123.5);
                     $pdf->Write(0, 'X');
                 }
+
+                //valor descuento
+                $pdf->SetXY(62, 232);
+                $pdf->Write(0, convertToISO88591($inability->val_total_desc_mensual));
+
+                //cc
+                $pdf->SetXY(42, 256);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                //direccion
+                $pdf->SetXY(125, 256);
+                $pdf->Write(0, convertToISO88591($inability->direccion_residencia));
+
+                //celular   
+                $pdf->SetXY(46, 260);
+                $pdf->Write(0, convertToISO88591($inability->celular));
+
+                //telefono fijo
+                $pdf->SetXY(110, 260);
+                $pdf->Write(0, convertToISO88591($inability->telefono_fijo));
             }
         }
 

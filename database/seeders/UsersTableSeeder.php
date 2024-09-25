@@ -21,13 +21,13 @@ class UsersTableSeeder extends Seeder
             'birthdate' => '2002-03-15',
             'email' => 'ronald@gmail.com',
             'password' => bcrypt('Andes2025*'),
-        ],[
+        ], [
             'name' => 'Antonio',
             'document' => 10475505,
             'phone' => 3223447891,
             'birthdate' => '1995-02-10',
-            'email' => 'antonio@gmail.com',
-            'password' => bcrypt('123456789'),
+            'email' => 'antonio.guevara@svgseguros.com',
+            'password' => bcrypt('Estasseguro2024*'),
         ]);
     }
 }

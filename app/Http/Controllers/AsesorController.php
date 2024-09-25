@@ -16,7 +16,7 @@ class AsesorController extends Controller
     {
         $asesors = Asesor::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
 
         return view('general.asesors.index', compact('asesors'));
     }

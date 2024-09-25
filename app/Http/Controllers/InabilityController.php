@@ -264,7 +264,6 @@ class InabilityController extends Controller
             'no_identificacion' => 'required',
             'ciudad_expedicion' => 'required',
             'genero' => 'required',
-            'fecha_nacimiento_asegurado' => 'required|date',
             'direccion_residencia' => 'required',
             'telefono_fijo' => 'required',
             'celular' => 'required',
@@ -283,7 +282,6 @@ class InabilityController extends Controller
             'no_identificacion.required' => 'El campo número de identificación es obligatorio.',
             'ciudad_expedicion.required' => 'El campo ciudad de expedición es obligatorio.',
             'genero.required' => 'El campo género es obligatorio.',
-            'fecha_nacimiento_asegurado.required' => 'El campo fecha de nacimiento es obligatorio.',
             'direccion_residencia.required' => 'El campo dirección de residencia es obligatorio.',
             'telefono_fijo.required' => 'El campo teléfono fijo es obligatorio.',
             'celular.required' => 'El campo celular es obligatorio.',
@@ -343,8 +341,8 @@ class InabilityController extends Controller
         $inability->save();
 
         $val_total_desc_mensual = $request->val_total_desc_mensual;
-        $tu_pierdes = number_format($request->tu_pierdes, 0, ',', '.');
-        $te_pagamos = number_format($request->te_pagamos, 0, ',', '.');
+        $tu_pierdes = $request->tu_pierdes;
+        $te_pagamos = $request->te_pagamos;
         $edad = $request->edad;
         $message = "La información se guardó correctamente.";
 

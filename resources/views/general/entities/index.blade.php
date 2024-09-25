@@ -37,6 +37,7 @@
                                 <th>Entidad</th>
                                 <th>Abreviatura</th>
                                 <th>Nit o código</th>
+                                <th>Sucursal</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -47,6 +48,7 @@
                                 <td>{{ $entity['name'] }}</td>
                                 <td>{{ $entity['nemo'] }}</td>
                                 <td>{{ $entity['cnitpagador'] }}</td>
+                                <td>{{ $entity['sucursal'] }}</td>
                                 <td>
                                     @if($entity['status'] === 1)
                                     <span class="badge badge-success">Activo</span>
@@ -110,8 +112,15 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="cnitpagador">NIT (código) <span class="required">*</span></label>
-                            <input type="number" class="form-control @error('cnitpagador') is-invalid @enderror" id="cnitpagador" name="cnitpagador" placeholder="000000" required>
+                            <input type="number" class="form-control @error('cnitpagador') is-invalid @enderror" id="cnitpagador" name="cnitpagador" placeholder="000" required>
                             @error('cnitpagador')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="sucursal">Sucursal <span class="required">*</span></label>
+                            <input type="number" class="form-control @error('sucursal') is-invalid @enderror" id="sucursal" name="sucursal" placeholder="000000" required>
+                            @error('sucursal')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

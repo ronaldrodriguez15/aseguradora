@@ -146,16 +146,6 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="fecha_nacimiento_asegurado">Fecha de nacimiento del asegurado <span class="required">*</span></label>
-                        <input type="date"
-                            class="form-control @error('fecha_nacimiento_asegurado') is-invalid @enderror"
-                            id="fecha_nacimiento_asegurado" name="fecha_nacimiento_asegurado"
-                            placeholder="Selecciona la fecha del asegurado" required>
-                        @error('fecha_nacimiento_asegurado')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-6">
                         <label for="direccion_residencia">Dirección de residencia <span class="required">*</span></label>
                         <input type="text" class="form-control @error('direccion_residencia') is-invalid @enderror"
                             id="direccion_residencia" name="direccion_residencia" placeholder="Introduce la dirección de residencia" required>

@@ -16,7 +16,7 @@ class EntityController extends Controller
     {
         $entities = Entity::orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
-            ->paginate();
+            ->get();
 
         return view('general.entities.index', compact('entities'));
     }
@@ -49,7 +49,7 @@ class EntityController extends Controller
         $entity->name = $request->name;
         $entity->nemo = $request->nemo;
         $entity->cnitpagador = $request->cnitpagador;
-        $entity->sucursal = 1;
+        $entity->sucursal = $request->sucursal;
         $entity->status = 1; //Activo 1, Inactivo 2
         $entity->save();
 
@@ -95,10 +95,8 @@ class EntityController extends Controller
         $request->validate($rules, $messages);
 
         $entity = Entity::find($id);
-        $entity->name = $request->name;
-        $entity->nemo = $request->nemo;
         $entity->cnitpagador = $request->cnitpagador;
-        $entity->sucursal = 1;
+        $entity->sucursal = $request->sucursal;
         $entity->status = 1; //Activo 1, Inactivo 2
         $entity->save();
 
@@ -125,6 +123,7 @@ class EntityController extends Controller
             'name' => 'required|string',
             'nemo' => 'required|string',
             'cnitpagador' => 'required',
+            'sucursal' => 'required',
         ];
     }
 
@@ -134,6 +133,7 @@ class EntityController extends Controller
             'name.required' => 'El campo Nombres es obligatorio.',
             'type_entity.required' => 'El campo Abreviatura es obligatorio.',
             'area.required' => 'El campo NIT o código es obligatorio.',
+            'sucursal.required' => 'La sucursal es obligatoria.',
         ];
     }
 }

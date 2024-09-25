@@ -118,7 +118,7 @@ class PDFPositivaController extends Controller
 
                 // fecha de nacimiento
                 $pdf->SetXY(95, 98);
-                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asegurado));
+                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // ciudad
                 $pdf->SetXY(137, 98);
