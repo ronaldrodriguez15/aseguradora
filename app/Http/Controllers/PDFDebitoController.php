@@ -52,9 +52,81 @@ class PDFDebitoController extends Controller
                 // Agregar datos al PDF
                 $pdf->SetFont('Arial', '', 8);
 
-                //Fecha 
-                $pdf->SetXY(35, 25);
+                //Fecha
+                $pdf->SetXY(45, 40);
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
+
+                //Cedula
+                $pdf->SetXY(42, 50);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                //Primer apellido
+                $pdf->SetXY(86, 50);
+                $pdf->Write(0, convertToISO88591($inability->primer_apellido));
+
+                //segundo apellido
+                $pdf->SetXY(125, 50);
+                $pdf->Write(0, convertToISO88591($inability->segundo_apellido));
+
+                //nombres
+                $pdf->SetXY(165, 50);
+                $pdf->Write(0, convertToISO88591($inability->nombres_completos));
+
+                //celular
+                $pdf->SetXY(42, 59);
+                $pdf->Write(0, convertToISO88591($inability->celular));
+
+                //telefono
+                $pdf->SetXY(86, 59);
+                $pdf->Write(0, convertToISO88591($inability->telefono_fijo));
+
+                //ciudad residencia
+                $pdf->SetXY(125, 59);
+                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+
+                //direccion residencia
+                $pdf->SetXY(158, 59);
+                $pdf->Write(0, convertToISO88591($inability->direccion_residencia));
+
+                //correo
+                $pdf->SetXY(57, 67);
+                $pdf->Write(0, convertToISO88591($inability->email_corporativo));
+
+                //entidad
+                $pdf->SetXY(135, 67);
+                $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
+
+                //banco
+                $pdf->SetXY(55, 78);
+                $pdf->Write(0, convertToISO88591($inability->banco));
+
+                //ciudad
+                $pdf->SetXY(135, 78);
+                $pdf->Write(0, convertToISO88591($inability->ciudad_banco));
+
+                //previexequial exclusivo
+                if ($inability->servicios_prevision_exequial === 'si') {
+                    $pdf->SetXY(109.5, 109.6);
+                    $pdf->Write(0, 'X');
+                }
+
+                //prevision exequial mascotas
+                if ($inability->serv_prevision_exequial_mascotas === 'no') {
+                    $pdf->SetXY(172.5, 109.6);
+                    $pdf->Write(0, 'X');
+                }
+
+                //servicios de prevision salud mascotas
+                if ($inability->serv_prevision_salud === 'no') {
+                    $pdf->SetXY(109.5, 113.3);
+                    $pdf->Write(0, 'X');
+                }
+
+                //beneficio diario por incapacidad temporal
+                if ($inability->beneficiario_diario_inc_temp === 'si') {
+                    $pdf->SetXY(109.5, 123.5);
+                    $pdf->Write(0, 'X');
+                }
             }
         }
 

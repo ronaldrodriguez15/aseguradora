@@ -294,7 +294,6 @@ class InabilityController extends Controller
             'entidad_pagadora_sucursal.required' => 'El campo entidad pagadora sucursal es obligatorio.',
         ];
 
-
         $this->validate($request, $rules, $messages);
 
         // Recuperar el ID del registro desde la sesión

@@ -73,7 +73,7 @@
                     </a>
                 </div>
                 <div class="col-md-4">
-            
+
                 </div>
                 <div class="col-md-4 text-right">
                     <!-- <a class="btn btn-primary btn-lg" href="#">
@@ -91,13 +91,13 @@
                         <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Confianza)
                     </a>
                     @endif
-                    @if ($pago === "mensual_libranza")
+                    @if ($pago === "debito_automatico")
                     <a class="btn btn-danger mb-4" href="{{ route('incapacidades.generarPDFLibranza', $inabilityId) }}" target="_blank">
                         <i class="fas fa-file-pdf mr-2"></i>Generar PDF (libranza)
                     </a>
                     @else
-                    <a class="btn btn-danger mb-4" href="#" target="_blank">
-                        <i class="fas fa-file-pdf mr-2"></i>Generar PDF (pago)
+                    <a class="btn btn-danger mb-4" href="{{ route('incapacidades.generarPDFdebito', $inabilityId) }}" target="_blank">
+                        <i class="fas fa-file-pdf mr-2"></i>Generar PDF (debito)
                     </a>
                     @endif
                 </div>

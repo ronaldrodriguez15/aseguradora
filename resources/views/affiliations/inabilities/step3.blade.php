@@ -41,22 +41,22 @@
                     <div class="form-group col-md-3">
                         <label for="tu_pierdes" class="text-danger">Tu pierdes!!!</label>
                         <input type="text" class="form-control form-control-lg is-invalid"
-                            id="tu_pierdes" name="tu_pierdes" placeholder="000000" value="{{ $tu_pierdes }}" disabled required>
+                            id="tu_pierdes" name="tu_pierdes" placeholder="000000" value="{{ $tu_pierdes }}" required readonly>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="te_pagamos" class="text-info">Nosotros te pagamos!!!</label>
                         <input type="text" class="form-control form-control-lg border-info"
-                            id="te_pagamos" name="te_pagamos" placeholder="000000" value="{{ $te_pagamos }}" disabled required>
+                            id="te_pagamos" name="te_pagamos" placeholder="000000" value="{{ $te_pagamos }}" required readonly>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="val_total_desc_mensual" class="text-warning">Valor total de descuento mensual</label>
                         <input type="text" class="form-control form-control-lg is-warning"
-                            id="val_total_desc_mensual" name="val_total_desc_mensual" placeholder="000000" value="{{ $val_total_desc_mensual }}" disabled required>
+                            id="val_total_desc_mensual" name="val_total_desc_mensual" placeholder="000000" value="{{ $val_total_desc_mensual }}" required readonly>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="edad" class="text-success">Edad del funcionario</label>
                         <input type="text" class="form-control form-control-lg is-valid"
-                            id="edad" name="edad" placeholder="000000" value="{{ $edad }}" disabled required>
+                            id="edad" name="edad" placeholder="000000" value="{{ $edad }}" required readonly>
                     </div>
                 </div>
             </div>

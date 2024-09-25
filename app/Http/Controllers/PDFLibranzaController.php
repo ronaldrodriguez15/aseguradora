@@ -44,7 +44,7 @@ class PDFLibranzaController extends Controller
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
             $tplIdx = $pdf->importPage($pageNo);
 
-            $pdf->AddPage('P', 'Legal');
+            $pdf->AddPage('P', 'Letter');
             $pdf->useTemplate($tplIdx);
             $pdf->SetAutoPageBreak(false);
             if ($pageNo == 1) {
@@ -80,9 +80,49 @@ class PDFLibranzaController extends Controller
                 $pdf->SetXY(173, 48.8);
                 $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
 
-                //ocupacion
-                $pdf->SetXY(58, 53.2);
-                $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
+                //previexequial exclusivo
+                if ($inability->servicios_prevision_exequial === 'si') {
+                    $pdf->SetXY(102, 65);
+                    $pdf->Write(0, 'X');
+                }
+
+                //prevision exequial mascotas
+                if ($inability->serv_prevision_exequial_mascotas === 'si') {
+                    $pdf->SetXY(169.5, 65.2);
+                    $pdf->Write(0, 'X');
+                }
+
+                //servicios de prevision salud mascotas
+                if ($inability->serv_prevision_salud === 'si') {
+                    $pdf->SetXY(102, 69);
+                    $pdf->Write(0, 'X');
+                }
+
+                //beneficio diario por incapacidad temporal
+                if ($inability->beneficiario_diario_inc_temp === 'si') {
+                    $pdf->SetXY(102, 81);
+                    $pdf->Write(0, 'X');
+                }
+
+                //valor descuento
+                $pdf->SetXY(70, 204.5);
+                $pdf->Write(0, $inability->val_total_desc_mensual);
+
+                //CC
+                $pdf->SetXY(50, 231.3);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                //direccion
+                $pdf->SetXY(113, 231.3);
+                $pdf->Write(0, convertToISO88591($inability->direccion_residencia));
+
+                //celular
+                $pdf->SetXY(55, 235.3);
+                $pdf->Write(0, convertToISO88591($inability->celular));
+
+                //tel fijo
+                $pdf->SetXY(109, 235.3);
+                $pdf->Write(0, convertToISO88591($inability->telefono_fijo));
             }
         }
 
