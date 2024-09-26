@@ -221,22 +221,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group col-md-2">
-                        <label for="eps_asegurado">EPS <span class="required">*</span></label>
-                        <select class="form-control @error('eps_asegurado') is-invalid @enderror" id="eps_asegurado"
-                            name="eps_asegurado" required>
-                            <option value="">Selecciona la eps</option>
-                            @foreach ($epss as $eps)
-                            <option value="{{ $eps['name'] }}">
-                                {{ $eps['name'] }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('eps_asegurado')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-6">
                         <label for="n_beneficiarios">Beneficiarios del solicitante <span class="required">*</span></label>
                         <select class="form-control @error('n_beneficiarios') is-invalid @enderror" id="n_beneficiarios"
                             name="n_beneficiarios" required>

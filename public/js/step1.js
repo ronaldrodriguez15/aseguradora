@@ -92,18 +92,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "val_total_desc_mensual"
     );
     const numeroDias = document.getElementById("numero_dias");
-    const resultadoPierdes = document.getElementById("resultadoPierdes");
-    const resultadoPagamos = document.getElementById("resultadoPagamos");
-    const resultadoPierdesInput = document.getElementById(
-        "resultadoPierdesInput"
-    );
-    const resultadoPagamosInput = document.getElementById(
-        "resultadoPagamosInput"
-    );
     const botonTePagamos = document.getElementById("botonTePagamos");
-    const modal = new bootstrap.Modal(
-        document.getElementById("tePagamosModal")
-    );
+    const tuPierdesInput = document.getElementById('tu_pierdes');
+    const tePagamosInput = document.getElementById('te_pagamos');
 
     // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
     function calcularValores() {
@@ -200,6 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Vincula la función al evento click del botón
     botonTePagamos.addEventListener("click", calcularResultados);
 
+    valorIbcBasico.addEventListener("input", calcularResultados);
+
     function calcularResultados() {
         const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
@@ -212,10 +205,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 title: "Número de días fuera de rango",
                 text: "Por favor, ingrese un número de días entre 3 y 45.",
                 confirmButtonText: "Aceptar",
-            }).then(() => {
-                // Si el número de días está fuera del rango, no se abre el modal.
-                return; // Salir de la función para evitar el cálculo y la apertura del modal
             });
+            return; // Salir de la función si los días están fuera de rango
         }
 
         // Calcular "Tu Pierdes"
@@ -223,21 +214,21 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!isNaN(valor) && !isNaN(dias) && dias > 2) {
             tuPierdes = (valor / 90) * (dias - 2);
         }
-        resultadoPierdes.textContent = tuPierdes.toLocaleString("es-CO", {
+
+        // Mostrar el resultado en el input "Tu Pierdes"
+        tuPierdesInput.value = tuPierdes.toLocaleString("es-CO", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
 
         // Calcular "Nosotros Te Pagamos"
         const pagamos = tuPierdes * 1.3;
-        resultadoPagamos.textContent = pagamos.toLocaleString("es-CO", {
+
+        // Mostrar el resultado en el input "Nosotros Te Pagamos"
+        tePagamosInput.value = pagamos.toLocaleString("es-CO", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
-
-        // Almacenar los resultados en los campos ocultos
-        resultadoPierdesInput.value = tuPierdes.toFixed(2);
-        resultadoPagamosInput.value = pagamos.toFixed(2);
     }
 
     // CONFIRMACION ENVIO DE FORMULARIO
@@ -365,3 +356,110 @@ document.getElementById('aseguradora').addEventListener('change', function () {
         identificadorInput.classList.add('is-invalid');
     }
 });
+
+//calcular tu pierdes
+document.addEventListener("DOMContentLoaded", function () {
+    const valorIbcBasicoInput = document.getElementById("valor_ibc_basico");
+    const numeroDiasInput = document.getElementById("numero_dias");
+    const tuPierdesInput = document.getElementById("tu_pierdes");
+    const tePagamosInput = document.getElementById("te_pagamos");
+
+    // Función para limpiar el valor IBC y convertirlo a número
+    function limpiarValor(valor) {
+        // Elimina comas, puntos, o cualquier otro separador de miles, dejando solo los números
+        return parseFloat(valor.replace(/[^0-9]/g, ""));
+    }
+
+    // Función para calcular "Tu Pierdes"
+    function calcularTuPierdes() {
+        const valorIbcBasico = limpiarValor(valorIbcBasicoInput.value);
+        const numeroDias = parseInt(numeroDiasInput.value);
+
+        // Validar que el valor IBC básico y el número de días sean números válidos
+        if (!isNaN(valorIbcBasico) && !isNaN(numeroDias)) {
+            // Aplicar la fórmula: Si número de días es menor o igual a 2, no hay cálculo
+            if (numeroDias <= 2) {
+                tuPierdesInput.value = "";
+                tePagamosInput.value = ""; // No se calcula nada si días <= 2
+            } else {
+                const resultadoTuPierdes = (valorIbcBasico / 90) * (numeroDias - 2);
+                tuPierdesInput.value = resultadoTuPierdes.toLocaleString("es-CO", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+                // Calcular "Te Pagamos" basado en "Tu Pierdes"
+                const resultadoTePagamos = resultadoTuPierdes * 1.3;
+                tePagamosInput.value = resultadoTePagamos.toLocaleString("es-CO", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+            }
+        } else {
+            tuPierdesInput.value = "";
+            tePagamosInput.value = "";
+        }
+    }
+
+    // Agregar eventos para recalcular cuando cambien los valores
+    valorIbcBasicoInput.addEventListener("input", calcularTuPierdes);
+    numeroDiasInput.addEventListener("input", calcularTuPierdes);
+});
+
+//-------------------- DEBITO -------------------------
+
+document.getElementById("forma_pago").addEventListener("change", function () {
+    var debitoAutomaticoFields = document.getElementById(
+        "debito_automatico_fields"
+    );
+    var tipoCuenta = document.getElementById("tipo_cuenta");
+    var noCuenta = document.getElementById("no_cuenta");
+    var rNoCuenta = document.getElementById("r_no_cuenta");
+    var banco = document.getElementById("banco");
+    var ciudadBanco = document.getElementById("ciudad_banco");
+
+    if (this.value === "debito_automatico") {
+        // Mostrar los campos para débito automático
+        debitoAutomaticoFields.style.display = "block";
+        tipoCuenta.setAttribute("required", "true");
+        noCuenta.setAttribute("required", "true");
+        rNoCuenta.setAttribute("required", "true");
+        banco.setAttribute("required", "true");
+        ciudadBanco.setAttribute("required", "true");
+    } else {
+        // Ocultar los campos y quitar el atributo required
+        debitoAutomaticoFields.style.display = "none";
+        tipoCuenta.removeAttribute("required");
+        noCuenta.removeAttribute("required");
+        rNoCuenta.removeAttribute("required");
+        banco.removeAttribute("required");
+        ciudadBanco.removeAttribute("required");
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const noCuenta = document.getElementById('no_cuenta');
+    const rNoCuenta = document.getElementById('r_no_cuenta');
+
+    // Función para validar si los campos coinciden
+    function validarCuentas() {
+        if (noCuenta.value !== rNoCuenta.value) {
+            // Si no coinciden, mostrar error
+            noCuenta.classList.add('is-invalid');
+            rNoCuenta.classList.add('is-invalid');
+        } else {
+            // Si coinciden, remover error
+            noCuenta.classList.remove('is-invalid');
+            rNoCuenta.classList.remove('is-invalid');
+        }
+    }
+
+    // Validar en tiempo real mientras el usuario escribe
+    noCuenta.addEventListener('input', validarCuentas);
+    rNoCuenta.addEventListener('input', validarCuentas);
+});
+
+
+
+
+
+

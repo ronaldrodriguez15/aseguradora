@@ -39,8 +39,10 @@ class InabilityController extends Controller
         $insurers = Insurer::where('status', 1)->get();
         $asesors = Asesor::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
+        $banks = Bank::where('status', 1)->get();
+        $cities = City::where('status', 1)->get();
 
-        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss'));
+        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities'));
     }
 
     /**
@@ -126,6 +128,7 @@ class InabilityController extends Controller
             'val_total_desc_mensual' => 'required',
             'tu_pierdes' => 'required',
             'te_pagamos' => 'required',
+            'forma_pago' => 'required|string|in:debito_automatico,mensual_libranza',
         ];
 
         $messages = [
@@ -148,6 +151,9 @@ class InabilityController extends Controller
             'val_total_desc_mensual.required' => 'El campo valor total descuento mensual es obligatorio.',
             'tu_pierdes.required' => 'El campo tú pierdes es obligatorio.',
             'te_pagamos.required' => 'El campo te pagamos es obligatorio.',
+            'forma_pago.required' => 'El campo forma de pago es obligatorio.',
+            'forma_pago.string' => 'La forma de pago debe ser una cadena de texto.',
+            'forma_pago.in' => 'La forma de pago seleccionada no es válida.',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -181,14 +187,27 @@ class InabilityController extends Controller
             $inability->prima_pago_prima_seguro = $request->prima_pago_prima_seguro;
             $inability->gastos_administrativos = $request->gastos_administrativos;
             $inability->val_total_desc_mensual = $request->val_total_desc_mensual;
+
+            //TIPO PAGO
+            $inability->forma_pago = $request->forma_pago;
+            $inability->tipo_cuenta = $request->tipo_cuenta;
+
+            if ($request->forma_pago !== 'mensual_libranza') {
+                $inability->no_cuenta = $request->no_cuenta;
+                $inability->no_cuenta = $request->r_no_cuenta;
+                $bank = Bank::find($request->banco);
+                $inability->bank_id = $bank->id;
+                $inability->banco = $bank->name;
+                $inability->ciudad_banco = $request->ciudad_banco;
+            }
             $inability->save();
 
             // Guardar el ID en la sesión o en una variable
             $request->session()->put('inability_id', $inability->id);
 
             $val_total_desc_mensual = $request->val_total_desc_mensual;
-            $tu_pierdes = number_format($request->tu_pierdes, 0, ',', '.');
-            $te_pagamos = number_format($request->te_pagamos, 0, ',', '.');
+            $tu_pierdes = $request->tu_pierdes;
+            $te_pagamos = $request->te_pagamos;
             $edad = $request->edad;
             $banks = Bank::where('status', 1)->get();
             $cities = City::where('status', 1)->get();
@@ -208,39 +227,14 @@ class InabilityController extends Controller
 
     public function formStepTree(Request $request)
     {
-        // Validación del formulario por backend
-        $rules = [
-            'forma_pago' => 'required|string|in:debito_automatico,mensual_libranza',
-        ];
-
-        $messages = [
-            'forma_pago.required' => 'El campo forma de pago es obligatorio.',
-            'forma_pago.string' => 'La forma de pago debe ser una cadena de texto.',
-            'forma_pago.in' => 'La forma de pago seleccionada no es válida.',
-        ];
-
-        $this->validate($request, $rules, $messages);
-
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');
 
         $inability = Inability::find($inabilityId);
-        $inability->forma_pago = $request->forma_pago;
-        $inability->tipo_cuenta = $request->tipo_cuenta;
-
-        if ($request->forma_pago !== 'mensual_libranza') {
-            $inability->no_cuenta = $request->no_cuenta;
-            $inability->no_cuenta = $request->r_no_cuenta;
-            $bank = Bank::find($request->banco);
-            $inability->bank_id = $bank->id;
-            $inability->banco = $bank->name;
-            $inability->ciudad_banco = $request->ciudad_banco;
-        }
-        $inability->save();
 
         $val_total_desc_mensual = $inability->val_total_desc_mensual;
-        $tu_pierdes = number_format($inability->tu_pierdes, 0, ',', '.');
-        $te_pagamos = number_format($inability->te_pagamos, 0, ',', '.');
+        $tu_pierdes = $inability->tu_pierdes;
+        $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
         $cities = City::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
@@ -270,7 +264,6 @@ class InabilityController extends Controller
             'ciudad_residencia' => 'required',
             'fuente_recursos' => 'required',
             'ocupacion_asegurado' => 'required',
-            'eps_asegurado' => 'required',
             'entidad_pagadora_sucursal' => 'required',
         ];
 
@@ -288,7 +281,6 @@ class InabilityController extends Controller
             'ciudad_residencia.required' => 'El campo ciudad de residencia es obligatorio.',
             'fuente_recursos.required' => 'El campo fuente de recursos es obligatorio.',
             'ocupacion_asegurado.required' => 'El campo ocupación es obligatorio.',
-            'eps_asegurado.required' => 'El campo EPS es obligatorio.',
             'entidad_pagadora_sucursal.required' => 'El campo entidad pagadora sucursal es obligatorio.',
         ];
 
@@ -312,7 +304,6 @@ class InabilityController extends Controller
         $inability->ciudad_residencia = $request->ciudad_residencia;
         $inability->fuente_recursos = $request->fuente_recursos;
         $inability->ocupacion_asegurado = $request->ocupacion_asegurado;
-        $inability->eps_asegurado = $request->eps_asegurado;
         $inability->entidad_pagadora_sucursal = $request->entidad_pagadora_sucursal;
 
         $inability->nombres_s1 = $request->no_cuenta;

@@ -67,7 +67,8 @@
                                 name="aseguradora" required>
                                 <option value="">Selecciona la aseguradora</option>
                                 @foreach ($insurers as $insurer)
-                                    <option value="{{ $insurer['id'] }}" data-poliza="{{ $insurer['no_poliza'] }}" data-identificador="{{ $insurer['identificador'] }}">
+                                    <option value="{{ $insurer['id'] }}" data-poliza="{{ $insurer['no_poliza'] }}"
+                                        data-identificador="{{ $insurer['identificador'] }}">
                                         {{ $insurer['name'] }}
                                     </option>
                                 @endforeach
@@ -228,7 +229,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-3">
                             <label for="valor_adicional">Valor adicional <span class="required">*</span></label>
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
@@ -241,11 +242,25 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-3 d-flex justify-content-end align-items-end mb-4">
-                            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" id="botonTePagamos"
-                                data-target="#tePagamosModal">
-                                Calculadora <i class="fas fa-calculator ml-2 mt-1"></i>
-                            </button>
+                        <div class="form-group col-md-3">
+                            <label for="tu_pierdes" class="text-danger">TU PIERDES!!!</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" class="form-control border-danger" name="tu_pierdes"
+                                    id="tu_pierdes" placeholder="Calculo automatico" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="te_pagamos" class="text-success">NOSOTROS TE PAGAMOS!!!</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" class="form-control border-success" name="te_pagamos"
+                                    id="te_pagamos" placeholder="Calculo automatico" required readonly>
+                            </div>
                         </div>
                     </div>
 
@@ -337,15 +352,98 @@
                             @enderror
                         </div>
                     </div>
-
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="forma_pago">Forma de pago <span class="required">*</span></label>
+                            <select class="form-control @error('forma_pago') is-invalid @enderror" id="forma_pago"
+                                name="forma_pago" required>
+                                <option value="">Selecciona la forma de pago</option>
+                                <option value="debito_automatico">Debito automatico</option>
+                                <option value="mensual_libranza">Mensual Libranza</option>
+                            </select>
+                            @error('forma_pago')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
+            <br>
+            <div class="card" id="debito_automatico_fields" style="display: none">
+                <div class="card-body">
+                    <br>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="tipo_cuenta">Tipo de cuenta <span class="required">*</span></label>
+                            <select class="form-control @error('tipo_cuenta') is-invalid @enderror" id="tipo_cuenta"
+                                name="tipo_cuenta">
+                                <option value="ahorros">Ahorros</option>
+                                <option value="corriente">Corriente</option>
+                            </select>
+                            @error('tipo_cuenta')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="no_cuenta">Número de cuenta <span class="required">*</span></label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" class="form-control" name="no_cuenta" id="no_cuenta"
+                                    placeholder="Escribe el N de cuenta" >
+                            </div>
+                            <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
+                        </div>
 
-            <!-- Campo oculto para almacenar el resultado -->
-            <input type="hidden" id="resultadoPierdesInput" name="tu_pierdes">
-            <input type="hidden" id="resultadoPagamosInput" name="te_pagamos">
-
-
+                        <div class="form-group col-md-6">
+                            <label for="r_no_cuenta">Repite el número de cuenta <span class="required">*</span></label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" class="form-control" name="r_no_cuenta" id="r_no_cuenta"
+                                    placeholder="Repite el N de cuenta" onpaste="return false">
+                            </div>
+                            <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="banco">Banco <span class="required">*</span></label>
+                            <select class="form-control @error('banco') is-invalid @enderror" id="banco"
+                                name="banco">
+                                <option value="">Selecciona el banco</option>
+                                @foreach ($banks as $bank)
+                                    <option value="{{ $bank['id'] }}">
+                                        {{ $bank['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('banco')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="ciudad_banco">Ciudad del Banco <span class="required">*</span></label>
+                            <select class="form-control @error('bank_id') is-invalid @enderror" id="ciudad_banco"
+                                name="ciudad_banco">
+                                <option value="">Selecciona el banco</option>
+                                @foreach ($cities as $city)
+                                    <option value="{{ $city['name'] }}">
+                                        {{ $city['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('ciudad_banco')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row mb-4">
                 <div class="col-md-6 mb-5">
                     <a href="{{ route('incapacidades.index') }}" class="btn btn-info">
@@ -360,34 +458,6 @@
             </div>
         </form>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="tePagamosModal" tabindex="-1" role="dialog" aria-labelledby="tePagamosModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title mx-auto" id="tePagamosModalLabel">Mira cuanto pierdes y cuanto te pagamos</h5>
-                </div>
-                <div class="modal-body">
-                    <div>
-                        <h5 class="text-danger">TU PIERDES!!!</h5>
-                        <div class="text-center">
-                            <h2 class="text-danger" id="resultadoPierdes">0</h2> <!-- Aquí se mostrará el resultado -->
-                        </div>
-                    </div>
-                    <br><br>
-                    <div>
-                        <h4 class="text-success">NOSOTROS TE PAGAMOS!!!</h4>
-                        <div class="text-center">
-                            <h2 class="text-success" id="resultadoPagamos">0</h2> <!-- Aquí se mostrará el resultado -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 @stop
 

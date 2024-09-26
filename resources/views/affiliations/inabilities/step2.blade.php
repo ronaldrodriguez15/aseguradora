@@ -62,98 +62,9 @@
                     </div>
                 </div>
                 <br><br>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="forma_pago">Forma de pago <span class="required">*</span></label>
-                        <select class="form-control @error('forma_pago') is-invalid @enderror" id="forma_pago"
-                            name="forma_pago" required>
-                            <option value="">Selecciona la forma de pago</option>
-                            <option value="debito_automatico">Debito automatico</option>
-                            <option value="mensual_libranza">Mensual Libranza</option>
-                        </select>
-                        @error('forma_pago')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
             </div>
         </div>
         <br>
-        <div class="card" id="debito_automatico_fields" style="display: none">
-            <div class="card-body">
-                <br>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="tipo_cuenta">Tipo de cuenta <span class="required">*</span></label>
-                        <select class="form-control @error('tipo_cuenta') is-invalid @enderror" id="tipo_cuenta"
-                            name="tipo_cuenta">
-                            <option value="ahorros">Ahorros</option>
-                            <option value="corriente">Corriente</option>
-                        </select>
-                        @error('tipo_cuenta')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="no_cuenta">Número de cuenta <span class="required">*</span></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">$</span>
-                            </div>
-                            <input type="text" class="form-control" name="no_cuenta" id="no_cuenta"
-                                placeholder="Escribe el N de cuenta" required>
-                        </div>
-                        <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="r_no_cuenta">Repite el número de cuenta <span class="required">*</span></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">$</span>
-                            </div>
-                            <input type="text" class="form-control" name="r_no_cuenta" id="r_no_cuenta"
-                                placeholder="Repite el N de cuenta" required onpaste="return false">
-                        </div>
-                        <div class="invalid-feedback">Los números de cuenta no coinciden.</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="banco">Banco <span class="required">*</span></label>
-                        <select class="form-control @error('banco') is-invalid @enderror" id="banco"
-                            name="banco" required>
-                            <option value="">Selecciona el banco</option>
-                            @foreach ($banks as $bank)
-                            <option value="{{ $bank['id'] }}">
-                                {{ $bank['name'] }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('banco')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="ciudad_banco">Ciudad del Banco <span class="required">*</span></label>
-                        <select class="form-control @error('bank_id') is-invalid @enderror" id="ciudad_banco"
-                            name="ciudad_banco" required>
-                            <option value="">Selecciona el banco</option>
-                            @foreach ($cities as $city)
-                            <option value="{{ $city['name'] }}">
-                                {{ $city['name'] }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('ciudad_banco')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="row mb-4">
             <div class="col-md-6 text-right mb-5">
             </div>
