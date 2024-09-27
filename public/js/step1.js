@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
         "val_total_desc_mensual"
     );
     const numeroDias = document.getElementById("numero_dias");
-    const botonTePagamos = document.getElementById("botonTePagamos");
     const tuPierdesInput = document.getElementById('tu_pierdes');
     const tePagamosInput = document.getElementById('te_pagamos');
 
@@ -102,6 +101,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
+
+        console.log(deseaValorAdicional, deseaValor);
 
         // Calcular el descuento
         let descuento = 0;
@@ -187,9 +188,6 @@ document.addEventListener("DOMContentLoaded", function () {
     valorIbcBasico.addEventListener("input", calcularValores);
     deseaValor.addEventListener("change", calcularValores);
     gastosAdministrativos.addEventListener("input", calcularValores);
-
-    // Vincula la función al evento click del botón
-    botonTePagamos.addEventListener("click", calcularResultados);
 
     valorIbcBasico.addEventListener("input", calcularResultados);
 
