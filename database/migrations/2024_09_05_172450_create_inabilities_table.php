@@ -166,6 +166,10 @@ class CreateInabilitiesTable extends Migration
             $table->text('path_aseguradora', 30)->nullable();
             $table->text('path_pago', 30)->nullable();
 
+            //SECURITY
+            $table->text('user_id', 5)->nullable();
+            $table->text('ip_address', 30)->nullable();
+
             $table->string('status', 10)->default('1');
             $table->timestamps();
         });

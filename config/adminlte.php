@@ -198,7 +198,7 @@ return [
     'classes_content' => '',
     'classes_sidebar' => 'sidebar-dark-danger elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-dark navbar-light',
+    'classes_topnav' => 'navbar-danger navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
 
@@ -312,14 +312,14 @@ return [
         ],
         ['header' => 'FUNCIONALIDADES'],
         [
-            'text' => 'Utilidades',
-            'url' => '#',
-            'icon' => 'fa fa-file-archive',
-        ],
-        [
             'text' => 'Reportes',
             'url' => '#',
             'icon' => 'fa fa-folder-open',
+        ],
+        [
+            'text' => 'Documentos',
+            'url' => 'documentos',
+            'icon' => 'fa fa-file-alt',
         ],
         [
             'text' => 'Afiliaciones',

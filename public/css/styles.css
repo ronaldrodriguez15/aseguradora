@@ -105,3 +105,19 @@ select[multiple].form-control {
         font-size: 12px; /* Reducir el tamaño del texto */
     }
 }
+
+/* Clases para fondo naranja */
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+
+/* Clases para texto naranja */
+.text-orange {
+    color: #fd7e14 !important;
+}
+
+/* Clases para bordes naranjas */
+.border-orange {
+    border-color: #fd7e14 !important;
+}
+
