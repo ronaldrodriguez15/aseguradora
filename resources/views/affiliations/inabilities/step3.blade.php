@@ -274,7 +274,7 @@
                         <label for="parentesco_s1">Parentesco <span class="required">*</span></label>
                         <select class="form-control @error('parentesco_s1') is-invalid @enderror" id="parentesco_s1"
                             name="parentesco_s1">
-                            <option value="">Selecciona el parentesco</option>
+                            <option value="">Selecciona el género</option>
                             <option value="conyugue">Conyugue</option>
                             <option value="hermano">Hermano</option>
                             <option value="hijo">Hijo</option>
@@ -357,7 +357,7 @@
                         <label for="parentesco_s2">Parentesco <span class="required">*</span></label>
                         <select class="form-control @error('parentesco_s2') is-invalid @enderror" id="parentesco_s2"
                             name="parentesco_s2">
-                            <option value="">Selecciona el parentesco</option>
+                            <option value="">Selecciona el género</option>
                             <option value="conyugue">Conyugue</option>
                             <option value="hermano">Hermano</option>
                             <option value="hijo">Hijo</option>
@@ -439,8 +439,8 @@
                     <div class="form-group col-md-4">
                         <label for="parentesco_s3">Parentesco <span class="required">*</span></label>
                         <select class="form-control @error('parentesco_s3') is-invalid @enderror" id="parentesco_s3"
-                            name="parentesco_s1">
-                            <option value="">Selecciona el parentesco</option>
+                            name="parentesco_s3">
+                            <option value="">Selecciona el género</option>
                             <option value="conyugue">Conyugue</option>
                             <option value="hermano">Hermano</option>
                             <option value="hijo">Hijo</option>

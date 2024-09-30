@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Inability;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Docuuments;
 
 class PDFLibranzaController extends Controller
 {
     public function generarPDF($id)
     {
-        // Obtener los datos de la tabla inabilities
         $inability = Inability::find($id);
 
         if (!$inability) {
             abort(404, 'Incapacidad no encontrada.');
         }
 
-        // Ruta del archivo PDF a usar como plantilla
-        $pdfFilePath = public_path('documents/libranza.pdf');
+        $document = Docuuments::first();
 
-        // Verificar si el archivo existe
-        if (!file_exists($pdfFilePath)) {
+        // Asegúrate de que exista el documento y que la columna libranza_document no esté vacía
+        if (!$document || empty($document->libranza_document)) {
+            abort(404, 'Documento no encontrado.');
+        }
+
+        // Obtener la ruta del archivo PDF almacenado
+        $pdfFilePath = $document->libranza_document;
+
+        // Verificar si el archivo existe en Storage
+        if (!Storage::disk('public')->exists($pdfFilePath)) {
             abort(404, 'Archivo PDF no encontrado.');
         }
 
+        // Obtener la ruta completa del archivo
+        $fullPath = Storage::disk('public')->path($pdfFilePath);
+
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $pdfFilePath);
+        $this->generarPDFConPlantilla($inability, $fullPath);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -103,6 +113,10 @@ class PDFLibranzaController extends Controller
                     $pdf->SetXY(102, 81);
                     $pdf->Write(0, 'X');
                 }
+
+                //No poliza
+                $pdf->SetXY(154, 81);
+                $pdf->Write(0, convertToISO88591($inability->no_poliza));
 
                 //valor descuento
                 $pdf->SetXY(70, 204.5);

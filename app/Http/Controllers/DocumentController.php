@@ -60,48 +60,54 @@ class DocumentController extends Controller
             'type_document.in' => 'El tipo de documento no es válido.',
         ];
 
-        $this->validate($request, $rules, $messages);
+        try {
 
-        $type = $request->input('type_document');
+            $this->validate($request, $rules, $messages);
 
-        $documentFile = Docuuments::first();
+            $type = $request->input('type_document');
 
-        if (!$documentFile) {
-            $documentFile = new Docuuments();
-        }
+            $documentFile = Docuuments::first();
 
-        $oldFilePath = null;
-        if ($type === 'estasseguro' && $documentFile->estasseguro_document) {
-            $oldFilePath = $documentFile->estasseguro_document;
-        } elseif ($type === 'libranza' && $documentFile->libranza_document) {
-            $oldFilePath = $documentFile->libranza_document;
-        } elseif ($type === 'debito' && $documentFile->debito_document) {
-            $oldFilePath = $documentFile->debito_document;
-        }
-
-        // Eliminar el archivo anterior si existe
-        if ($oldFilePath && Storage::disk('public')->exists($oldFilePath)) {
-            Storage::disk('public')->delete($oldFilePath);
-        }
-
-        // Guardar el nuevo archivo en la carpeta 'documents/uploads' usando Storage
-        if ($request->hasFile('document_path')) {
-            // Guardar el nuevo archivo
-            $newFilePath = $request->file('document_path')->store('documents/uploads', 'public');
-
-            // Asignar el nuevo archivo al campo correspondiente según el tipo de documento
-            if ($type === 'estasseguro') {
-                $documentFile->estasseguro_document = $newFilePath;
-            } elseif ($type === 'libranza') {
-                $documentFile->libranza_document = $newFilePath;
-            } elseif ($type === 'debito') {
-                $documentFile->debito_document = $newFilePath;
+            if (!$documentFile) {
+                $documentFile = new Docuuments();
             }
+
+            $oldFilePath = null;
+            if ($type === 'estasseguro' && $documentFile->estasseguro_document) {
+                $oldFilePath = $documentFile->estasseguro_document;
+            } elseif ($type === 'libranza' && $documentFile->libranza_document) {
+                $oldFilePath = $documentFile->libranza_document;
+            } elseif ($type === 'debito' && $documentFile->debito_document) {
+                $oldFilePath = $documentFile->debito_document;
+            }
+
+            // Eliminar el archivo anterior si existe
+            if ($oldFilePath && Storage::disk('public')->exists($oldFilePath)) {
+                Storage::disk('public')->delete($oldFilePath);
+            }
+
+            // Guardar el nuevo archivo en la carpeta 'documents/uploads' usando Storage
+            if ($request->hasFile('document_path')) {
+                // Guardar el nuevo archivo
+                $newFilePath = $request->file('document_path')->store('documents/uploads', 'public');
+
+                // Asignar el nuevo archivo al campo correspondiente según el tipo de documento
+                if ($type === 'estasseguro') {
+                    $documentFile->estasseguro_document = $newFilePath;
+                } elseif ($type === 'libranza') {
+                    $documentFile->libranza_document = $newFilePath;
+                } elseif ($type === 'debito') {
+                    $documentFile->debito_document = $newFilePath;
+                }
+            }
+
+            $documentFile->save();
+
+            return redirect()->route('documentos.index')->with('success', '¡Excelente! El documento ha sido almacenado correctamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Redirige a la vista anterior con los mensajes de error
+            return redirect()->back()->withErrors($e->validator)->withInput();
         }
-
-        $documentFile->save();
-
-        return redirect()->route('ciudades.index')->with('success', '¡Excelente! El documento ha sido almacenado correctamente.');
     }
 
 

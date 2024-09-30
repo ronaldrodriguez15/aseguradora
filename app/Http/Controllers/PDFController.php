@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use setasign\Fpdi\Fpdi;
-use Illuminate\Http\Request;
 use App\Models\Inability;
-use App\Models\Insurer;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Docuuments;
 
 class PDFController extends Controller
 {
@@ -18,17 +18,29 @@ class PDFController extends Controller
             abort(404, 'Incapacidad no encontrada.');
         }
 
-        // Ruta del archivo PDF a usar como plantilla
-        $pdfFilePath = public_path('documents/esstas.pdf');
+        // Obtener el documento desde el modelo Documents
+        $document = Docuuments::first();
 
-        // Verificar si el archivo existe
-        if (!file_exists($pdfFilePath)) {
+        // Asegúrate de que exista el documento
+        if (!$document || empty($document->estasseguro_document)) {
+            abort(404, 'Documento no encontrado.');
+        }
+
+        // Obtener la ruta del archivo PDF almacenado
+        $pdfFilePath = $document->estasseguro_document;
+
+        // Verificar si el archivo existe en Storage
+        if (!Storage::disk('public')->exists($pdfFilePath)) {
             abort(404, 'Archivo PDF no encontrado.');
         }
 
+        // Obtener la ruta completa del archivo
+        $fullPath = Storage::disk('public')->path($pdfFilePath);
+
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $pdfFilePath);
+        $this->generarPDFConPlantilla($inability, $fullPath);
     }
+
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
     {
@@ -153,7 +165,7 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->val_prevexequial_eclusivo));
 
                 // nombre titular contratante
-                $nombres_completos = $inability->primer_apellido.' '.$inability->segundo_apellido.' '.$inability->nombres_completos;
+                $nombres_completos = $inability->primer_apellido . ' ' . $inability->segundo_apellido . ' ' . $inability->nombres_completos;
                 $pdf->SetXY(46.5, 261.5);
                 $pdf->Write(0, convertToISO88591($nombres_completos));
 
@@ -177,7 +189,7 @@ class PDFController extends Controller
                 $pdf->SetFont('Arial', '', 7);
 
                 // Nombres completos
-                $nombres_completos = $inability->primer_apellido.' '.$inability->segundo_apellido.' '.$inability->nombres_completos; 
+                $nombres_completos = $inability->primer_apellido . ' ' . $inability->segundo_apellido . ' ' . $inability->nombres_completos;
                 $pdf->SetXY(37, 110);
                 $pdf->Write(0, $nombres_completos);
 
@@ -185,27 +197,27 @@ class PDFController extends Controller
                 $pdf->SetXY(125, 110);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 
-                // expedida en 
+                // expedida en
                 $pdf->SetXY(162, 110);
                 $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
 
-                // ocupacion 
+                // ocupacion
                 $pdf->SetXY(50, 113.5);
                 $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
 
-                // fecha nacimiento 
+                // fecha nacimiento
                 $pdf->SetXY(60, 120);
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asegurado));
 
-                // valor IBC basico 
+                // valor IBC basico
                 $pdf->SetXY(91, 123.5);
                 $pdf->Write(0, $inability->valor_ibc_basico);
 
-                // entidad donde labora 
+                // entidad donde labora
                 $pdf->SetXY(70.5, 127);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
-                // Correo electronico 
+                // Correo electronico
                 $pdf->SetXY(65, 130);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
 
@@ -222,7 +234,7 @@ class PDFController extends Controller
                 // Agregar datos al PDF
                 $pdf->SetFont('Arial', '', 8);
 
-                // ------------------ Referido 1 
+                // ------------------ Referido 1
                 // nombres y apellidos
                 $pdf->SetXY(70, 121.5);
                 $pdf->Write(0, $inability->nombres_apellidos_r1);
@@ -266,14 +278,14 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->tienes_mascotas));
 
                 // ------------------ Mascota 1
-                // nombres 
+                // nombres
                 $pdf->SetXY(50, 181.3);
                 $pdf->Write(0, $inability->nombre_m1);
 
                 // tipo de mascotas
-                $pdf->SetXY(80, 181.3   );
+                $pdf->SetXY(80, 181.3);
                 $pdf->Write(0, $inability->tipo_m1);
-                
+
                 // raza
                 $pdf->SetXY(104, 181.5);
                 $pdf->Write(0, $inability->raza_m1);
@@ -288,17 +300,17 @@ class PDFController extends Controller
 
                 // edad
                 $pdf->SetXY(158, 181.5);
-                $pdf->Write(0, $inability->edad_m1." ".convertToISO88591("Años"));
+                $pdf->Write(0, $inability->edad_m1 . " " . convertToISO88591("Años"));
 
                 // ------------------ Mascota 2
-                // nombres 
+                // nombres
                 $pdf->SetXY(50, 185);
                 $pdf->Write(0, $inability->nombre_m2);
 
                 // tipo de mascotas
                 $pdf->SetXY(80, 185);
                 $pdf->Write(0, $inability->tipo_m2);
-                
+
                 // raza
                 $pdf->SetXY(104, 185);
                 $pdf->Write(0, $inability->raza_m2);
@@ -313,17 +325,17 @@ class PDFController extends Controller
 
                 // edad
                 $pdf->SetXY(158, 185);
-                $pdf->Write(0, $inability->edad_m2." ".convertToISO88591("Años"));
+                $pdf->Write(0, $inability->edad_m2 . " " . convertToISO88591("Años"));
 
                 // ------------------ Mascota 2
-                // nombres 
+                // nombres
                 $pdf->SetXY(50, 188.5);
                 $pdf->Write(0, $inability->nombre_m3);
 
                 // tipo de mascotas
                 $pdf->SetXY(80, 188.5);
                 $pdf->Write(0, $inability->tipo_m3);
-                
+
                 // raza
                 $pdf->SetXY(104, 188.5);
                 $pdf->Write(0, $inability->raza_m3);
@@ -338,7 +350,7 @@ class PDFController extends Controller
 
                 // edad
                 $pdf->SetXY(158, 188.5);
-                $pdf->Write(0, $inability->edad_m3." ".convertToISO88591("Años"));
+                $pdf->Write(0, $inability->edad_m3 . " " . convertToISO88591("Años"));
             }
         }
 

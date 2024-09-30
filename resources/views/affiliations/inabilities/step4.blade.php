@@ -407,9 +407,9 @@
                 <div class="form-row" style="display: none;" id="descripcion_de_enfermedades">
                     <div class="form-group col-md-12">
                         <label for="descripcion_de_enfermedades">En caso de haber contestado afirmativamente alguna de las preguntas anteriores,
-                            por favor, a continuación describa los detalles con su respectiva fecha de diagnostico </label>
+                            por favor, a continuación describa los detalles con su respectiva fecha de diagnóstico </label>
                         <textarea class="form-control @error('descripcion_de_enfermedades') is-invalid @enderror"
-                            name="descripcion_de_enfermedades"
+                            id="descripcion_de_enfermedades_input" name="descripcion_de_enfermedades"
                             rows="4"
                             placeholder="Describe si tienes alguna enfermedad hematológica"></textarea>
                         @error('descripcion_de_enfermedades')

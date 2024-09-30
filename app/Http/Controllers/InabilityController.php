@@ -440,8 +440,8 @@ class InabilityController extends Controller
 
 
         $val_total_desc_mensual = $inability->val_total_desc_mensual;
-        $tu_pierdes = number_format($inability->tu_pierdes, 0, ',', '.');
-        $te_pagamos = number_format($inability->te_pagamos, 0, ',', '.');
+        $tu_pierdes = $inability->tu_pierdes;
+        $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
         $cities = City::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
@@ -547,8 +547,8 @@ class InabilityController extends Controller
 
 
         $val_total_desc_mensual = $inability->val_total_desc_mensual;
-        $tu_pierdes = number_format($inability->tu_pierdes, 0, ',', '.');
-        $te_pagamos = number_format($inability->te_pagamos, 0, ',', '.');
+        $tu_pierdes = $inability->tu_pierdes;
+        $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
         $message = "La información se guardó correctamente.";
         $aseguradora = $inability->aseguradora;

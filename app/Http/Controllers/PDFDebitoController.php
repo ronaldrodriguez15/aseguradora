@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Inability;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Docuuments;
 
 class PDFDebitoController extends Controller
 {
     public function generarPDF($id)
     {
-        // Obtener los datos de la tabla inabilities
         $inability = Inability::find($id);
 
         if (!$inability) {
             abort(404, 'Incapacidad no encontrada.');
         }
 
-        // Ruta del archivo PDF a usar como plantilla
-        $pdfFilePath = public_path('documents/debito.pdf');
+        $document = Docuuments::first();
 
-        // Verificar si el archivo existe
-        if (!file_exists($pdfFilePath)) {
+        // Asegúrate de que exista el documento y que la columna libranza_document no esté vacía
+        if (!$document || empty($document->debito_document)) {
+            abort(404, 'Documento no encontrado.');
+        }
+
+        // Obtener la ruta del archivo PDF almacenado
+        $pdfFilePath = $document->debito_document;
+
+        // Verificar si el archivo existe en Storage
+        if (!Storage::disk('public')->exists($pdfFilePath)) {
             abort(404, 'Archivo PDF no encontrado.');
         }
 
+        // Obtener la ruta completa del archivo
+        $fullPath = Storage::disk('public')->path($pdfFilePath);
+
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $pdfFilePath);
+        $this->generarPDFConPlantilla($inability, $fullPath);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -111,13 +121,13 @@ class PDFDebitoController extends Controller
                 }
 
                 //prevision exequial mascotas
-                if ($inability->serv_prevision_exequial_mascotas === 'no') {
+                if ($inability->serv_prevision_exequial_mascotas === 'si') {
                     $pdf->SetXY(172.5, 109.6);
                     $pdf->Write(0, 'X');
                 }
 
                 //servicios de prevision salud mascotas
-                if ($inability->serv_prevision_salud === 'no') {
+                if ($inability->serv_prevision_salud === 'si') {
                     $pdf->SetXY(109.5, 113.3);
                     $pdf->Write(0, 'X');
                 }
@@ -127,6 +137,10 @@ class PDFDebitoController extends Controller
                     $pdf->SetXY(109.5, 123.5);
                     $pdf->Write(0, 'X');
                 }
+
+                //No poliza
+                $pdf->SetXY(158, 123.5);
+                $pdf->Write(0, convertToISO88591($inability->no_poliza));
 
                 //valor descuento
                 $pdf->SetXY(62, 232);
@@ -140,7 +154,7 @@ class PDFDebitoController extends Controller
                 $pdf->SetXY(125, 256);
                 $pdf->Write(0, convertToISO88591($inability->direccion_residencia));
 
-                //celular   
+                //celular
                 $pdf->SetXY(46, 260);
                 $pdf->Write(0, convertToISO88591($inability->celular));
 
