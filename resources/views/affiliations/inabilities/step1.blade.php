@@ -182,12 +182,12 @@
                     <div class="form-group col-md-2">
                         <label for="numero_dias">Número de días <span class="required">*</span></label>
                         <input type="number" class="form-control @error('numero_dias') is-invalid @enderror"
-                            id="numero_dias" name="numero_dias" placeholder="No de días" required>
+                            id="numero_dias" name="numero_dias" placeholder="No de días" value="3" required>
                         @error('numero_dias')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    
                     <div class="form-group col-md-4">
                         <label for="desea_valor">¿Desea valor adicional? <span class="required">*</span></label>
                         <select class="form-control @error('desea_valor') is-invalid @enderror" id="desea_valor"
@@ -322,7 +322,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-5">
                         <label for="forma_pago">Forma de pago <span class="required">*</span></label>
                         <select class="form-control @error('forma_pago') is-invalid @enderror" id="forma_pago" name="forma_pago" required>
                             <option value="">Selecciona la forma de pago</option>
@@ -347,8 +347,8 @@
                         @enderror
                     </div>
 
-                    <div class="form-group col-md-3">
-                        <label for="val_total_desc_mensual" class="text-warning">Valor total de descuento mensual
+                    <div class="form-group col-md-4">
+                        <label for="val_total_desc_mensual" class="text-warning">Valor total descuento mensual
                             <span class="required">*</span></label>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">

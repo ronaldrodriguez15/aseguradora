@@ -114,6 +114,22 @@ class PDFDebitoController extends Controller
                 $pdf->SetXY(135, 78);
                 $pdf->Write(0, convertToISO88591($inability->ciudad_banco));
 
+                //tipo de cuenta
+                $pdf->SetXY(36, 91);
+                $pdf->Write(0, convertToISO88591($inability->tipo_cuenta));
+
+                //tipo de cuenta 2
+                $pdf->SetXY(78, 91);
+                $pdf->Write(0, convertToISO88591($inability->tipo_cuenta));
+
+                //n de cuenta
+                $pdf->SetXY(120, 91);
+                $pdf->Write(0, convertToISO88591($inability->no_cuenta));
+
+                //n de cuenta 2
+                $pdf->SetXY(160, 91);
+                $pdf->Write(0, convertToISO88591($inability->no_cuenta));
+
                 //previexequial exclusivo
                 if ($inability->servicios_prevision_exequial === 'si') {
                     $pdf->SetXY(109.5, 109.6);

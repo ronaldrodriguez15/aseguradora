@@ -90,6 +90,18 @@ class PDFLibranzaController extends Controller
                 $pdf->SetXY(173, 48.8);
                 $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
 
+                //calidad de
+                $pdf->SetXY(55, 53);
+                $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
+
+                // No de Contrato
+                // Extraer el año y el mes de la fecha
+                $fecha = $inability->fecha_diligenciamiento;
+                $ano = date('Y', strtotime($fecha));
+                $mes = date('n', strtotime($fecha));
+                $pdf->SetXY(149, 60.5);
+                $pdf->Write(0, $ano . $mes . str_replace('.', '', $inability->no_identificacion));
+
                 //previexequial exclusivo
                 if ($inability->servicios_prevision_exequial === 'si') {
                     $pdf->SetXY(102, 65);

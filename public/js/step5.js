@@ -26,12 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "enf_hematologicas",
     ];
 
-    const descripcionDeEnfermedades = document.getElementById(
-        "descripcion_de_enfermedades"
-    );
-    const descripcionDeEnfermedadesInput = document.getElementById(
-        "descripcion_de_enfermedades_input"
-    );
+    const descripcionDeEnfermedades = document.getElementById("descripcion_de_enfermedades");
+    const descripcionDeEnfermedadesInput = document.getElementById("descripcion_de_enfermedades_input");
     const formFields = fields.map((id) => document.getElementById(id));
 
     function checkFields() {
@@ -70,19 +66,19 @@ document.addEventListener("DOMContentLoaded", function () {
     var form4 = document.getElementById("formStep4"); // Selecciona tu formulario
 
     form4.addEventListener("submit", function (event) {
+        event.preventDefault(); // Detener el envío predeterminado del formulario
+
         // Verificar si el textarea es requerido y está vacío
         if (
             descripcionDeEnfermedadesInput.required &&
             descripcionDeEnfermedadesInput.value.trim() === ""
         ) {
-            event.preventDefault(); // Detener el envío si está vacío
-            descripcionDeEnfermedadesInput.setCustomValidity(
-                "Este campo es obligatorio."
-            ); // Mensaje de error personalizado
+            descripcionDeEnfermedadesInput.setCustomValidity("Este campo es obligatorio.");
             descripcionDeEnfermedadesInput.reportValidity(); // Mostrar el mensaje de error
-            return;
+            return; // Detener el envío si está vacío
         }
 
+        // Mostrar la ventana de confirmación
         Swal.fire({
             title: "¿Estás seguro de continuar?",
             text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación",

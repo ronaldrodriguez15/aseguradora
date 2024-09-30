@@ -102,8 +102,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
 
-        console.log(deseaValorAdicional, deseaValor);
-
         // Calcular el descuento
         let descuento = 0;
         if (!isNaN(valor)) {
@@ -467,20 +465,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
     const formaPago = document.getElementById("forma_pago");
-    const gastosAdministrativos = document.getElementById(
-        "gastos_administrativos"
-    );
+    const gastosAdministrativos = document.getElementById("gastos_administrativos");
+    const valTotalDescMensual = document.getElementById("val_total_desc_mensual");
+
+    let seSumo1400 = false; // Bandera para controlar si se han sumado los 1400
+
+    // Función para limpiar formato (elimina puntos y convierte a número)
+    function limpiarFormato(valor) {
+        return parseFloat(valor.replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    // Función para formatear números con puntos como separador de miles
+    function formatearConPuntos(valor) {
+        return valor.toLocaleString('de-DE');
+    }
 
     formaPago.addEventListener("change", function () {
-        if (this.value === "debito_automatico") {
-            gastosAdministrativos.value = 1400; // Establecer el valor a 1.400
-            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
-        } else if (this.value === "mensual_libranza") {
-            gastosAdministrativos.value = 0; // Establecer el valor a 0
-            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
-        } else {
-            gastosAdministrativos.value = 0; // Valor por defecto si no hay selección
-            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
+        let valorTotal = limpiarFormato(valTotalDescMensual.value); // Limpiar formato del valor
+
+        if (this.value === "debito_automatico" && !seSumo1400) {
+            gastosAdministrativos.value = 1400;
+            gastosAdministrativos.readOnly = true;
+            valorTotal += 1400; // Sumar 1.400
+            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
+            seSumo1400 = true;
+        } else if (this.value === "mensual_libranza" && seSumo1400) {
+            gastosAdministrativos.value = 0;
+            gastosAdministrativos.readOnly = true;
+            valorTotal -= 1400; // Restar 1.400
+            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
+            seSumo1400 = false; // Marcar que los 1400 se han restado
+        } else if (this.value !== "debito_automatico" && this.value !== "mensual_libranza") {
+            gastosAdministrativos.value = 0;
+            gastosAdministrativos.readOnly = true;
         }
     });
 });
+
+

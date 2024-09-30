@@ -73,7 +73,8 @@ class PDFController extends Controller
 
                 // No de Contrato
                 $pdf->SetXY(168, 29);
-                $pdf->Write(0, $ano . $mes . $inability->no_identificacion);
+                $pdf->Write(0, $ano . $mes . str_replace('.', '', $inability->no_identificacion));
+
 
                 //Fecha diligenciamiento
                 $pdf->SetXY(89.5, 37.5);
@@ -113,7 +114,7 @@ class PDFController extends Controller
 
                 // fecha nacimiento
                 $pdf->SetXY(103, 57.5);
-                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asegurado));
+                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // ciudad
                 $pdf->SetXY(140, 57.5);
@@ -189,7 +190,7 @@ class PDFController extends Controller
                 $pdf->SetFont('Arial', '', 7);
 
                 // Nombres completos
-                $nombres_completos = $inability->primer_apellido . ' ' . $inability->segundo_apellido . ' ' . $inability->nombres_completos;
+                $nombres_completos = $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido;
                 $pdf->SetXY(37, 110);
                 $pdf->Write(0, $nombres_completos);
 
@@ -207,7 +208,7 @@ class PDFController extends Controller
 
                 // fecha nacimiento
                 $pdf->SetXY(60, 120);
-                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asegurado));
+                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // valor IBC basico
                 $pdf->SetXY(91, 123.5);
@@ -228,7 +229,7 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
             }
 
-            // Pagina 2
+            // Pagina 3
             if ($pageNo == 3) {
 
                 // Agregar datos al PDF

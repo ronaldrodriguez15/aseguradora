@@ -470,7 +470,6 @@ class InabilityController extends Controller
             'seleccion_opcion_r3' => 'required',
 
             'tienes_mascotas' => 'required',
-            'proteger_mascotas' => 'required',
         ];
 
         $messages = [
@@ -487,7 +486,6 @@ class InabilityController extends Controller
             'seleccion_opcion_r3.required' => 'Debes seleccionar una opción en el tercer registro.',
 
             'tienes_mascotas.required' => 'El campo de mascotas es obligatorio.',
-            'proteger_mascotas.required_if' => 'Debes especificar cómo proteger a tus mascotas si seleccionaste que tienes mascotas.',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -515,7 +513,7 @@ class InabilityController extends Controller
 
         // Almacenar información de mascotas
         $inability->tienes_mascotas = $request->tienes_mascotas;
-        $inability->proteger_mascotas = $request->proteger_mascotas;
+        $inability->proteger_mascotas = $request->proteger_mascotas ?? 'no';
 
         // Almacenar datos de la mascota 1
         $inability->nombre_m1 = $request->nombre_m1;

@@ -35,22 +35,30 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (event) {
         event.preventDefault(); // Detiene el envío del formulario inicialmente
 
-        // Verifica si hay al menos un beneficiario seleccionado
-        const beneficiarios = parseInt(
-            document.getElementById("n_beneficiarios").value
-        );
+        // Verifica si hay beneficiarios seleccionados
+        const beneficiarios = parseInt(document.getElementById("n_beneficiarios").value);
+
+        // Si no hay beneficiarios (valor 0), se permite enviar el formulario
         if (beneficiarios === 0) {
+            // Muestra la confirmación de envío del formulario
             Swal.fire({
-                title: "Error",
-                text: "Debes seleccionar al menos un beneficiario.",
-                icon: "error",
+                title: "¿Estás seguro de continuar?",
+                text: "Recuerda que no podrás editar la información una vez continúes con el proceso de afiliación.",
+                icon: "warning",
+                showCancelButton: true,
                 confirmButtonColor: "#28a745",
-                confirmButtonText: "Entendido",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, continuar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Envía el formulario si el usuario confirma
+                }
             });
-            return; // Detiene el envío del formulario
+            return; // Se detiene aquí si no hay beneficiarios
         }
 
-        // Verifica si los campos de los beneficiarios están llenos
+        // Verifica si los campos de los beneficiarios están llenos (solo si beneficiarios > 0)
         let valid = true;
         for (let i = 1; i <= beneficiarios; i++) {
             const nombres = document.getElementById(`nombres_s${i}`).value;
@@ -71,21 +79,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmButtonColor: "#28a745",
                 confirmButtonText: "Entendido",
             });
-            return; // Detiene el envío del formulario
+            return; // Detiene el envío del formulario si los campos no están completos
         }
 
-        // Obtén los valores de los porcentajes de los campos
-        var porcentaje1 =
-            parseFloat(document.getElementById("porcentaje_s1").value) || 0;
-        var porcentaje2 =
-            parseFloat(document.getElementById("porcentaje_s2").value) || 0;
-        var porcentaje3 =
-            parseFloat(document.getElementById("porcentaje_s3").value) || 0;
+        // Obtén los valores de los porcentajes de los beneficiarios
+        let totalPorcentaje = 0;
+        for (let i = 1; i <= beneficiarios; i++) {
+            totalPorcentaje += parseFloat(document.getElementById(`porcentaje_s${i}`).value) || 0;
+        }
 
-        // Calcula la suma de los porcentajes
-        var totalPorcentaje = porcentaje1 + porcentaje2 + porcentaje3;
-
-        // Verifica si la suma es válida
+        // Verifica si la suma de los porcentajes es válida
         if (totalPorcentaje !== 100) {
             Swal.fire({
                 title: "Error",
@@ -94,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmButtonColor: "#28a745",
                 confirmButtonText: "Entendido",
             });
-            return; // Detiene el envío del formulario
+            return; // Detiene el envío del formulario si los porcentajes no suman 100%
         }
 
         // Muestra la confirmación de envío del formulario
@@ -113,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
 });
 
 function removeRequiredFields() {
@@ -156,3 +160,56 @@ window.onload = function () {
     // Establecer la fecha mínima en el campo de fecha
     inputFechaNacimiento.setAttribute("max", minDate);
 };
+
+document.addEventListener("DOMContentLoaded", function () {
+    const noIdentificacion = document.getElementById("no_identificacion");
+    const confirmNoIdentificacion = document.getElementById("confirm_no_identificacion");
+
+    // Función para formatear el número con puntos al escribir
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+
+    // Escuchar los eventos de entrada para formatear el campo
+    noIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    confirmNoIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    // Función para validar si ambos campos coinciden
+    function validarIdentificaciones() {
+        const noIdentificacionValor = noIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+        const confirmNoIdentificacionValor = confirmNoIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+
+        if (noIdentificacionValor !== "" && confirmNoIdentificacionValor !== "") {
+            if (noIdentificacionValor === confirmNoIdentificacionValor) {
+                noIdentificacion.classList.add("is-valid");
+                noIdentificacion.classList.remove("is-invalid");
+                confirmNoIdentificacion.classList.add("is-valid");
+                confirmNoIdentificacion.classList.remove("is-invalid");
+            } else {
+                noIdentificacion.classList.add("is-invalid");
+                noIdentificacion.classList.remove("is-valid");
+                confirmNoIdentificacion.classList.add("is-invalid");
+                confirmNoIdentificacion.classList.remove("is-valid");
+            }
+        }
+    }
+
+    // Bloquear copiar/pegar en el campo de confirmación
+    confirmNoIdentificacion.addEventListener('paste', function (e) {
+        e.preventDefault(); // Evita que se pegue contenido
+    });
+    confirmNoIdentificacion.addEventListener('copy', function (e) {
+        e.preventDefault(); // Evita que se copie contenido
+    });
+});
+

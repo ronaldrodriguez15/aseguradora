@@ -56,12 +56,17 @@ class PDFPositivaController extends Controller
                 $pdf->SetXY(57, 25);
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
+                //consecutivo
+                $insurer = Insurer::find($inability->insurer_id);
+                $pdf->SetXY(134, 12.8);
+                $pdf->Write(0, convertToISO88591($insurer->identificador));
+
                 // Nombre asesor
                 $pdf->SetXY(57, 43);
                 $pdf->Write(0, convertToISO88591($inability->nombre_asesor));
 
                 // Codigo asesor
-                $pdf->SetXY(108, 43);
+                $pdf->SetXY(106, 43);
                 $pdf->Write(0, convertToISO88591($inability->codigo_asesor));
 
                 // Valor IBC basico
@@ -162,8 +167,8 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
 
                 // eps actual
-                $pdf->SetXY(130, 112.5);
-                $pdf->Write(0, convertToISO88591($inability->eps_asegurado));
+                $pdf->SetXY(120, 112.5);
+                $pdf->Write(0, convertToISO88591($inability->nombre_eps));
 
                 // descuento eps
                 $pdf->SetXY(175, 112.5);
@@ -172,6 +177,10 @@ class PDFPositivaController extends Controller
                 // email corporativo
                 $pdf->SetXY(58, 116.5);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
+
+                // fuente recursos
+                $pdf->SetXY(130, 123);
+                $pdf->Write(0, convertToISO88591($inability->fuente_recursos));
 
                 // ------------------ Referido 1 
                 // nombres y apellidos
@@ -280,7 +289,7 @@ class PDFPositivaController extends Controller
                 }
 
                 // enfermedades hepaticas
-                if ($inability->enf_hepaticas === 'no') {
+                if ($inability->enf_hepaticas === 'si') {
                     $pdf->SetXY(114.5, 166);
                     $pdf->Write(0, 'X');
                 } else {
@@ -288,7 +297,7 @@ class PDFPositivaController extends Controller
                     $pdf->Write(0, 'X');
                 }
                 // enfermedades neurológicas
-                if ($inability->enf_neurologicas === 'no') {
+                if ($inability->enf_neurologicas === 'si') {
                     $pdf->SetXY(114.5, 170);
                     $pdf->Write(0, 'X');
                 } else {
@@ -297,7 +306,7 @@ class PDFPositivaController extends Controller
                 }
 
                 // pulmones
-                if ($inability->pulmones === 'no') {
+                if ($inability->pulmones === 'si') {
                     $pdf->SetXY(114.5, 173.5);
                     $pdf->Write(0, 'X');
                 } else {
@@ -379,7 +388,7 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 // entidad pagadora
-                $pdf->SetXY(147, 269);
+                $pdf->SetXY(146, 269.5);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 // valor a descontar
