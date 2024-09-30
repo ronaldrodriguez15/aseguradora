@@ -107,7 +107,6 @@ class InabilityController extends Controller
     public function formStepTwo(Request $request)
     {
         $rules = [
-            'no_solicitud' => 'required',
             'aseguradora' => 'required',
             'no_poliza' => 'required',
             'codigo_asesor' => 'required',
@@ -132,7 +131,6 @@ class InabilityController extends Controller
         ];
 
         $messages = [
-            'no_solicitud.required' => 'El campo número de solicitud es obligatorio.',
             'aseguradora.required' => 'El campo aseguradora es obligatorio.',
             'no_poliza.required' => 'El campo número de póliza es obligatorio.',
             'codigo_asesor.required' => 'El campo código de asesor es obligatorio.',
@@ -160,7 +158,7 @@ class InabilityController extends Controller
 
         try {
             $inability = new Inability();
-            $inability->no_solicitud = $request->no_solicitud;
+            $inability->no_solicitud = '0001';
             $inability->insurer_id = $request->aseguradora;
 
             $insurer = Insurer::find($request->aseguradora);

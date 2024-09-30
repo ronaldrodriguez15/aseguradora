@@ -51,16 +51,6 @@
 
             <div class="card-body">
                 <div class="form-row">
-                    <div class="form-group col-md-3">
-                        <label for="no_solicitud">No de Solicitud <span class="required">*</span></label>
-                        <input type="number" class="form-control @error('no_solicitud') is-invalid @enderror"
-                            id="no_solicitud" name="no_solicitud" placeholder="000000" required>
-                        @error('no_solicitud')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="aseguradora">Aseguradora <span class="required">*</span></label>
                         <select class="form-control @error('aseguradora') is-invalid @enderror" id="aseguradora"

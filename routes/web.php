@@ -16,6 +16,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PDFPositivaController;
 use App\Http\Controllers\PDFDebitoController;
 use App\Http\Controllers\PDFLibranzaController;
+use App\Http\Controllers\PDFConfianzaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +36,22 @@ Route::get('/', function () {
 // enlace simbolico
 Route::get('storage-link', function () {
     Artisan::call('storage:link');
+
+    return response()->json([
+        'status' => 'Correctly Storage.',
+    ]);
 });
 
+Route::get('clear-caches', function () {
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+
+    return response()->json([
+        'status' => 'Cachés limpiados correctamente.',
+    ]);
+}); 
 
 Route::middleware([
     'auth:sanctum',
@@ -68,9 +83,12 @@ Route::middleware([
     Route::post('afiliaciones/incapacidades/step5', [InabilityController::class, 'formStepFive'])->name('incapacidades.formStepFive');
     Route::post('afiliaciones/incapacidades/step6', [InabilityController::class, 'formStepSix'])->name('incapacidades.formStepSix');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdf', [PDFController::class, 'generarPDF'])->name('incapacidades.generarPDF');
+
+    // PDFs que se generan
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfPositiva', [PDFPositivaController::class, 'generarPDF'])->name('incapacidades.generarPDFpositiva');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfLibranza', [PDFLibranzaController::class, 'generarPDF'])->name('incapacidades.generarPDFLibranza');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfDebito', [PDFDebitoController::class, 'generarPDF'])->name('incapacidades.generarPDFdebito');
+    Route::get('afiliaciones/incapacidades/{inabilityId}/pdfConfianza', [PDFConfianzaController::class, 'generarPDF'])->name('incapacidades.generarPDFconfianza');
 });
 
 Auth::routes();

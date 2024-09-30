@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Inability;
 use App\Models\Insurer;
+use App\Models\Inability;
 use setasign\Fpdi\Fpdi;
 
-class PDFPositivaController extends Controller
+class PDFConfianzaController extends Controller
 {
     public function generarPDF($id)
     {
@@ -19,7 +18,6 @@ class PDFPositivaController extends Controller
         }
 
         $insurer = Insurer::find($inability->insurer_id);
-
 
         $pdfFilePath = public_path("storage/" . $insurer->document_path);
 
@@ -44,7 +42,7 @@ class PDFPositivaController extends Controller
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
             $tplIdx = $pdf->importPage($pageNo);
 
-            $pdf->AddPage('P', 'Legal');
+            $pdf->AddPage('P', 'Letter');
             $pdf->useTemplate($tplIdx);
             $pdf->SetAutoPageBreak(false);
 
@@ -53,22 +51,73 @@ class PDFPositivaController extends Controller
                 // Agregar datos al PDF
                 $pdf->SetFont('Arial', '', 8);
 
-                //Fecha diligenciamiento
-                $pdf->SetXY(57, 25);
-                $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
-
                 //consecutivo
                 $insurer = Insurer::find($inability->insurer_id);
-                $pdf->SetXY(134, 12.8);
+                $pdf->SetXY(136, 17);
                 $pdf->Write(0, convertToISO88591($insurer->identificador));
 
+                //Fecha diligenciamiento
+                $pdf->SetXY(108, 22.6);
+                $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
+
                 // Nombre asesor
-                $pdf->SetXY(57, 43);
+                $pdf->SetXY(55, 33);
                 $pdf->Write(0, convertToISO88591($inability->nombre_asesor));
 
                 // Codigo asesor
-                $pdf->SetXY(106, 43);
+                $pdf->SetXY(104, 33);
                 $pdf->Write(0, convertToISO88591($inability->codigo_asesor));
+
+                // Primer apellido
+                $pdf->SetXY(22, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->primer_apellido));
+                
+                // Segundo apellido
+                $pdf->SetXY(50, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->segundo_apellido));
+                
+                // Nombres completos
+                $pdf->SetXY(83, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->nombres_completos));
+
+                // tipo identificación
+                if ($inability->tipo_identificacion === 'cedula_ciudadania') {
+                    $pdf->SetXY(126, 44.5);
+                    $pdf->Write(0, 'X');
+                } else if ($inability->tipo_identificacion === 'cedula_extranjeria') {
+                    $pdf->SetXY(139, 44.5);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(151, 44.5);
+                    $pdf->Write(0, 'X');
+                }
+
+                // No identificacion
+                $pdf->SetXY(22, 50);
+                $pdf->Write(0, convertToISO88591($inability->no_identificacion));
+
+                // Fecha nacimiento
+                $pdf->SetXY(159, 55);
+                $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
+
+                // Ciudad
+                $pdf->SetXY(159, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+
+                $pdf->SetXY(159, 44.5);
+                $pdf->Write(0, convertToISO88591('Cundinamarca'));
+
+                // Telefono
+                $pdf->SetXY(159, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->telefono_fijo));
+
+                // Ocupacion
+                $pdf->SetXY(159, 44.5);
+                $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
+
+
+
+
 
                 // Valor IBC basico
                 $pdf->SetXY(100, 64);
