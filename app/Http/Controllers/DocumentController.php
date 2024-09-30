@@ -69,7 +69,7 @@ class DocumentController extends Controller
         if (!$documentFile) {
             $documentFile = new Docuuments();
         }
-
+        
         $oldFilePath = null;
         if ($type === 'estasseguro' && $documentFile->estasseguro_document) {
             $oldFilePath = $documentFile->estasseguro_document;
