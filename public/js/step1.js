@@ -92,13 +92,13 @@ document.addEventListener("DOMContentLoaded", function () {
         "val_total_desc_mensual"
     );
     const numeroDias = document.getElementById("numero_dias");
-    const tuPierdesInput = document.getElementById('tu_pierdes');
-    const tePagamosInput = document.getElementById('te_pagamos');
+    const tuPierdesInput = document.getElementById("tu_pierdes");
+    const tePagamosInput = document.getElementById("te_pagamos");
 
     // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
     function calcularValores() {
         // Obtén el valor IBC básico y realiza el cálculo del descuento
-        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
+        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, "");
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
 
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
     valorIbcBasico.addEventListener("input", calcularResultados);
 
     function calcularResultados() {
-        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, '');
+        const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, "");
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const dias = parseInt(numeroDias.value, 10);
 
@@ -310,48 +310,50 @@ document.addEventListener("DOMContentLoaded", function () {
     confirmEmailInput.addEventListener("input", validateEmails);
 });
 
-document.getElementById('valor_ibc_basico').addEventListener('input', function (e) {
-    let input = e.target.value;
+document
+    .getElementById("valor_ibc_basico")
+    .addEventListener("input", function (e) {
+        let input = e.target.value;
 
-    // Eliminar cualquier caracter que no sea número
-    input = input.replace(/[\D\s\._\-]+/g, "");
+        // Eliminar cualquier caracter que no sea número
+        input = input.replace(/[\D\s\._\-]+/g, "");
 
-    // Si el input está vacío, no hacer nada
-    if (input === "") {
-        e.target.value = "";
-        return;
-    }
+        // Si el input está vacío, no hacer nada
+        if (input === "") {
+            e.target.value = "";
+            return;
+        }
 
-    // Convertir el valor a entero para eliminar cualquier posible error
-    let inputNumber = parseInt(input, 10);
+        // Convertir el valor a entero para eliminar cualquier posible error
+        let inputNumber = parseInt(input, 10);
 
-    // Aplicar el formato de moneda con separadores de miles sin decimales
-    e.target.value = new Intl.NumberFormat('es-CO', {
-        style: 'decimal',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(inputNumber);
-});
+        // Aplicar el formato de moneda con separadores de miles sin decimales
+        e.target.value = new Intl.NumberFormat("es-CO", {
+            style: "decimal",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(inputNumber);
+    });
 
 //campo identificador
-document.getElementById('aseguradora').addEventListener('change', function () {
+document.getElementById("aseguradora").addEventListener("change", function () {
     // Get the selected option
     var selectedOption = this.options[this.selectedIndex];
 
     // Get the value of the 'data-identificador' attribute
-    var identificador = selectedOption.getAttribute('data-identificador');
+    var identificador = selectedOption.getAttribute("data-identificador");
 
     // Set the value of the 'identificador' field
-    var identificadorInput = document.getElementById('identificador');
-    identificadorInput.value = identificador || '';
+    var identificadorInput = document.getElementById("identificador");
+    identificadorInput.value = identificador || "";
 
     // Apply or remove 'is-valid' class based on the field value
     if (identificadorInput.value) {
-        identificadorInput.classList.add('is-valid');
-        identificadorInput.classList.remove('is-invalid');
+        identificadorInput.classList.add("is-valid");
+        identificadorInput.classList.remove("is-invalid");
     } else {
-        identificadorInput.classList.remove('is-valid');
-        identificadorInput.classList.add('is-invalid');
+        identificadorInput.classList.remove("is-valid");
+        identificadorInput.classList.add("is-invalid");
     }
 });
 
@@ -380,17 +382,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 tuPierdesInput.value = "";
                 tePagamosInput.value = ""; // No se calcula nada si días <= 2
             } else {
-                const resultadoTuPierdes = (valorIbcBasico / 90) * (numeroDias - 2);
-                tuPierdesInput.value = resultadoTuPierdes.toLocaleString("es-CO", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
+                const resultadoTuPierdes =
+                    (valorIbcBasico / 90) * (numeroDias - 2);
+                tuPierdesInput.value = resultadoTuPierdes.toLocaleString(
+                    "es-CO",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }
+                );
                 // Calcular "Te Pagamos" basado en "Tu Pierdes"
                 const resultadoTePagamos = resultadoTuPierdes * 1.3;
-                tePagamosInput.value = resultadoTePagamos.toLocaleString("es-CO", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
+                tePagamosInput.value = resultadoTePagamos.toLocaleString(
+                    "es-CO",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }
+                );
             }
         } else {
             tuPierdesInput.value = "";
@@ -434,30 +443,44 @@ document.getElementById("forma_pago").addEventListener("change", function () {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const noCuenta = document.getElementById('no_cuenta');
-    const rNoCuenta = document.getElementById('r_no_cuenta');
+document.addEventListener("DOMContentLoaded", function () {
+    const noCuenta = document.getElementById("no_cuenta");
+    const rNoCuenta = document.getElementById("r_no_cuenta");
 
     // Función para validar si los campos coinciden
     function validarCuentas() {
         if (noCuenta.value !== rNoCuenta.value) {
             // Si no coinciden, mostrar error
-            noCuenta.classList.add('is-invalid');
-            rNoCuenta.classList.add('is-invalid');
+            noCuenta.classList.add("is-invalid");
+            rNoCuenta.classList.add("is-invalid");
         } else {
             // Si coinciden, remover error
-            noCuenta.classList.remove('is-invalid');
-            rNoCuenta.classList.remove('is-invalid');
+            noCuenta.classList.remove("is-invalid");
+            rNoCuenta.classList.remove("is-invalid");
         }
     }
 
     // Validar en tiempo real mientras el usuario escribe
-    noCuenta.addEventListener('input', validarCuentas);
-    rNoCuenta.addEventListener('input', validarCuentas);
+    noCuenta.addEventListener("input", validarCuentas);
+    rNoCuenta.addEventListener("input", validarCuentas);
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const formaPago = document.getElementById("forma_pago");
+    const gastosAdministrativos = document.getElementById(
+        "gastos_administrativos"
+    );
 
-
-
-
-
+    formaPago.addEventListener("change", function () {
+        if (this.value === "debito_automatico") {
+            gastosAdministrativos.value = 1400; // Establecer el valor a 1.400
+            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
+        } else if (this.value === "mensual_libranza") {
+            gastosAdministrativos.value = 0; // Establecer el valor a 0
+            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
+        } else {
+            gastosAdministrativos.value = 0; // Valor por defecto si no hay selección
+            gastosAdministrativos.readOnly = true; // Mantener como solo lectura
+        }
+    });
+});

@@ -15,9 +15,9 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('estasseguro_document');
-            $table->string('libranza_document');
-            $table->string('debito_document');
+            $table->string('estasseguro_document')->nullable();
+            $table->string('libranza_document')->nullable();
+            $table->string('debito_document')->nullable();
             $table->timestamps();
         });
     }

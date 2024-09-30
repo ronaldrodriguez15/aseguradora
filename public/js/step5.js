@@ -29,6 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const descripcionDeEnfermedades = document.getElementById(
         "descripcion_de_enfermedades"
     );
+    const descripcionDeEnfermedadesInput = document.getElementById(
+        "descripcion_de_enfermedades_input"
+    );
     const formFields = fields.map((id) => document.getElementById(id));
 
     function checkFields() {
@@ -36,10 +39,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (anyFieldYes) {
             descripcionDeEnfermedades.style.display = "block";
-            descripcionDeEnfermedades.required = true;
+            descripcionDeEnfermedadesInput.required = true; // Asegúrate de que se requiere
         } else {
             descripcionDeEnfermedades.style.display = "none";
-            descripcionDeEnfermedades.required = false;
+            descripcionDeEnfermedadesInput.required = false; // Eliminar requerido
+            descripcionDeEnfermedadesInput.value = ""; // Limpiar el valor
         }
     }
 
@@ -62,30 +66,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Al cargar la página, ocultar el campo si no está seleccionado "sí"
-    if (selectOtro.value !== "si") {
-        formGroupCual.style.display = "none"; // Ocultar el campo inicialmente
-    }
-});
+    // Confirmación y validación en el envío del formulario
+    var form4 = document.getElementById("formStep4"); // Selecciona tu formulario
 
-// CONFIRMACION ENVIO DE FORMULARIO
-var form4 = document.getElementById("formStep4"); // Selecciona tu formulario
-
-form4.addEventListener("submit", function (event) {
-    event.preventDefault(); // Detiene el envío del formulario inicialmente
-
-    Swal.fire({
-        title: "¿Estás seguro de continuar?",
-        text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#28a745",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sí, continuar",
-        cancelButtonText: "Cancelar",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form4.submit(); // Envía el formulario si el usuario confirma
+    form4.addEventListener("submit", function (event) {
+        // Verificar si el textarea es requerido y está vacío
+        if (
+            descripcionDeEnfermedadesInput.required &&
+            descripcionDeEnfermedadesInput.value.trim() === ""
+        ) {
+            event.preventDefault(); // Detener el envío si está vacío
+            descripcionDeEnfermedadesInput.setCustomValidity(
+                "Este campo es obligatorio."
+            ); // Mensaje de error personalizado
+            descripcionDeEnfermedadesInput.reportValidity(); // Mostrar el mensaje de error
+            return;
         }
+
+        Swal.fire({
+            title: "¿Estás seguro de continuar?",
+            text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, continuar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form4.submit(); // Envía el formulario si el usuario confirma
+            }
+        });
     });
 });

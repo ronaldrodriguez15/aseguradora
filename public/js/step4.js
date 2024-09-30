@@ -1,30 +1,119 @@
-document
-    .getElementById("n_beneficiarios")
-    .addEventListener("change", function () {
-        var beneficiarios = parseInt(this.value);
+document.addEventListener("DOMContentLoaded", function () {
+    document
+        .getElementById("n_beneficiarios")
+        .addEventListener("change", function () {
+            var beneficiarios = parseInt(this.value);
 
-        // Ocultar todos los beneficiarios
-        document.getElementById("beneficiario1").style.display = "none";
-        document.getElementById("beneficiario2").style.display = "none";
-        document.getElementById("beneficiario3").style.display = "none";
+            // Ocultar todos los beneficiarios
+            document.getElementById("beneficiario1").style.display = "none";
+            document.getElementById("beneficiario2").style.display = "none";
+            document.getElementById("beneficiario3").style.display = "none";
 
-        // Remover el "required" de los campos de los beneficiarios
-        removeRequiredFields();
+            // Remover el "required" de los campos de los beneficiarios
+            removeRequiredFields();
 
-        // Mostrar el número adecuado de beneficiarios según la selección
-        if (beneficiarios >= 1) {
-            document.getElementById("beneficiario1").style.display = "block";
-            setRequiredFields(1);
+            // Mostrar el número adecuado de beneficiarios según la selección
+            if (beneficiarios >= 1) {
+                document.getElementById("beneficiario1").style.display =
+                    "block";
+                setRequiredFields(1);
+            }
+            if (beneficiarios >= 2) {
+                document.getElementById("beneficiario2").style.display =
+                    "block";
+                setRequiredFields(2);
+            }
+            if (beneficiarios === 3) {
+                document.getElementById("beneficiario3").style.display =
+                    "block";
+                setRequiredFields(3);
+            }
+        });
+
+    const form = document.getElementById("formStep3");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Detiene el envío del formulario inicialmente
+
+        // Verifica si hay al menos un beneficiario seleccionado
+        const beneficiarios = parseInt(
+            document.getElementById("n_beneficiarios").value
+        );
+        if (beneficiarios === 0) {
+            Swal.fire({
+                title: "Error",
+                text: "Debes seleccionar al menos un beneficiario.",
+                icon: "error",
+                confirmButtonColor: "#28a745",
+                confirmButtonText: "Entendido",
+            });
+            return; // Detiene el envío del formulario
         }
-        if (beneficiarios >= 2) {
-            document.getElementById("beneficiario2").style.display = "block";
-            setRequiredFields(2);
+
+        // Verifica si los campos de los beneficiarios están llenos
+        let valid = true;
+        for (let i = 1; i <= beneficiarios; i++) {
+            const nombres = document.getElementById(`nombres_s${i}`).value;
+            const apellidos = document.getElementById(`apellidos_s${i}`).value;
+            const genero = document.getElementById(`genero_s${i}`).value;
+
+            if (!nombres || !apellidos || !genero) {
+                valid = false;
+                break;
+            }
         }
-        if (beneficiarios === 3) {
-            document.getElementById("beneficiario3").style.display = "block";
-            setRequiredFields(3);
+
+        if (!valid) {
+            Swal.fire({
+                title: "Error",
+                text: "Por favor, completa todos los campos requeridos de los beneficiarios.",
+                icon: "error",
+                confirmButtonColor: "#28a745",
+                confirmButtonText: "Entendido",
+            });
+            return; // Detiene el envío del formulario
         }
+
+        // Obtén los valores de los porcentajes de los campos
+        var porcentaje1 =
+            parseFloat(document.getElementById("porcentaje_s1").value) || 0;
+        var porcentaje2 =
+            parseFloat(document.getElementById("porcentaje_s2").value) || 0;
+        var porcentaje3 =
+            parseFloat(document.getElementById("porcentaje_s3").value) || 0;
+
+        // Calcula la suma de los porcentajes
+        var totalPorcentaje = porcentaje1 + porcentaje2 + porcentaje3;
+
+        // Verifica si la suma es válida
+        if (totalPorcentaje !== 100) {
+            Swal.fire({
+                title: "Error",
+                text: "La suma de los porcentajes debe ser exactamente 100%.",
+                icon: "error",
+                confirmButtonColor: "#28a745",
+                confirmButtonText: "Entendido",
+            });
+            return; // Detiene el envío del formulario
+        }
+
+        // Muestra la confirmación de envío del formulario
+        Swal.fire({
+            title: "¿Estás seguro de continuar?",
+            text: "Recuerda que no podrás editar la información una vez continúes con el proceso de afiliación.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, continuar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit(); // Envía el formulario si el usuario confirma
+            }
+        });
     });
+});
 
 function removeRequiredFields() {
     var fields = document.querySelectorAll(
@@ -67,48 +156,3 @@ window.onload = function () {
     // Establecer la fecha mínima en el campo de fecha
     inputFechaNacimiento.setAttribute("max", minDate);
 };
-
-// CONFIRMACION ENVIO DE FORMULARIO
-var form = document.getElementById("formStep3"); // Selecciona tu formulario
-
-form.addEventListener("submit", function (event) {
-    event.preventDefault(); // Detiene el envío del formulario inicialmente
-
-    // Obtén los valores de los porcentajes de los campos
-    var porcentaje1 =
-        parseFloat(document.getElementById("porcentaje_s1").value) || 0;
-    var porcentaje2 =
-        parseFloat(document.getElementById("porcentaje_s2").value) || 0;
-    var porcentaje3 =
-        parseFloat(document.getElementById("porcentaje_s3").value) || 0;
-
-    // Calcula la suma de los porcentajes
-    var totalPorcentaje = porcentaje1 + porcentaje2 + porcentaje3;
-
-    // Verifica si la suma es válida
-    if (totalPorcentaje !== 100) {
-        Swal.fire({
-            title: "Error",
-            text: "La suma de los porcentajes debe ser exactamente 100%.",
-            icon: "error",
-            confirmButtonColor: "#28a745",
-            confirmButtonText: "Entendido",
-        });
-    } else {
-        // Muestra la confirmación de envío del formulario si la suma es válida
-        Swal.fire({
-            title: "¿Estás seguro de continuar?",
-            text: "Recuerda que no podrás editar la información una vez continues con el proceso de afiliación.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#28a745",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, continuar",
-            cancelButtonText: "Cancelar",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit(); // Envía el formulario si el usuario confirma
-            }
-        });
-    }
-});

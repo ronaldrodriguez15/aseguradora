@@ -311,15 +311,17 @@ return [
             'icon' => 'fa fa-columns',
         ],
         ['header' => 'FUNCIONALIDADES'],
-        [
-            'text' => 'Reportes',
-            'url' => '#',
-            'icon' => 'fa fa-folder-open',
-        ],
+        // [
+        //     'text' => 'Reportes',
+        //     'url' => '#',
+        //     'icon' => 'fa fa-folder-open',
+        // ],
         [
             'text' => 'Documentos',
             'url' => 'documentos',
             'icon' => 'fa fa-file-alt',
+            'label' => 'Nuevo',
+            'label_color' => 'success',
         ],
         [
             'text' => 'Afiliaciones',
