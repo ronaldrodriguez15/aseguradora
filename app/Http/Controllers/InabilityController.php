@@ -304,29 +304,29 @@ class InabilityController extends Controller
         $inability->ocupacion_asegurado = $request->ocupacion_asegurado;
         $inability->entidad_pagadora_sucursal = $request->entidad_pagadora_sucursal;
 
-        $inability->nombres_s1 = $request->no_cuenta;
-        $inability->apellidos_s1 = $request->no_cuenta;
-        $inability->genero_s1 = $request->no_cuenta;
-        $inability->parentesco_s1 = $request->no_cuenta;
-        $inability->edad_s1 = $request->no_cuenta;
-        $inability->porcentaje_s1 = $request->no_cuenta;
-        $inability->tipo_identidad_s1 = $request->no_cuenta;
+        $inability->nombres_s1 = $request->nombres_s1;
+        $inability->apellidos_s1 = $request->apellidos_s1;
+        $inability->genero_s1 = $request->genero_s1;
+        $inability->parentesco_s1 = $request->parentesco_s1;
+        $inability->edad_s1 = $request->edad_s1;
+        $inability->porcentaje_s1 = $request->porcentaje_s1;
+        $inability->tipo_identidad_s1 = $request->tipo_identidad_s1;
 
-        $inability->nombres_s2 = $request->no_cuenta;
-        $inability->apellidos_s2 = $request->no_cuenta;
-        $inability->genero_s2 = $request->no_cuenta;
-        $inability->parentesco_s2 = $request->no_cuenta;
-        $inability->edad_s2 = $request->no_cuenta;
-        $inability->porcentaje_s2 = $request->no_cuenta;
-        $inability->tipo_identidad_s2 = $request->no_cuenta;
+        $inability->nombres_s2 = $request->nombres_s2;
+        $inability->apellidos_s2 = $request->apellidos_s2;
+        $inability->genero_s2 = $request->genero_s2;
+        $inability->parentesco_s2 = $request->parentesco_s2;
+        $inability->edad_s2 = $request->edad_s2;
+        $inability->porcentaje_s2 = $request->porcentaje_s2;
+        $inability->tipo_identidad_s2 = $request->tipo_identidad_s2;
 
-        $inability->nombres_s3 = $request->no_cuenta;
-        $inability->apellidos_s3 = $request->no_cuenta;
-        $inability->genero_s3 = $request->no_cuenta;
-        $inability->parentesco_s3 = $request->no_cuenta;
-        $inability->edad_s3 = $request->no_cuenta;
-        $inability->porcentaje_s3 = $request->no_cuenta;
-        $inability->tipo_identidad_s3 = $request->no_cuenta;
+        $inability->nombres_s3 = $request->nombres_s3;
+        $inability->apellidos_s3 = $request->apellidos_s3;
+        $inability->genero_s3 = $request->genero_s3;
+        $inability->parentesco_s3 = $request->parentesco_s3;
+        $inability->edad_s3 = $request->edad_s3;
+        $inability->porcentaje_s3 = $request->porcentaje_s3;
+        $inability->tipo_identidad_s3 = $request->tipo_identidad_s3;
         $inability->save();
 
         $val_total_desc_mensual = $request->val_total_desc_mensual;
