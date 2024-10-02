@@ -161,6 +161,25 @@ class PDFController extends Controller
                 $pdf->SetXY(119, 69.5);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
 
+                // tipo pago
+                if ($inability->forma_pago === 'debito_automatico') {
+                    $pdf->SetXY(83, 229);
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->Write(0, convertToISO88591('Mensual'));
+                    $pdf->SetXY(83, 232);
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->Write(0, convertToISO88591('DebAuto'));
+                } else {
+                    $pdf->SetXY(83, 229);
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->Write(0, convertToISO88591('Mensual'));
+                    $pdf->SetXY(83, 232);
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->Write(0, convertToISO88591('DebAuto'));
+                }
+
+                $pdf->SetFont('Arial', '', 8);
+
                 // valor servicios
                 $pdf->SetXY(158, 236.5);
                 $pdf->Write(0, convertToISO88591($inability->val_prevexequial_eclusivo));
@@ -191,41 +210,41 @@ class PDFController extends Controller
 
                 // Nombres completos
                 $nombres_completos = $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido;
-                $pdf->SetXY(37, 110);
+                $pdf->SetXY(37, 108);
                 $pdf->Write(0, $nombres_completos);
 
                 // no documento
-                $pdf->SetXY(125, 110);
+                $pdf->SetXY(125, 108);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 
                 // expedida en
-                $pdf->SetXY(162, 110);
+                $pdf->SetXY(162, 108);
                 $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
 
                 // ocupacion
-                $pdf->SetXY(50, 113.5);
+                $pdf->SetXY(50, 111.6);
                 $pdf->Write(0, convertToISO88591($inability->ocupacion_asegurado));
 
                 // fecha nacimiento
-                $pdf->SetXY(60, 120);
+                $pdf->SetXY(60, 118);
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // valor IBC basico
-                $pdf->SetXY(91, 123.5);
+                $pdf->SetXY(91, 121);
                 $pdf->Write(0, $inability->valor_ibc_basico);
 
                 // entidad donde labora
-                $pdf->SetXY(70.5, 127);
+                $pdf->SetXY(70.5, 125);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 // Correo electronico
-                $pdf->SetXY(65, 130);
+                $pdf->SetXY(65, 128.4);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
 
                 // Nombres y No documento
-                $pdf->SetXY(46, 194);
+                $pdf->SetXY(46, 196);
                 $pdf->Write(0, $nombres_completos);
-                $pdf->SetXY(54, 197.5);
+                $pdf->SetXY(54, 199);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
             }
 

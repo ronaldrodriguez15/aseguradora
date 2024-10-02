@@ -69,7 +69,7 @@
                     </div>
 
                     <div class="form-group col-md-3">
-                        <label for="identificador">Código o identificador <span class="required">*</span></label>
+                        <label for="identificador">Consecutivo <span class="required">*</span></label>
                         <input type="text" class="form-control @error('identificador') is-invalid @enderror"
                             id="identificador" name="identificador" placeholder="00000" required readonly>
                         @error('identificador')
@@ -463,5 +463,8 @@
         $('input').attr('autocomplete', 'off');
     });
 </script>
-<script src="{{ asset('js/step1.js') }}"></script>
+<script src="{{ asset('js/step11.js') }}"></script>
+<script src="{{ asset('js/step12.js') }}"></script>
+<script src="{{ asset('js/step13.js') }}"></script>
+<script src="{{ asset('js/step14.js') }}"></script>
 @stop

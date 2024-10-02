@@ -66,12 +66,19 @@ class PDFLibranzaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 //Entidad pagadora
-                $pdf->SetXY(108, 41.5);
-                $pdf->Write(0, '(SHG)');
+                $pdf->SetXY(83, 41.5);
+                $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 //Nemomico
-                $pdf->SetXY(150, 42);
-                $pdf->Write(0, 'SLGR');
+                $texto = $inability->entidad_pagadora_sucursal;
+                $regex = '/\(([^)]+)\)/';
+
+                // Extraer el texto dentro de los paréntesis
+                if (preg_match($regex, $texto, $coincidencia)) {
+                    $textoExtraido = $coincidencia[1];
+                    $pdf->SetXY(150, 42);
+                    $pdf->Write(0, convertToISO88591($textoExtraido));
+                } 
 
                 //Sucursal
                 $pdf->SetXY(185, 42);

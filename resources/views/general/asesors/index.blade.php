@@ -109,7 +109,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" type="button" class="btn btn-success">
-                    <i class="fas fa-save mr-2"></i> Guardar Ciudad
+                    <i class="fas fa-save mr-2"></i> Guardar Asesor
                 </button>
                 </form>
             </div>
