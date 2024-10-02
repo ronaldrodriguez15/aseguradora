@@ -158,7 +158,7 @@ class InabilityController extends Controller
 
         try {
             $inability = new Inability();
-            $inability->no_solicitud = '0001';
+            $inability->no_solicitud = $inability->identificador;
             $inability->insurer_id = $request->aseguradora;
 
             $insurer = Insurer::find($request->aseguradora);
@@ -198,6 +198,16 @@ class InabilityController extends Controller
                 $inability->banco = $bank->name;
                 $inability->ciudad_banco = $request->ciudad_banco;
             }
+
+            // Buscar el valor más alto de no_solicitud en la tabla inabilities
+            $maxSolicitud = Inability::max('no_solicitud');
+
+            dd($maxSolicitud);
+
+            // Si no hay registros en la tabla, asignar el valor inicial
+            $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
+            $inability->no_solicitud = $newSolicitudNumber;
+
             $inability->save();
 
             // Guardar el ID en la sesión o en una variable
@@ -539,6 +549,14 @@ class InabilityController extends Controller
         $inability->genero_m3 = $request->genero_m3;
         $inability->edad_m3 = $request->edad_m3;
         $inability->valor_prima_m3 = $request->valor_prima_m3;
+
+        // Buscar el valor más alto de no_solicitud en la tabla inabilities
+        $maxSolicitud = Inability::max('no_solicitud');
+        $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
+
+        // Asignar el nuevo número de solicitud
+        $inability->no_solicitud = $newSolicitudNumber;
+
         $inability->save();
 
 

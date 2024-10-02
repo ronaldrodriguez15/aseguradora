@@ -35,7 +35,7 @@
                         <table id="datatable" class="table">
                             <thead class="text-center">
                                 <tr class="table-dark text-white">
-                                    <th>No Solicitud</th>
+                                    <th>Consecutivo</th>
                                     <th>Aseguradora</th>
                                     <th>Asesor</th>
                                     <th>Asegurado</th>
