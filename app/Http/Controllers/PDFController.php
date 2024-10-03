@@ -175,7 +175,7 @@ class PDFController extends Controller
                     $pdf->Write(0, convertToISO88591('Mensual'));
                     $pdf->SetXY(83, 232);
                     $pdf->SetFont('Arial', '', 7);
-                    $pdf->Write(0, convertToISO88591('DebAuto'));
+                    $pdf->Write(0, convertToISO88591('Libranza'));
                 }
 
                 $pdf->SetFont('Arial', '', 8);

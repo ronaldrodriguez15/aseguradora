@@ -202,12 +202,11 @@ class InabilityController extends Controller
             // Buscar el valor más alto de no_solicitud en la tabla inabilities
             $maxSolicitud = Inability::max('no_solicitud');
 
-            dd($maxSolicitud);
-
             // Si no hay registros en la tabla, asignar el valor inicial
             $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
             $inability->no_solicitud = $newSolicitudNumber;
-
+            $insurer->identificador = $newSolicitudNumber;
+            $insurer->save();
             $inability->save();
 
             // Guardar el ID en la sesión o en una variable
@@ -296,7 +295,6 @@ class InabilityController extends Controller
 
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');
-
         $inability = Inability::find($inabilityId);
         $inability->primer_apellido = $request->primer_apellido;
         $inability->segundo_apellido = $request->segundo_apellido;
@@ -321,6 +319,7 @@ class InabilityController extends Controller
         $inability->edad_s1 = $request->edad_s1;
         $inability->porcentaje_s1 = $request->porcentaje_s1;
         $inability->tipo_identidad_s1 = $request->tipo_identidad_s1;
+        $inability->n_identificacion_s1 = $request->n_identificacion_s1;
 
         $inability->nombres_s2 = $request->nombres_s2;
         $inability->apellidos_s2 = $request->apellidos_s2;
@@ -329,6 +328,7 @@ class InabilityController extends Controller
         $inability->edad_s2 = $request->edad_s2;
         $inability->porcentaje_s2 = $request->porcentaje_s2;
         $inability->tipo_identidad_s2 = $request->tipo_identidad_s2;
+        $inability->n_identificacion_s2 = $request->n_identificacion_s2;
 
         $inability->nombres_s3 = $request->nombres_s3;
         $inability->apellidos_s3 = $request->apellidos_s3;
@@ -337,6 +337,7 @@ class InabilityController extends Controller
         $inability->edad_s3 = $request->edad_s3;
         $inability->porcentaje_s3 = $request->porcentaje_s3;
         $inability->tipo_identidad_s3 = $request->tipo_identidad_s3;
+        $inability->n_identificacion_s3 = $request->n_identificacion_s3;
         $inability->save();
 
         $val_total_desc_mensual = $request->val_total_desc_mensual;
@@ -549,14 +550,6 @@ class InabilityController extends Controller
         $inability->genero_m3 = $request->genero_m3;
         $inability->edad_m3 = $request->edad_m3;
         $inability->valor_prima_m3 = $request->valor_prima_m3;
-
-        // Buscar el valor más alto de no_solicitud en la tabla inabilities
-        $maxSolicitud = Inability::max('no_solicitud');
-        $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
-
-        // Asignar el nuevo número de solicitud
-        $inability->no_solicitud = $newSolicitudNumber;
-
         $inability->save();
 
 

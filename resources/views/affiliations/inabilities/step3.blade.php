@@ -550,5 +550,5 @@
             $('input').attr('autocomplete', 'off');
         });
     </script>
-    <script src="{{ asset('js/step4.js') }}"></script>
+    <script src="{{ asset('js/step4.js?v=1.0') }}"></script>
 @stop
