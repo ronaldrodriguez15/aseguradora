@@ -188,7 +188,27 @@ class PDFDebitoController extends Controller
             }
         }
 
-        // Salida del PDF
-        $pdf->Output('I', 'DebitoGenerado.pdf');
+        $numeroDocumento = $inability->no_identificacion;
+        $fechaActual = date('Y-m-d');
+        $nombreArchivo = 'documento_' . $numeroDocumento . '_' . $fechaActual . '.pdf';
+
+
+        // Ruta donde se va a almacenar el PDF
+        $rutaCarpeta = storage_path('app/public/documentos_debito');
+        if (!file_exists($rutaCarpeta)) {
+            // Crea la carpeta si no existe
+            if (!mkdir($rutaCarpeta, 0755, true)) {
+                die('Error al crear la carpeta: ' . $rutaCarpeta);
+            }
+        }
+
+        $rutaArchivo = $rutaCarpeta . '/' . $nombreArchivo;
+
+        $pdf->Output('F', $rutaArchivo); // 'F' indica que se guarda en un archivo
+
+        $inability->path_pago = 'documentos_debito/' . $nombreArchivo;
+        $inability->save();
+
+        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
     }
 }

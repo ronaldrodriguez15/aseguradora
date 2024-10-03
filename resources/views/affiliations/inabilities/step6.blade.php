@@ -76,7 +76,15 @@
                         </a>
                     </div>
                     <div class="col-md-4">
-
+                        <div class="loader-wrapper" id="loader" style="display: none;">
+                            <div class="loader">
+                                <div class="loader-inner ball-pulse-rise">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4 text-right">
                         <a class="btn btn-danger mb-4" href="{{ route('incapacidades.generarPDF', $inabilityId) }}">
@@ -104,8 +112,9 @@
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (debito)
                             </a>
                         @endif
-                        <a class="btn btn-primary btn-lg" href="#">
-                            <i class="fas fa-signature mr-2"></i>Iniciar firmado con Via Firma
+                        <a class="btn btn-primary btn-lg" id="iniciar-firmado" data-id="{{ $inabilityId }}"
+                            href="#">
+                            <i class="fas fa-signature mr-2"></i> Iniciar firmado con Via Firma
                         </a>
                     </div>
                 </div>
@@ -142,4 +151,47 @@
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
     <script src="{{ asset('js/step7.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#iniciar-firmado').on('click', function(e) {
+                e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+
+                var id = $(this).data('id'); // Obtener el ID desde el botón
+
+                // Mostrar el loader usando SweetAlert
+                Swal.fire({
+                    title: 'Cargando...',
+                    html: 'Por favor espera mientras se procesan los documentos.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Realiza la solicitud AJAX
+                $.ajax({
+                    url: '{{ route('sendToViaFirma') }}', // Ruta de la API
+                    method: 'POST',
+                    data: {
+                        id: id, // Asegúrate de que el ID se está pasando aquí
+                        _token: '{{ csrf_token() }}' // Incluye el token CSRF para Laravel
+                    },
+                    success: function(response) {
+                        // Maneja la respuesta exitosa
+                        console.log(response); // Muestra la respuesta en la consola
+                        Swal.fire('Éxito', `ID validado: ${response.id}`, 'success');
+                    },
+                    error: function(xhr) {
+                        // Maneja los errores
+                        Swal.fire('Error', (xhr.responseJSON.error ||
+                            'Ocurrió un error inesperado.'), 'error');
+                    },
+                    complete: function() {
+                        // Cerrar el loader
+                        Swal.close();
+                    }
+                });
+            });
+        });
+    </script>
 @stop

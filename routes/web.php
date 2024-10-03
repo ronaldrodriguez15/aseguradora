@@ -17,6 +17,7 @@ use App\Http\Controllers\PDFPositivaController;
 use App\Http\Controllers\PDFDebitoController;
 use App\Http\Controllers\PDFLibranzaController;
 use App\Http\Controllers\PDFConfianzaController;
+use App\Http\Controllers\DocumentsApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +90,9 @@ Route::middleware([
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfLibranza', [PDFLibranzaController::class, 'generarPDF'])->name('incapacidades.generarPDFLibranza');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfDebito', [PDFDebitoController::class, 'generarPDF'])->name('incapacidades.generarPDFdebito');
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfConfianza', [PDFConfianzaController::class, 'generarPDF'])->name('incapacidades.generarPDFconfianza');
+
+    //conexion via firma
+    Route::post('/send-to-viafirma', [DocumentsApiController::class, 'sendToViaFirma'])->name('sendToViaFirma');
 });
 
 Auth::routes();
