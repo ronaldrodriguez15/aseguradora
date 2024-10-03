@@ -99,11 +99,11 @@ class PDFDebitoController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->direccion_residencia));
 
                 //correo
-                $pdf->SetXY(57, 67);
+                $pdf->SetXY(58, 67);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
 
                 //entidad
-                $pdf->SetXY(135, 67);
+                $pdf->SetXY(136, 67);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 //banco
@@ -115,11 +115,11 @@ class PDFDebitoController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->ciudad_banco));
 
                 //tipo de cuenta
-                $pdf->SetXY(36, 91);
+                $pdf->SetXY(38, 91);
                 $pdf->Write(0, convertToISO88591($inability->tipo_cuenta));
 
                 //tipo de cuenta 2
-                $pdf->SetXY(78, 91);
+                $pdf->SetXY(80, 91);
                 $pdf->Write(0, convertToISO88591($inability->tipo_cuenta));
 
                 //n de cuenta
@@ -129,6 +129,14 @@ class PDFDebitoController extends Controller
                 //n de cuenta 2
                 $pdf->SetXY(160, 91);
                 $pdf->Write(0, convertToISO88591($inability->no_cuenta));
+
+                // No de Contrato
+                // Extraer el año y el mes de la fecha
+                $fecha = $inability->fecha_diligenciamiento;
+                $ano = date('Y', strtotime($fecha));
+                $mes = date('n', strtotime($fecha));
+                $pdf->SetXY(150, 105);
+                $pdf->Write(0, $ano . $mes . str_replace('.', '', $inability->no_identificacion));
 
                 //previexequial exclusivo
                 if ($inability->servicios_prevision_exequial === 'si') {
