@@ -6,6 +6,7 @@ use App\Models\Inability;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentsApiController extends Controller
 {
@@ -33,6 +34,30 @@ class DocumentsApiController extends Controller
             }
 
             // Preparar los datos para la solicitud a la API de Via Firma
+            $messages = array_map(function ($documentPath) use ($inability) {
+                $fullPath = Storage::disk('public')->path($documentPath);
+                if (!file_exists($fullPath)) {
+                    throw new \Exception("El archivo no existe: " . $fullPath);
+                }
+                $pdfContent = base64_encode(file_get_contents($fullPath));
+                $templateCode = '';
+                if ($documentPath === $inability->path_estasseguro) {
+                    $templateCode = "Afiliacion1estaSSeguro";
+                } elseif ($documentPath === $inability->path_aseguradora) {
+                    $templateCode = "Afiliacion2Positiva";
+                } elseif ($documentPath === $inability->path_pago) {
+                    $templateCode = "Afiliacion3DescuentoporNomina";
+                }
+                return [
+                    "document" => [
+                        "templateCode" => $templateCode,
+                        "templateReference" => $pdfContent,
+                        "templateType" => "base64"
+                    ]
+                ];
+            }, $documents);
+
+            // Construir la solicitud
             $data = [
                 "groupCode" => "svgseguros",
                 "title" => "SVG_PDFs",
@@ -41,42 +66,33 @@ class DocumentsApiController extends Controller
                     [
                         "key" => "signer" . $validated['id'],
                         "mail" => $inability->email_corporativo,
-                        "name" => $inability->name, // Asegúrate de que el nombre esté en el modelo
+                        "name" => $inability->nombres_completos . $inability->primer_apellido . ' ' . $inability->segundo_apellido,
                         "id" => $validated['id']
                     ]
                 ],
                 "customization" => [
                     "requestMailSubject" => "Contrato listo para firmar",
-                    "requestMailBody" => "Hola " . $inability->name . ". <br /><br />Ya puedes revisar y firmar el contrato.",
+                    "requestMailBody" => "Hola " . $inability->nombres_completos . ". <br /><br />Ya puedes revisar y firmar el contrato.",
                     "requestSmsBody" => "En el siguiente link puedes revisar y firmar el contrato"
                 ],
-                //revisar
-                "messages" => array_map(function ($documentPath) {
-                    // Leer el contenido del documento y codificarlo en base64
-                    $pdfContent = base64_encode(file_get_contents($documentPath)); // Asegúrate de que las rutas sean correctas
-
-                    return [
-                        "document" => [
-                            "templateCode" => "your_template_code_here", // Cambia esto por el código del template correspondiente
-                            "templateReference" => $pdfContent,
-                            "templateType" => "base64"
-                        ]
-                    ];
-                }, $documents)
+                "messages" => $messages
             ];
 
-            // Responder con los datos que se enviarán a Via Firma
-            return response()->json(['data_to_send' => $data]);
+            $credentials = base64_encode('svgseguros:Seguro5060*..');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Capturar y manejar excepciones de validación
-            Log::error('Validation error: ' . $e->getMessage());
+            // Enviar los datos a ViaFirma usando Guzzle
+            $client = new Client();
+            $response = $client->post('https://sandbox.viafirma.com/documents/api/v3/set', [
+                'json' => $data,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Basic c3Znc2VndXJvczpTZWd1cm81MDYwKi4u',
+                ],
+            ]);
 
-            return response()->json(['error' => 'Validation failed', 'messages' => $e->validator->errors()], 422);
+            return response()->json(['data' => json_decode($response->getBody()->getContents())]);
         } catch (\Exception $e) {
-            // Capturar otros tipos de excepciones
             Log::error('Error en sendToViaFirma: ' . $e->getMessage());
-
             return response()->json(['error' => 'An unexpected error occurred'], 500);
         }
     }
