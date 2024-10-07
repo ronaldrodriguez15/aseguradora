@@ -40,6 +40,10 @@ class DocumentsApiController extends Controller
                     throw new \Exception("El archivo no existe: " . $fullPath);
                 }
                 $pdfContent = base64_encode(file_get_contents($fullPath));
+
+                // Obtener el nombre del archivo
+                $fileName = basename($documentPath);
+
                 $templateCode = '';
                 if ($documentPath === $inability->path_estasseguro) {
                     $templateCode = "Afiliacion1estaSSeguro";
@@ -52,7 +56,8 @@ class DocumentsApiController extends Controller
                     "document" => [
                         "templateCode" => $templateCode,
                         "templateReference" => $pdfContent,
-                        "templateType" => "base64"
+                        "templateType" => "base64",
+                        "fileName" => $fileName,
                     ]
                 ];
             }, $documents);
