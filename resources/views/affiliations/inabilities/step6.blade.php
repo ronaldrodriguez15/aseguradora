@@ -112,9 +112,12 @@
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (debito)
                             </a>
                         @endif
-                        <a class="btn btn-primary btn-lg" id="iniciar-firmado" data-id="{{ $inabilityId }}"
+                        <a class="btn btn-primary mb-4" id="iniciar-firmado" data-id="{{ $inabilityId }}" href="#">
+                            <i class="fas fa-envelope-open-text mr-2"></i> Iniciar firmado
+                        </a>
+                        <a class="btn btn-primary mb-4" id="consultar-documentos" data-id="{{ $inabilityId }}"
                             href="#">
-                            <i class="fas fa-signature mr-2"></i> Iniciar firmado con Via Firma
+                            <i class="fas fa-signature mr-2"></i> Verificar documentos firmados
                         </a>
                     </div>
                 </div>
@@ -154,7 +157,7 @@
     <script>
         $(document).ready(function() {
             $('#iniciar-firmado').on('click', function(e) {
-                e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
 
                 var id = $(this).data('id'); // Obtener el ID desde el botón
 
@@ -170,16 +173,20 @@
 
                 // Realiza la solicitud AJAX
                 $.ajax({
-                    url: '{{ route('sendToViaFirma') }}', // Ruta de la API
+                    url: '{{ route('sendToViaFirma') }}',
                     method: 'POST',
                     data: {
-                        id: id, // Asegúrate de que el ID se está pasando aquí
-                        _token: '{{ csrf_token() }}' // Incluye el token CSRF para Laravel
+                        id: id,
+                        _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        // Maneja la respuesta exitosa
-                        console.log(response); // Muestra la respuesta en la consola
-                        Swal.fire('Éxito', `ID validado: ${response.id}`, 'success');
+                        console.log('Respuesta de la API:', response);
+                        // Verificar si hay éxito o error en la respuesta
+                        if (response.success) {
+                            Swal.fire('Éxito', response.message, 'success');
+                        } else if (response.error) {
+                            Swal.fire('Error', response.error, 'error');
+                        }
                     },
                     error: function(xhr) {
                         // Maneja los errores
@@ -191,6 +198,49 @@
                         Swal.close();
                     }
                 });
+            });
+
+            $('#consultar-documentos').on('click', function(e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+
+                // Mostrar el loader usando SweetAlert
+                Swal.fire({
+                    title: 'Consultando Documentos...',
+                    html: 'Por favor espera mientras verificamos los documentos firmados.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Realiza la solicitud AJAX para verificar los documentos firmados
+                $.ajax({
+                    url: '/consulta-viafirma',
+                    method: 'POST',
+                    data: {
+                        id: id, // ID del registro
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log('Respuesta de la API:', response);
+
+                        if (response.correct) {
+                            Swal.fire('Éxito',
+                                'Los documentos han sido firmados y descargados correctamente.',
+                                'success');
+                        } else {
+                            Swal.fire('Pendiente', 'Los documentos aún no han sido firmados.',
+                                'info');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Ocurrió un error al consultar los documentos.',
+                            'error');
+                    }
+                });
+
             });
         });
     </script>

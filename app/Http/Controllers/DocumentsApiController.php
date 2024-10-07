@@ -95,10 +95,67 @@ class DocumentsApiController extends Controller
                 ],
             ]);
 
-            return response()->json(['data' => json_decode($response->getBody()->getContents())]);
+            $responseData = json_decode($response->getBody()->getContents());
+
+            // Guardar los codes y templateCodes en la sesión
+            $codes = [];
+            foreach ($responseData->messages as $message) {
+                $codes[] = [
+                    'messagesCode' => $message->code,
+                    'templateCode' => $message->templateCode,
+                ];
+            }
+
+            session(['via_firma_codes' => $codes]); // Almacena en la sesión
+
+            return response()->json(['data' => $responseData]);
         } catch (\Exception $e) {
             Log::error('Error en sendToViaFirma: ' . $e->getMessage());
             return response()->json(['error' => 'An unexpected error occurred'], 500);
+        }
+    }
+
+    public function downloadFile(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => 'required|exists:inabilities,id',
+            ]);
+
+            $inability = Inability::find($validated['id']);
+
+            // Recuperar los codes y templateCodes de la sesión
+            $codes = session('via_firma_codes', []);
+
+            if (empty($codes)) {
+                return response()->json(['error' => 'No hay códigos disponibles para descargar.'], 400);
+            }
+
+            $client = new Client();
+            $allResponses = []; 
+
+            foreach ($codes as $code) {
+
+                if (isset($code['messagesCode'])) {
+                    $response = $client->get(env('URL_VIA_FIRMA') . '/api/v3/documents/download/signed/' . $code['messagesCode'], [
+                        'headers' => [
+                            'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),
+                            'Accept' => 'application/json',
+                        ],
+                    ]);
+
+                    $decodedResponse = json_decode($response->getBody()->getContents());
+                    $allResponses[] = $decodedResponse;
+                } else {
+                
+                    Log::error('messagesCode no encontrado en el objeto: ', (array)$code);
+                }
+            }
+
+            return response()->json($allResponses);
+        } catch (\Exception $e) {
+            Log::error('Error en la descarga de documentos firmados: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error inesperado.'], 500);
         }
     }
 }

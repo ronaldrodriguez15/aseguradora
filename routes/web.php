@@ -52,7 +52,7 @@ Route::get('clear-caches', function () {
     return response()->json([
         'status' => 'Cachés limpiados correctamente.',
     ]);
-}); 
+});
 
 Route::middleware([
     'auth:sanctum',
@@ -92,7 +92,9 @@ Route::middleware([
     Route::get('afiliaciones/incapacidades/{inabilityId}/pdfConfianza', [PDFConfianzaController::class, 'generarPDF'])->name('incapacidades.generarPDFconfianza');
 
     //conexion via firma
-    Route::post('/send-to-viafirma', [DocumentsApiController::class, 'sendToViaFirma'])->name('sendToViaFirma');
+    Route::post('/envio-viafirma', [DocumentsApiController::class, 'sendToViaFirma'])->name('sendToViaFirma');
+    //conexion via firma
+    Route::post('/consulta-viafirma', [DocumentsApiController::class, 'downloadFile'])->name('downloadFile');
 });
 
 Auth::routes();
