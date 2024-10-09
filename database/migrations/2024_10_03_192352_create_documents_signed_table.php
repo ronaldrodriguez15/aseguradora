@@ -12,12 +12,18 @@ class CreateDocumentsSignedTable extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('documents_signed', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('documents_signed', function (Blueprint $table) {
+        $table->id();
+        $table->string('file_name');
+        $table->string('signed_id');
+        $table->string('document_path');
+        $table->string('inability_id');
+        $table->timestamp('expires');
+        $table->timestamps();
+    });
+}
+
 
     /**
      * Reverse the migrations.

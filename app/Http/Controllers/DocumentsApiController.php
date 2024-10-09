@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\DocumentSigned;
+use Illuminate\Support\Carbon;
 
 class DocumentsApiController extends Controller
 {
@@ -83,8 +85,6 @@ class DocumentsApiController extends Controller
                 "messages" => $messages
             ];
 
-            $credentials = base64_encode('svgseguros:Seguro5060*..');
-
             // Enviar los datos a ViaFirma usando Guzzle
             $client = new Client();
             $response = $client->post('https://sandbox.viafirma.com/documents/api/v3/set', [
@@ -117,6 +117,8 @@ class DocumentsApiController extends Controller
 
     public function downloadFile(Request $request)
     {
+        set_time_limit(180);
+
         try {
             $validated = $request->validate([
                 'id' => 'required|exists:inabilities,id',
@@ -132,22 +134,43 @@ class DocumentsApiController extends Controller
             }
 
             $client = new Client();
-            $allResponses = []; 
+            $allResponses = [];
 
             foreach ($codes as $code) {
-
                 if (isset($code['messagesCode'])) {
                     $response = $client->get(env('URL_VIA_FIRMA') . '/api/v3/documents/download/signed/' . $code['messagesCode'], [
                         'headers' => [
-                            'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),
-                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json',
+                            'Authorization' => 'Basic c3Znc2VndXJvczpTZWd1cm81MDYwKi4u',
                         ],
                     ]);
 
-                    $decodedResponse = json_decode($response->getBody()->getContents());
-                    $allResponses[] = $decodedResponse;
+                    // Decodificar la respuesta y agregarla al array
+                    $decodedResponse = json_decode($response->getBody()->getContents(), true);
+                    $allResponses[] = $decodedResponse; // Guardar cada respuesta en el array
+
+                    // Extraer los campos necesarios del objeto de respuesta
+                    $fileName = $decodedResponse['fileName'];
+                    $link = $decodedResponse['link'];
+                    $signedID = $decodedResponse['signedID'];
+                    $expires = Carbon::createFromTimestampMs($decodedResponse['expires']);
+
+                    // Descargar el archivo desde el link de la API
+                    $fileContent = file_get_contents($link);
+
+                    // Guardar el archivo en la carpeta 'documents_signed' dentro de storage
+                    $storagePath = 'documents_signed/' . $fileName;
+                    Storage::put($storagePath, $fileContent);
+
+                    // Almacenar el documento en la base de datos
+                    $documentSigned = new DocumentSigned();
+                    $documentSigned->file_name = $fileName;
+                    $documentSigned->signed_id = $signedID;
+                    $documentSigned->expires = $expires;
+                    $documentSigned->inability_id = $validated['id']; // Corregido el campo 'inability_id'
+                    $documentSigned->document_path = $storagePath; // Guardamos la ruta de almacenamiento
+                    $documentSigned->save();
                 } else {
-                
                     Log::error('messagesCode no encontrado en el objeto: ', (array)$code);
                 }
             }
