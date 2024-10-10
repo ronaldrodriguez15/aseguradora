@@ -311,26 +311,26 @@ return [
             'icon' => 'fa fa-columns',
         ],
         ['header' => 'FUNCIONALIDADES'],
-        // [
-        //     'text' => 'Reportes',
-        //     'url' => '#',
-        //     'icon' => 'fa fa-folder-open',
-        // ],
         [
             'text' => 'Documentos',
             'url' => 'documentos',
             'icon' => 'fa fa-file-alt',
-            'label' => 'Nuevo',
-            'label_color' => 'success',
         ],
         [
             'text' => 'Afiliaciones',
             'icon' => 'fas fa-handshake',
             'submenu' => [
                 [
-                    'text' => 'Pago incapacidades',
+                    'text' => 'Nueva afiliación',
                     'url' => 'afiliaciones/incapacidades',
                     'icon' => 'fa fa-money-check-alt',
+                ],
+                [
+                    'text' => 'Consulta afiliaciones',
+                    'url' => 'reportes',
+                    'icon' => 'fa fa-search',
+                    'label' => 'Nuevo',
+                    'label_color' => 'success',
                 ],
             ],
         ],

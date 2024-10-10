@@ -18,6 +18,7 @@ use App\Http\Controllers\PDFDebitoController;
 use App\Http\Controllers\PDFLibranzaController;
 use App\Http\Controllers\PDFConfianzaController;
 use App\Http\Controllers\DocumentsApiController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,9 @@ Route::middleware([
     Route::post('/envio-viafirma', [DocumentsApiController::class, 'sendToViaFirma'])->name('sendToViaFirma');
     //conexion via firma
     Route::post('/consulta-viafirma', [DocumentsApiController::class, 'downloadFile'])->name('downloadFile');
+
+    // Reportes
+    Route::resource('reportes', ReportController::class);
 });
 
 Auth::routes();
