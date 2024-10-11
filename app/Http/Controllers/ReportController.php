@@ -13,6 +13,8 @@ use App\Models\DocumentSigned;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\FocusExport;
 
 class ReportController extends Controller
 {
@@ -33,7 +35,7 @@ class ReportController extends Controller
             END as estado_firmado
         '))
             ->leftJoin('insurers', 'inabilities.insurer_id', '=', 'insurers.id');
-
+        dd($request->all());
         // Aplicamos los filtros si están presentes
         if ($request->filled('fecha_desde')) {
             $query->where('inabilities.created_at', '>=', $request->input('fecha_desde'));
@@ -218,5 +220,29 @@ class ReportController extends Controller
 
         // Descargar el archivo ZIP
         return response()->download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
+    public function descargarPlanoFocus(Request $request)
+    {
+        // Obtener los IDs seleccionados
+        $selectedRecords = json_decode($request->input('selected_records'));
+
+        // Obtener los datos de los registros seleccionados como una colección
+        $inabilities = Inability::whereIn('id', $selectedRecords)->get();
+
+        // Crear una instancia de FocusExport con la colección
+        $export = new FocusExport($inabilities);
+
+        // Guardar el archivo en una ubicación temporal
+        $filePath = public_path('plano_focus/resultado_' . time() . '.xlsx');
+
+        // Guardar el archivo Excel
+        $export->saveTemplate($filePath);
+
+        // Retornar la descarga
+        return response()->json([
+            'success' => true,
+            'file' => url('plano_focus/resultado_' . time() . '.xlsx')
+        ]);
     }
 }

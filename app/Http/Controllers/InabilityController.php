@@ -158,7 +158,19 @@ class InabilityController extends Controller
 
         try {
             $inability = new Inability();
-            $inability->no_solicitud = $inability->identificador;
+
+            // Obtener el número máximo de solicitud actual
+            $maxSolicitud = Inability::pluck('no_solicitud')->max();
+
+            // Determinar el nuevo número de solicitud
+            if ($request->identificador > $maxSolicitud) {
+                $newSolicitudNumber = $request->identificador;
+            } else {
+                $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
+            }
+
+            // Asignar el nuevo número de solicitud al modelo
+            $inability->no_solicitud = $newSolicitudNumber;
             $inability->insurer_id = $request->aseguradora;
 
             $insurer = Insurer::find($request->aseguradora);
@@ -186,7 +198,7 @@ class InabilityController extends Controller
             $inability->gastos_administrativos = $request->gastos_administrativos;
             $inability->val_total_desc_mensual = $request->val_total_desc_mensual;
 
-            //TIPO PAGO
+            // TIPO PAGO
             $inability->forma_pago = $request->forma_pago;
             $inability->tipo_cuenta = $request->tipo_cuenta;
 
@@ -199,19 +211,19 @@ class InabilityController extends Controller
                 $inability->ciudad_banco = $request->ciudad_banco;
             }
 
-            // Buscar el valor más alto de no_solicitud en la tabla inabilities
-            $maxSolicitud = Inability::max('no_solicitud');
-
-            // Si no hay registros en la tabla, asignar el valor inicial
-            $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
-            $inability->no_solicitud = $newSolicitudNumber;
-            $insurer->identificador = $newSolicitudNumber;
-            $insurer->save();
+            // Guardar el incapacidad
             $inability->save();
 
-            // Guardar el ID en la sesión o en una variable
+            // Actualizar el identificador de la aseguradora
+            if ($insurer) {
+                $insurer->identificador = $newSolicitudNumber; // Asignar el nuevo número
+                $insurer->save();
+            }
+
+            // Guardar el ID en la sesión
             $request->session()->put('inability_id', $inability->id);
 
+            // Preparar los datos para la vista
             $val_total_desc_mensual = $request->val_total_desc_mensual;
             $tu_pierdes = $request->tu_pierdes;
             $te_pagamos = $request->te_pagamos;
@@ -226,11 +238,12 @@ class InabilityController extends Controller
             );
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return redirect()->back()->with('error', 'El correo corporativo ya existe.'); // Aquí controlas el error de duplicado
+                return redirect()->back()->with('error', 'El correo corporativo ya existe.'); // Controlar el error de duplicado
             }
             return redirect()->back()->with('error', 'Ocurrió un error al guardar la información.');
         }
     }
+
 
     public function formStepTree(Request $request)
     {

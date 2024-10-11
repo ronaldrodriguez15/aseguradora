@@ -13,7 +13,7 @@ function getSelectedRecords() {
     return selectedRecords;
 }
 
-// Manejar el click en el botón "Descargar PDFs"
+// Manejar el clic en el botón "Descargar PDFs"
 document
     .getElementById("descargar-pdfs")
     .addEventListener("click", function (e) {
@@ -48,4 +48,61 @@ document
 
         document.body.appendChild(form);
         form.submit(); // Enviar el formulario
+    });
+
+// Manejar el clic en el botón "Descargar Plano Focus"
+document
+    .getElementById("descargar-plano")
+    .addEventListener("click", function (e) {
+        e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+
+        const selectedRecords = getSelectedRecords(); // Obtener los registros seleccionados
+
+        if (selectedRecords.length === 0) {
+            alert("No se ha seleccionado ningún registro.");
+            return;
+        }
+
+        // Crear un formulario oculto para enviar los datos al servidor
+        const form = new FormData(); // Usar FormData para simplificar el proceso
+        form.append('_token', csrfToken); // Agregar el token CSRF
+        form.append('selected_records', JSON.stringify(selectedRecords)); // Agregar los IDs seleccionados
+
+        // Usar fetch para enviar el formulario y manejar la respuesta
+        fetch('/descargar-plano-focus', {
+            method: 'POST',
+            body: form
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Iniciar la descarga del archivo Excel
+                    window.location.href = data.file;
+
+                    // Mostrar mensaje de éxito con SweetAlert
+                    Swal.fire({
+                        title: 'Éxito!',
+                        text: 'Excel descargado con éxito.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    // Manejo de errores
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Hubo un problema al descargar el Excel.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Hubo un problema al procesar la solicitud.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
     });
