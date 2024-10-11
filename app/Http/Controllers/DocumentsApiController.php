@@ -160,7 +160,7 @@ class DocumentsApiController extends Controller
 
                     // Guardar el archivo en la carpeta 'documents_signed' dentro de storage
                     $storagePath = 'documents_signed/' . $fileName;
-                    Storage::put($storagePath, $fileContent);
+                    Storage::disk('public')->put($storagePath, $fileContent);
 
                     // Almacenar el documento en la base de datos
                     $documentSigned = new DocumentSigned();
@@ -175,7 +175,13 @@ class DocumentsApiController extends Controller
                 }
             }
 
-            return response()->json($allResponses);
+            // Obtiene el primer documento firmado guardado para mostrar en la vista
+            $firstSignedDocument = DocumentSigned::where('inability_id', $validated['id'])->first();
+
+            return response()->json([
+                'allResponses' => $allResponses,
+                'firstDocument' => $firstSignedDocument // Devuelve el primer documento firmado
+            ]);
         } catch (\Exception $e) {
             Log::error('Error en la descarga de documentos firmados: ' . $e->getMessage());
             return response()->json(['error' => 'Ocurrió un error inesperado.'], 500);

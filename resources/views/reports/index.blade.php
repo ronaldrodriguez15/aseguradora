@@ -47,7 +47,7 @@
                         <select class="form-control @error('vendedor') is-invalid @enderror" id="vendedor" name="vendedor">
                             <option value="">Selecciona un vendedor</option>
                             @foreach ($asesors as $asesor)
-                            <option value="{{ $asesor['id'] }}">{{ $asesor['name'] }}</option>
+                            <option value="{{ $asesor['name'] }}">{{ $asesor['name'] }}</option>
                             @endforeach
                         </select>
                         @error('vendedor')
@@ -95,7 +95,7 @@
                         <select class="form-control @error('entidad') is-invalid @enderror" id="entidad" name="entidad">
                             <option value="">Selecciona una entidad</option>
                             @foreach ($entities as $entity)
-                            <option value="{{ $entity['id'] }}">{{ $entity['name'] }}</option>
+                            <option value="{{ $entity['name'] }}">{{ $entity['name'] }}</option>
                             @endforeach
                         </select>
                         @error('entidad')
@@ -147,6 +147,7 @@
                                 <th>Fecha afiliación</th>
                                 <th>Consecutivo</th>
                                 <th>Entidad</th>
+                                <th>Nombres</th>
                                 <th>Cédula</th>
                                 <th>Valor</th>
                                 <th>Asesor</th>
@@ -162,6 +163,7 @@
                                 <td>{{ $inability['created_at']->format('Y-m-d') }}</td>
                                 <td>{{ $inability['no_solicitud'] }}</td>
                                 <td>{{ $inability['insurer_name'] }}</td>
+                                <td>{{ $inability['nombres_completos'] }}</td>
                                 <td>{{ $inability['no_identificacion'] }}</td>
                                 <td class="text-warning">{{ $inability['val_total_desc_mensual'] }}</td>
                                 <td>{{ $inability['nombre_asesor'] }}</td>

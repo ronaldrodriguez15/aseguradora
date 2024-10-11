@@ -17,29 +17,75 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $inabilities = Inability::select('inabilities.*', 'insurers.name as insurer_name', DB::raw('
-                CASE
-                    WHEN path_estasseguro IS NULL AND path_aseguradora IS NULL AND path_pago IS NULL THEN "Sin firmar"
-                    WHEN path_estasseguro IS NOT NULL AND path_aseguradora IS NOT NULL AND path_pago IS NOT NULL THEN "Pendiente"
-                    WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) >= 3 THEN "Firmado"
-                    ELSE "En espera"
-                END as estado_firmado
-            '))
-            ->leftJoin('insurers', 'inabilities.insurer_id', '=', 'insurers.id')
-            ->orderBy('status', 'DESC')
+        // Iniciamos la consulta base
+        $query = Inability::select('inabilities.*', 'insurers.name as insurer_name', DB::raw('
+            CASE
+                WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) >= 3 THEN "Firmado"
+                WHEN path_estasseguro IS NULL AND path_aseguradora IS NULL AND path_pago IS NULL THEN "Sin firmar"
+                WHEN path_estasseguro IS NOT NULL AND path_aseguradora IS NOT NULL AND path_pago IS NOT NULL THEN "Pendiente"
+                ELSE "En espera"
+            END as estado_firmado
+        '))
+            ->leftJoin('insurers', 'inabilities.insurer_id', '=', 'insurers.id');
+
+        // Aplicamos los filtros si están presentes
+        if ($request->filled('fecha_desde')) {
+            $query->where('inabilities.created_at', '>=', $request->input('fecha_desde'));
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->where('inabilities.created_at', '<=', $request->input('fecha_hasta'));
+        }
+
+        if ($request->filled('vendedor')) {
+            $query->where('inabilities.nombre_asesor', $request->input('vendedor'));
+        }
+
+        if ($request->filled('aseguradora')) {
+            $query->where('inabilities.insurer_id', $request->input('aseguradora'));
+        }
+
+        if ($request->filled('numero_afiliacion')) {
+            $query->where('inabilities.no_solicitud', 'like', '%' . $request->input('numero_afiliacion') . '%');
+        }
+
+        if ($request->filled('fecha_afiliacion')) {
+            $query->where('inabilities.fecha_diligenciamiento', $request->input('fecha_afiliacion'));
+        }
+
+        if ($request->filled('cedula')) {
+            $query->where('inabilities.no_identificacion', 'like', '%' . $request->input('cedula') . '%');
+        }
+
+        if ($request->filled('entidad')) {
+            $query->where('inabilities.entidad_pagadora_sucursal', $request->input('entidad'));
+        }
+
+        if ($request->filled('ciudad')) {
+            $query->where('inabilities.ciudad_residencia', $request->input('ciudad'));
+        }
+
+        if ($request->filled('edad')) {
+            $query->where('inabilities.edad', $request->input('edad'));
+        }
+
+        // Finalizamos la consulta con los filtros aplicados
+        $inabilities = $query->orderBy('status', 'DESC')
             ->orderBy('created_at', 'DESC')
             ->paginate();
 
-
+        // Variables adicionales
         $cities = City::where('status', 1)->get();
         $asesors = Asesor::where('status', 1)->get();
         $insurers = Insurer::where('status', 1)->get();
         $entities = Entity::where('status', 1)->get();
 
-        return view('reports.index', compact('inabilities', 'cities', 'asesors', 'insurers', 'entities'));
+        // Retornamos la vista con los datos y los filtros aplicados
+        return view('reports.index', compact('inabilities', 'cities', 'asesors', 'insurers', 'entities', 'request'));
     }
+
 
     /**
      * Show the form for creating a new resource.
