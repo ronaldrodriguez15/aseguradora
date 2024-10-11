@@ -9,6 +9,10 @@ use App\Models\Insurer;
 use App\Models\Entity;
 use App\Models\Inability;
 use Illuminate\Support\Facades\DB;
+use App\Models\DocumentSigned;
+use ZipArchive;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
 {
@@ -151,5 +155,68 @@ class ReportController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function descargarPDFs(Request $request)
+    {
+        // Obtener los IDs seleccionados
+        $selectedRecords = json_decode($request->input('selected_records'));
+
+        if (empty($selectedRecords)) {
+            return redirect()->back()->with('error', 'No se seleccionaron registros.');
+        }
+
+        // Crear un archivo ZIP en la ruta de almacenamiento
+        $zipFileName = 'afiliaciones_documentos.zip';
+        $zipFilePath = storage_path('app/' . $zipFileName);
+
+        // Verificar si ya existe el archivo ZIP y eliminarlo antes de crear uno nuevo
+        if (File::exists($zipFilePath)) {
+            File::delete($zipFilePath);
+        }
+
+        // Inicializar ZipArchive
+        $zip = new ZipArchive();
+
+        // Intentar abrir el archivo ZIP
+        if ($zip->open($zipFilePath, ZipArchive::CREATE) !== true) {
+            Log::error('Error al abrir el archivo ZIP: ' . $zip->getStatusString());
+            return redirect()->back()->with('error', 'No se pudo crear el archivo ZIP.');
+        }
+
+        foreach ($selectedRecords as $inabilityId) {
+            // Obtener la afiliación por su ID
+            $inability = Inability::find($inabilityId);
+
+            if ($inability) {
+                // Crear una carpeta dentro del ZIP con el número de solicitud como nombre
+                $folderName = $inability->no_solicitud;
+                $zip->addEmptyDir($folderName);
+
+                // Obtener los documentos relacionados con la afiliación
+                $documents = DocumentSigned::where('inability_id', $inabilityId)->get();
+
+                // Agregar cada documento al archivo ZIP
+                foreach ($documents as $document) {
+                    $filePath = storage_path('app/' . $document->file_path);
+
+                    if (File::exists($filePath)) {
+                        $zip->addFile($filePath, "$folderName/" . basename($filePath));
+                    } else {
+                        // Registrar en el log si el archivo no existe
+                        Log::warning("Archivo no encontrado: $filePath");
+                    }
+                }
+            }
+        }
+
+        // Cerrar el archivo ZIP
+        if ($zip->close() === false) {
+            Log::error('Error al cerrar el archivo ZIP: ' . $zip->getStatusString());
+            return redirect()->back()->with('error', 'No se pudo cerrar el archivo ZIP.');
+        }
+
+        // Descargar el archivo ZIP
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
     }
 }

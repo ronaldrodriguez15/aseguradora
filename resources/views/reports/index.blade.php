@@ -133,6 +133,8 @@
             </div>
         </form>
     </div>
+    <!-- Token CSRF -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="col-md-11">
         <div class="card mb-5">
@@ -211,7 +213,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
-<script src="{{ asset('js/script.js') }}"></script>
+<script src="{{ asset('js/scriptReports.js') }}"></script>
 <script>
     // Seleccionar todos los checkboxes
     document.getElementById('select-all').addEventListener('change', function() {

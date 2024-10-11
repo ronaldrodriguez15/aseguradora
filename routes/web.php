@@ -99,6 +99,8 @@ Route::middleware([
 
     // Reportes
     Route::resource('reportes', ReportController::class);
+    Route::post('/descargar-pdfs', [ReportController::class, 'descargarPDFs']);
+
 });
 
 Auth::routes();
