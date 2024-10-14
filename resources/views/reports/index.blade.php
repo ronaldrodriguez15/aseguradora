@@ -208,107 +208,59 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="col-md-11">
-        <div class="card mb-5">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="datatable" class="table table-dark table-striped">
-                        <thead class="text-center">
-                            <tr class="bg-dark text-white">
-                                <th>
-                                    <input type="checkbox" id="select-all" />
-                                </th>
-                                <th>Fecha afiliación</th>
-                                <th>Consecutivo</th>
-                                <th>Entidad</th>
-                                <th>Nombres</th>
-                                <th>Cédula</th>
-                                <th>Valor</th>
-                                <th>Asesor</th>
-                                <th>Estado firma</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            @foreach ($inabilities as $inability)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="record-checkbox" value="{{ $inability['id'] }}" />
-                                </td>
-                                <td>{{ $inability['created_at']->format('Y-m-d') }}</td>
-                                <td>{{ $inability['no_solicitud'] }}</td>
-                                <td>{{ $inability['insurer_name'] }}</td>
-                                <td>{{ $inability['nombres_completos'] }}</td>
-                                <td>{{ $inability['no_identificacion'] }}</td>
-                                <td class="text-warning">{{ $inability['val_total_desc_mensual'] }}</td>
-                                <td>{{ $inability['nombre_asesor'] }}</td>
-                                <td>
-                                    @if($inability['estado_firmado'] == 'Sin firmar')
-                                    <span class="badge badge-danger">{{ $inability['estado_firmado'] }}</span>
-                                    @elseif($inability['estado_firmado'] == 'Pendiente')
-                                    <span class="badge badge-info">{{ $inability['estado_firmado'] }}</span>
-                                    @elseif($inability['estado_firmado'] == 'Firmado')
-                                    <span class="badge badge-success">{{ $inability['estado_firmado'] }}</span>
-                                    @else
-                                    <span class="badge badge-warning">{{ $inability['estado_firmado'] }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4" id="button-container" style="display: none;">
-                    <a class="btn btn-success mb-4" id="descargar-plano" href="#">
-                        Descargar Plano Focus <i class="fas fa-file-excel ml-2"></i>
-                    </a>
-                    <a class="btn btn-primary mb-4" id="descargar-seguimiento" href="#">
-                        Descargar Seguimiento de ventas <i class="fas fa-file-invoice ml-2"></i>
-                    </a>
-                    <a class="btn btn-danger mb-4" id="descargar-pdfs" href="#">
-                        Descargar PDFs <i class="fas fa-file-pdf ml-2"></i>
-                    </a>
-                </div>
-            </div>
+        <div class="mt-4" id="button-container" style="display: none;">
+            <a class="btn btn-success mb-4" id="descargar-plano" href="#">
+                Descargar Plano Focus <i class="fas fa-file-excel ml-2"></i>
+            </a>
+            <a class="btn btn-primary mb-4" id="descargar-seguimiento" href="#">
+                Descargar Seguimiento de ventas <i class="fas fa-file-invoice ml-2"></i>
+            </a>
+            <a class="btn btn-danger mb-4" id="descargar-pdfs" href="#">
+                Descargar PDFs <i class="fas fa-file-pdf ml-2"></i>
+            </a>
         </div>
     </div>
-    @stop
 
-    @section('css')
-    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
-    @stop
+</div>
+@stop
 
-    @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Tu archivo de script personalizado -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
-    <script src="{{ asset('js/scriptReports.js') }}"></script>
-    <script>
-        // Seleccionar todos los checkboxes
-        document.getElementById('select-all').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.record-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-                toggleButtons();
-            });
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Tu archivo de script personalizado -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
+<script src="{{ asset('js/scriptReports.js') }}"></script>
+<script>
+    // Seleccionar todos los checkboxes
+    document.getElementById('select-all').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.record-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+            toggleButtons();
         });
+    });
 
-        // Verificar el estado de los checkboxes
-        document.querySelectorAll('.record-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', toggleButtons);
-        });
+    // Verificar el estado de los checkboxes
+    document.querySelectorAll('.record-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', toggleButtons);
+    });
 
-        // Función para mostrar u ocultar los botones
-        function toggleButtons() {
-            const checkboxes = document.querySelectorAll('.record-checkbox');
-            const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    // Función para mostrar u ocultar los botones
+    function toggleButtons() {
+        const checkboxes = document.querySelectorAll('.record-checkbox');
+        const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-            // Mostrar u ocultar el contenedor de botones
-            document.getElementById('button-container').style.display = isAnyChecked ? 'block' : 'none';
-        }
+        // Mostrar u ocultar el contenedor de botones
+        document.getElementById('button-container').style.display = isAnyChecked ? 'block' : 'none';
+    }
 
-        // Inicialmente ocultar los botones
-        toggleButtons();
-    </script>
-    @stop
+    // Inicialmente ocultar los botones
+    toggleButtons();
+</script>
+@stop
