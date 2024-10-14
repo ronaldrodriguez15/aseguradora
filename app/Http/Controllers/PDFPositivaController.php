@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
 use setasign\Fpdi\Fpdi;
+    use Illuminate\Support\Facades\DB;
 
 class PDFPositivaController extends Controller
 {
@@ -20,13 +21,38 @@ class PDFPositivaController extends Controller
 
         $insurer = Insurer::find($inability->insurer_id);
 
+        // Verificar que el asegurador exista
+        if (!$insurer) {
+            abort(404, 'Aseguradora no encontrada.');
+        }
 
+        // Obtener la ruta del archivo PDF almacenado
         $pdfFilePath = public_path("storage/" . $insurer->document_path);
 
+        // Verificar si el archivo existe
         if (!file_exists($pdfFilePath)) {
             abort(404, 'Archivo PDF no encontrado en la ruta especificada.');
         }
 
+        // Obtener el consecutivo máximo en la tabla inabilities
+        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
+
+        // Verificar el consecutivo máximo
+        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
+
+        // Verificar si el consecutivo actual es menor que el máximo
+        if ($inability->consecutivo < $maxConsecutivo) {
+            // Actualizar el consecutivo al máximo + 1
+            $inability->consecutivo = $maxConsecutivo + 1;
+        } else {
+            // Si el consecutivo actual es mayor o igual, incrementar en 1
+            $inability->consecutivo += 1;
+        }
+
+        // Guardar los cambios en el registro
+        $inability->save();
+
+        // Generar el PDF con la plantilla
         $this->generarPDFConPlantilla($inability, $pdfFilePath);
     }
 
@@ -389,18 +415,22 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 // entidad pagadora
+                $pdf->SetFont('Arial', '', 6);
                 $pdf->SetXY(146, 269.5);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 // valor a descontar
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->SetXY(65, 274.8);
                 $pdf->Write(0, convertToISO88591($inability->prima_pago_prima_seguro));
 
                 // nombres
-                $pdf->SetXY(38, 287);
+                $pdf->SetFont('Arial', '', 6);
+                $pdf->SetXY(35, 287);
                 $pdf->Write(0, convertToISO88591($inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido));
 
                 // cedula
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->SetXY(130, 287);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 

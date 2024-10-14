@@ -129,18 +129,16 @@
     </div>
     <br>
 
-    <!-- Modal -->
     <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true"
         data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="documentModalLabel">Visualización del Documento Firmado</h5>
-                    <!-- Removemos el botón de cerrar (X) -->
                 </div>
                 <div class="modal-body">
-                    <!-- Usamos iframe para mostrar el documento PDF sin la barra de herramientas -->
-                    <iframe id="pdfViewer" src="" width="100%" height="500px" style="border:none;"></iframe>
+                    <!-- Div que mostrará el documento PDF -->
+                    <canvas id="pdfViewerCanvas" style="width: 100%;"></canvas>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="closeModalBtn" class="btn btn-primary">Ir a inicio</button>
@@ -148,6 +146,7 @@
             </div>
         </div>
     </div>
+
 @stop
 
 @section('css')
@@ -172,6 +171,7 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <!-- Tu archivo de script personalizado -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
@@ -228,7 +228,6 @@
 
                 var id = $(this).data('id');
 
-                // Mostrar el loader usando SweetAlert
                 Swal.fire({
                     title: 'Consultando Documentos...',
                     html: 'Por favor espera mientras verificamos los documentos firmados.',
@@ -238,26 +237,44 @@
                     }
                 });
 
-                // Realiza la solicitud AJAX para verificar los documentos firmados
                 $.ajax({
                     url: '/consulta-viafirma',
                     method: 'POST',
                     data: {
-                        id: id, // ID del registro
+                        id: id,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        console.log('Respuesta de la API:', response);
-
-                        // Cierra el loader SweetAlert
                         Swal.close();
 
                         if (response.firstDocument) {
-                            // Asignamos el PDF al iframe sin la barra de herramientas
-                            $('#pdfViewer').attr('src', '/storage/' + response.firstDocument
-                                .document_path + '#toolbar=0');
+                            var pdfUrl = '/storage/' + response.firstDocument.document_path;
 
-                            // Abrimos el modal
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvas');
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            });
+
+                            // Abrir el modal
                             $('#documentModal').modal('show');
                         } else {
                             Swal.fire('Error', 'No se encontró el documento firmado.', 'error');
