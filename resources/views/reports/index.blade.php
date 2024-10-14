@@ -140,9 +140,9 @@
         <div class="card mb-5">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="datatable" class="table">
+                    <table id="datatable" class="table table-dark table-striped">
                         <thead class="text-center">
-                            <tr class="table-dark text-white">
+                            <tr class="bg-dark text-white">
                                 <th>
                                     <input type="checkbox" id="select-all" />
                                 </th>
