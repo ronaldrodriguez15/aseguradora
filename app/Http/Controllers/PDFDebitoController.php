@@ -35,6 +35,24 @@ class PDFDebitoController extends Controller
         // Obtener la ruta completa del archivo
         $fullPath = Storage::disk('public')->path($pdfFilePath);
 
+        // Obtener el consecutivo máximo en la tabla
+        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
+
+        // Verificar el consecutivo máximo
+        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
+
+        // Verificar si el consecutivo actual es menor que el máximo
+        if ($inability->consecutivo < $maxConsecutivo) {
+            // Actualizar el consecutivo al máximo + 1
+            $inability->consecutivo = $maxConsecutivo + 1;
+        } else {
+            // Si el consecutivo actual es mayor o igual, incrementar en 1
+            $inability->consecutivo += 1;
+        }
+
+        // Guardar los cambios en el registro
+        $inability->save();
+
         // Generar el PDF con la plantilla
         $this->generarPDFConPlantilla($inability, $fullPath);
     }

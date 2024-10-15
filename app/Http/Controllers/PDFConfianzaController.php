@@ -25,6 +25,24 @@ class PDFConfianzaController extends Controller
             abort(404, 'Archivo PDF no encontrado en la ruta especificada.');
         }
 
+        // Obtener el consecutivo máximo en la tabla inabilities
+        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
+
+        // Verificar el consecutivo máximo
+        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
+
+        // Verificar si el consecutivo actual es menor que el máximo
+        if ($inability->consecutivo < $maxConsecutivo) {
+            // Actualizar el consecutivo al máximo + 1
+            $inability->consecutivo = $maxConsecutivo + 1;
+        } else {
+            // Si el consecutivo actual es mayor o igual, incrementar en 1
+            $inability->consecutivo += 1;
+        }
+
+        // Guardar los cambios en el registro
+        $inability->save();
+
         $this->generarPDFConPlantilla($inability, $pdfFilePath);
     }
 
@@ -71,11 +89,11 @@ class PDFConfianzaController extends Controller
                 // Primer apellido
                 $pdf->SetXY(22, 44.5);
                 $pdf->Write(0, convertToISO88591($inability->primer_apellido));
-                
+
                 // Segundo apellido
                 $pdf->SetXY(50, 44.5);
                 $pdf->Write(0, convertToISO88591($inability->segundo_apellido));
-                
+
                 // Nombres completos
                 $pdf->SetXY(83, 44.5);
                 $pdf->Write(0, convertToISO88591($inability->nombres_completos));
@@ -232,7 +250,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(130, 123);
                 $pdf->Write(0, convertToISO88591($inability->fuente_recursos));
 
-                // ------------------ Referido 1 
+                // ------------------ Referido 1
                 // nombres y apellidos
                 $pdf->SetXY(48, 141);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s1 . ' ' . $inability->apellidos_s1));
@@ -245,7 +263,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(121.5, 141);
                 $pdf->Write(0, $inability->porcentaje_s1);
 
-                // calidad  
+                // calidad
                 if ($inability->nombres_s1 !== null) {
                     $pdf->SetXY(134, 141);
                     $pdf->Write(0, 'Gratuito');
@@ -259,7 +277,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(179.5, 141);
                 $pdf->Write(0, convertToISO88591($inability->n_identificacion_s1));
 
-                // ------------------ Referido 2 
+                // ------------------ Referido 2
                 // nombres y apellidos
                 $pdf->SetXY(48, 144.3);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s2 . ' ' . $inability->apellidos_s2));
@@ -272,7 +290,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(121.5, 144.3);
                 $pdf->Write(0, $inability->porcentaje_s2);
 
-                // calidad  
+                // calidad
                 if ($inability->nombres_s2 !== null) {
                     $pdf->SetXY(134, 144.3);
                     $pdf->Write(0, 'Gratuito');
@@ -286,7 +304,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(179.5, 144.3);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion_s2));
 
-                // ------------------ Referido 3 
+                // ------------------ Referido 3
                 // nombres y apellidos
                 $pdf->SetXY(48, 147.3);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s3 . ' ' . $inability->apellidos_s3));
@@ -295,7 +313,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(100, 147.3);
                 $pdf->Write(0, convertToISO88591($inability->parentesco_s3));
 
-                // calidad  
+                // calidad
                 if ($inability->nombres_s3 !== null) {
                     $pdf->SetXY(134, 147.3);
                     $pdf->Write(0, 'Gratuito');

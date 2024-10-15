@@ -5,7 +5,6 @@ namespace App\Exports;
 use App\Models\Inability;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class FocusExport implements FromCollection
 {
@@ -32,7 +31,7 @@ class FocusExport implements FromCollection
         $sheet = $spreadsheet->getActiveSheet();
 
         // Suponiendo que los datos comienzan en la fila 2 (la fila 1 puede ser el encabezado)
-        $row = 2; // Fila donde comenzaremos a escribir los datos
+        $row = 3; // Fila donde comenzaremos a escribir los datos
 
         // Agregar datos a la plantilla
         foreach ($this->data as $inability) {
@@ -49,6 +48,6 @@ class FocusExport implements FromCollection
 
         // Guardar el archivo en la ruta especificada
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($filePath);
+        $writer->save('php://output');
     }
 }

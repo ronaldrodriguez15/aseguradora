@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Reportes')
+@section('title', '| Reportes')
 
 @section('content_header')
 <h1>Reportes</h1>
@@ -23,7 +23,7 @@
         @endif
     </div>
     <div class="col-md-11 mb-5">
-        <form autocomplete="off" action="{{ route('reportes.index') }}" method="post" id="formStep3">
+        <form autocomplete="off" action="{{ route('reportes.index') }}" method="get">
             @csrf
             <br>
             <div id="debito_automatico_fields">
@@ -149,12 +149,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="col-md-11">
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+    </div>
+
+    <div class="col-md-11">
         <div class="card mb-5">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="datatable" class="table">
                         <thead class="text-center">
-                            <tr class="table-dark text-white">
+                            <tr class="bg-dark text-white">
                                 <th>
                                     <input type="checkbox" id="select-all" />
                                 </th>
@@ -169,11 +180,10 @@
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            @foreach ($inabilities as $inability)
+                            @forelse ($inabilities as $inability)
                             <tr>
                                 <td>
-                                    <input type="checkbox" class="record-checkbox"
-                                        value="{{ $inability['id'] }}" />
+                                    <input type="checkbox" class="record-checkbox" value="{{ $inability['id'] }}" />
                                 </td>
                                 <td>{{ $inability['created_at']->format('Y-m-d') }}</td>
                                 <td>{{ $inability['no_solicitud'] }}</td>
@@ -188,15 +198,17 @@
                                     @elseif($inability['estado_firmado'] == 'Pendiente')
                                     <span class="badge badge-info">{{ $inability['estado_firmado'] }}</span>
                                     @elseif($inability['estado_firmado'] == 'Firmado')
-                                    <span
-                                        class="badge badge-success">{{ $inability['estado_firmado'] }}</span>
+                                    <span class="badge badge-success">{{ $inability['estado_firmado'] }}</span>
                                     @else
-                                    <span
-                                        class="badge badge-warning">{{ $inability['estado_firmado'] }}</span>
+                                    <span class="badge badge-warning">{{ $inability['estado_firmado'] }}</span>
                                     @endif
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="9" class="text-center">No hay información para mostrar</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

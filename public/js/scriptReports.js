@@ -26,6 +26,17 @@ document
             return;
         }
 
+        Swal.fire({
+            title: "Descargando PDFs",
+            text: "Por favor, espera mientras se genera tu ZIP...",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            },
+        });
+
         // Crear un formulario oculto para enviar los datos al servidor
         const form = document.createElement("form");
         form.method = "POST";
@@ -48,6 +59,19 @@ document
 
         document.body.appendChild(form);
         form.submit(); // Enviar el formulario
+
+        // Cerrar el spinner y mostrar el mensaje de éxito después de un pequeño tiempo
+        setTimeout(() => {
+            Swal.close(); // Cerrar el spinner
+
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: "Éxito!",
+                text: "ZIP descargado con éxito.",
+                icon: "success",
+                confirmButtonText: "Aceptar", // Agregar un botón para cerrar la alerta de éxito
+            });
+        }, 1000); // Ajusta el tiempo según lo necesites
     });
 
 // Manejar el clic en el botón "Descargar Plano Focus"
@@ -63,46 +87,63 @@ document
             return;
         }
 
+        // Mostrar el spinner mientras se procesa la solicitud
+        Swal.fire({
+            title: "Descargando Excel",
+            text: "Por favor, espera mientras se genera tu archivo...",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            },
+        });
+
         // Crear un formulario oculto para enviar los datos al servidor
         const form = new FormData(); // Usar FormData para simplificar el proceso
-        form.append('_token', csrfToken); // Agregar el token CSRF
-        form.append('selected_records', JSON.stringify(selectedRecords)); // Agregar los IDs seleccionados
+        form.append("_token", csrfToken); // Agregar el token CSRF
+        form.append("selected_records", JSON.stringify(selectedRecords)); // Agregar los IDs seleccionados
 
         // Usar fetch para enviar el formulario y manejar la respuesta
-        fetch('/descargar-plano-focus', {
-            method: 'POST',
-            body: form
+        fetch("/descargar-plano-focus", {
+            method: "POST",
+            body: form,
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Iniciar la descarga del archivo Excel
-                    window.location.href = data.file;
-
-                    // Mostrar mensaje de éxito con SweetAlert
-                    Swal.fire({
-                        title: 'Éxito!',
-                        text: 'Excel descargado con éxito.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                } else {
-                    // Manejo de errores
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Hubo un problema al descargar el Excel.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+            .then((response) => {
+                if (response.ok) {
+                    return response.blob(); // Retorna el blob para la descarga del archivo
                 }
+                throw new Error("Network response was not ok.");
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `resultado_${Date.now()}.xlsx`; // Nombre del archivo de descarga
+                document.body.appendChild(a);
+                a.click(); // Simula un clic en el enlace para iniciar la descarga
+                a.remove(); // Elimina el enlace del DOM
+                window.URL.revokeObjectURL(url); // Libera el objeto URL
+
+                // Cerrar el spinner y mostrar mensaje de éxito
+                Swal.close(); // Cerrar el spinner
+
+                // Mostrar mensaje de éxito con SweetAlert
                 Swal.fire({
-                    title: 'Error!',
-                    text: 'Hubo un problema al procesar la solicitud.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+                    title: "Éxito!",
+                    text: "Excel descargado con éxito.",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                Swal.close(); // Cerrar el spinner en caso de error
+                Swal.fire({
+                    title: "Error!",
+                    text: "Hubo un problema al procesar la solicitud.",
+                    icon: "error",
+                    confirmButtonText: "OK",
                 });
             });
     });

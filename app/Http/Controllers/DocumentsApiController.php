@@ -87,7 +87,7 @@ class DocumentsApiController extends Controller
 
             // Enviar los datos a ViaFirma usando Guzzle
             $client = new Client();
-            $response = $client->post('https://sandbox.viafirma.com/documents/api/v3/set', [
+            $response = $client->post(env('URL_VIA_FIRMA') . '/api/v3/set', [
                 'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json',
