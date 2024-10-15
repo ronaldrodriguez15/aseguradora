@@ -169,6 +169,14 @@ class ReportController extends Controller
         // Obtener los datos de los registros seleccionados como una colección
         $inabilities = Inability::whereIn('id', $selectedRecords)->get();
 
+        if ($inabilities->isEmpty()) {
+            // Si no se encontraron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontraron registros para descargar.'
+            ]);
+        }
+
         // Crear una instancia de FocusExport con la colección
         $export = new FocusExport($inabilities);
 
@@ -176,7 +184,6 @@ class ReportController extends Controller
         $spreadsheet = IOFactory::load(public_path('plano_focus/plantilla.xlsx'));
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Suponiendo que los datos comienzan en la fila 3 (la fila 1 puede ser el encabezado)
         $row = 3; // Fila donde comenzaremos a escribir los datos
 
         // Obtener la colección desde el export
@@ -185,18 +192,26 @@ class ReportController extends Controller
         // Agregar datos a la plantilla
         foreach ($data as $inability) {
             // Escribir datos en las celdas
-            $sheet->setCellValue('B' . $row, $inability->no_solicitud);
-            $sheet->setCellValue('C' . $row, $inability->no_identificacion);
-            $sheet->setCellValue('D' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
-            $sheet->setCellValue('A' . $row, $inability->fecha_nacimiento_asesor);
+            $sheet->setCellValue('A' . $row, $inability->no_solicitud);
+            $sheet->setCellValue('B' . $row, $inability->no_identificacion);
+            $sheet->setCellValue('C' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
+            $sheet->setCellValue('D' . $row, $inability->fecha_nacimiento_asesor);
             $sheet->setCellValue('E' . $row, $inability->edad);
             $sheet->setCellValue('F' . $row, $inability->prima_pago_prima_seguro);
-            $sheet->setCellValue('G' . $row, $inability->valor_ibc_basico);
+            $sheet->setCellValue('G' . $row, $inability->desea_valor);
             $sheet->setCellValue('H' . $row, $inability->valor_ibc_basico);
-            $sheet->setCellValue('I' . $row, $inability->gastos_administrativos);
-            $sheet->setCellValue('J' . $row, $inability->val_total_desc_mensual);
-            $sheet->setCellValue('K' . $row, $inability->val_total_desc_mensual);
-            $sheet->setCellValue('L' . $row, $inability->val_total_desc_mensual);
+            $sheet->setCellValue('I' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('J' . $row, $inability->total);
+            $sheet->setCellValue('K' . $row, $inability->amparo_basico);
+
+            // Convertir los valores de string a números quitando los puntos y cambiando las comas por puntos decimales
+            $total = str_replace(['.', ','], ['', '.'], $inability->total);
+            $amparo_basico = str_replace(['.', ','], ['', '.'], $inability->amparo_basico);
+            // Convertir a float para hacer la suma
+            $suma = (float)$total + (float)$amparo_basico;
+
+            // Escribir el resultado en la celda L
+            $sheet->setCellValue('L' . $row, number_format($suma, 2, ',', '.'));
             $sheet->setCellValue('M' . $row, $inability->entidad_pagadora_sucursal);
             $tipo_pago = '';
             if ($inability->forma_pago === 'mensual_libranza') {
@@ -204,13 +219,17 @@ class ReportController extends Controller
             } else {
                 $tipo_pago = 'Debito Automatico';
             }
-            $sheet->setCellValue('N' . $row, $tipo_pago);
-            $sheet->setCellValue('O' . $row, $inability->banco);
-            $sheet->setCellValue('P' . $row, $inability->ciudad_banco);
-            $sheet->setCellValue('Q' . $row, $inability->tipo_cuenta);
-            $sheet->setCellValue('R' . $row, $inability->no_cuenta);
+            $sheet->setCellValue('N' . $row, $tipo_pago ?? '0');
+            $sheet->setCellValue('O' . $row, $inability->banco ?? '0');
+            $sheet->setCellValue('P' . $row, $inability->ciudad_banco ?? '0');
+
+            if ($inability->forma_pago !== 'mensual_libranza') {
+                $sheet->setCellValue('Q' . $row, $inability->tipo_cuenta ?? '0');
+            }
+
+            $sheet->setCellValue('R' . $row, $inability->no_cuenta ?? '0');
             $sheet->setCellValue('S' . $row, $inability->val_prevexequial_eclusivo);
-            $sheet->setCellValue('T' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('T' . $row, $inability->gastos_administrativos);
             $sheet->setCellValue('U' . $row, $inability->val_total_desc_mensual);
             $sheet->setCellValue('v' . $row, $inability->created_at->format('Y-m-d'));
             $sheet->setCellValue('W' . $row, $inability->ciudad_residencia);
@@ -219,77 +238,77 @@ class ReportController extends Controller
             $sheet->setCellValue('Z' . $row, $inability->direccion_residencia);
             $sheet->setCellValue('AA' . $row, $inability->ciudad_residencia);
             $sheet->setCellValue('AB' . $row, 'Cundinamarca');
-            $sheet->setCellValue('AC' . $row, $inability->celular);
-            $sheet->setCellValue('AD' . $row, $inability->telefono_fijo);
-            $sheet->setCellValue('AE' . $row, $inability->email_corporativo);
-            $sheet->setCellValue('AF' . $row, $inability->ocupacion_asegurado);
-            $sheet->setCellValue('AG' . $row, $inability->eps_asegurado);
-            $sheet->setCellValue('AH' . $row, $inability->descuento_eps);
-            $sheet->setCellValue('AI' . $row, '');
-            $sheet->setCellValue('AJ' . $row, $inability->proteger_mascotas);
-            $sheet->setCellValue('AK' . $row, $inability->nombre_m1);
-            $sheet->setCellValue('AL' . $row, $inability->tipo_m1);
-            $sheet->setCellValue('AM' . $row, $inability->raza_m1);
-            $sheet->setCellValue('AN' . $row, $inability->color_m1);
-            $sheet->setCellValue('AO' . $row, $inability->genero_m1);
-            $sheet->setCellValue('AP' . $row, $inability->edad_m1);
-            $sheet->setCellValue('AQ' . $row, $inability->nombre_m2);
-            $sheet->setCellValue('AR' . $row, $inability->tipo_m2);
-            $sheet->setCellValue('AS' . $row, $inability->raza_m2);
-            $sheet->setCellValue('AT' . $row, $inability->color_m2);
-            $sheet->setCellValue('AU' . $row, $inability->genero_m2);
-            $sheet->setCellValue('AV' . $row, $inability->edad_m2);
-            $sheet->setCellValue('AW' . $row, $inability->nombre_m3);
-            $sheet->setCellValue('AX' . $row, $inability->tipo_m3);
-            $sheet->setCellValue('AY' . $row, $inability->raza_m3);
-            $sheet->setCellValue('AZ' . $row, $inability->color_m3);
+            $sheet->setCellValue('AC' . $row, $inability->celular ?? '0');
+            $sheet->setCellValue('AD' . $row, $inability->telefono_fijo ?? '0');
+            $sheet->setCellValue('AE' . $row, $inability->email_corporativo ?? '0');
+            $sheet->setCellValue('AF' . $row, $inability->ocupacion_asegurado ?? '0');
+            $sheet->setCellValue('AG' . $row, $inability->nombre_eps ?? '0');
+            $sheet->setCellValue('AH' . $row, $inability->descuento_eps ?? '0');
+            $sheet->setCellValue('AI' . $row, $inability->fuente_recursos ?? '0');
+            $sheet->setCellValue('AJ' . $row, $inability->proteger_mascotas ?? '0');
+            $sheet->setCellValue('AK' . $row, $inability->nombre_m1 ?? '0');
+            $sheet->setCellValue('AL' . $row, $inability->tipo_m1 ?? '0');
+            $sheet->setCellValue('AM' . $row, $inability->raza_m1 ?? '0');
+            $sheet->setCellValue('AN' . $row, $inability->color_m1 ?? '0');
+            $sheet->setCellValue('AO' . $row, $inability->genero_m1 ?? '0');
+            $sheet->setCellValue('AP' . $row, $inability->edad_m1 ?? '0');
+            $sheet->setCellValue('AQ' . $row, $inability->nombre_m2 ?? '0');
+            $sheet->setCellValue('AR' . $row, $inability->tipo_m2 ?? '0');
+            $sheet->setCellValue('AS' . $row, $inability->raza_m2 ?? '0');
+            $sheet->setCellValue('AT' . $row, $inability->color_m2 ?? '0');
+            $sheet->setCellValue('AU' . $row, $inability->genero_m2 ?? '0');
+            $sheet->setCellValue('AV' . $row, $inability->edad_m2 ?? '0');
+            $sheet->setCellValue('AW' . $row, $inability->nombre_m3 ?? '0');
+            $sheet->setCellValue('AX' . $row, $inability->tipo_m3 ?? '0');
+            $sheet->setCellValue('AY' . $row, $inability->raza_m3 ?? '0');
+            $sheet->setCellValue('AZ' . $row, $inability->color_m3 ?? '0');
 
-            $sheet->setCellValue('BA' . $row, $inability->genero_m3);
-            $sheet->setCellValue('BB' . $row, $inability->edad_m3);
-            $sheet->setCellValue('BC' . $row, $inability->nombres_s1 . ' ' . $inability->apellidos_s1);
-            $sheet->setCellValue('BD' . $row, $inability->parentesco_s1);
-            $sheet->setCellValue('BE' . $row, $inability->porcentaje_s1);
-            $sheet->setCellValue('BF' . $row, '');
-            $sheet->setCellValue('BH' . $row, $inability->tipo_identidad_s1);
-            $sheet->setCellValue('BG' . $row, $inability->n_identificacion_s1);
-            $sheet->setCellValue('BI' . $row, $inability->nombres_s2 . ' ' . $inability->apellidos_s2);
-            $sheet->setCellValue('BJ' . $row, $inability->parentesco_s2);
-            $sheet->setCellValue('BK' . $row, $inability->porcentaje_s2);
-            $sheet->setCellValue('BL' . $row, '');
-            $sheet->setCellValue('BM' . $row, $inability->tipo_identidad_s2);
-            $sheet->setCellValue('BN' . $row, $inability->n_identificacion_s2);
-            $sheet->setCellValue('BO' . $row, $inability->nombres_s3 . ' ' . $inability->apellidos_s3);
-            $sheet->setCellValue('BP' . $row, $inability->parentesco_s3);
-            $sheet->setCellValue('BQ' . $row, $inability->porcentaje_s3);
-            $sheet->setCellValue('BR' . $row, '');
-            $sheet->setCellValue('BS' . $row, $inability->tipo_identidad_s3);
-            $sheet->setCellValue('BT' . $row, $inability->n_identificacion_s3);
-            $sheet->setCellValue('BU' . $row, $inability->cancer);
-            $sheet->setCellValue('BV' . $row, $inability->corazon);
-            $sheet->setCellValue('BW' . $row, $inability->diabetes);
-            $sheet->setCellValue('BX' . $row, $inability->enf_hepaticas);
-            $sheet->setCellValue('BY' . $row, $inability->enf_neurologicas);
-            $sheet->setCellValue('BZ' . $row, $inability->pulmones);
+            $sheet->setCellValue('BA' . $row, $inability->genero_m3 ?? '0');
+            $sheet->setCellValue('BB' . $row, $inability->edad_m3 ?? '0');
+            $sheet->setCellValue('BC' . $row, $inability->nombres_s1 ?? '0');
+            $sheet->setCellValue('BD' . $row, $inability->parentesco_s1 ?? '0');
+            $sheet->setCellValue('BE' . $row, $inability->porcentaje_s1 ?? '0');
+            $sheet->setCellValue('BF' . $row, 'GRATUITO');
+            $sheet->setCellValue('BH' . $row, $inability->n_identificacion_s1 ?? '0');
+            $sheet->setCellValue('BG' . $row, $inability->tipo_identidad_s1 ?? '0');
+            $sheet->setCellValue('BI' . $row, $inability->nombres_s2 ?? '0');
+            $sheet->setCellValue('BJ' . $row, $inability->parentesco_s2 ?? '0');
+            $sheet->setCellValue('BK' . $row, $inability->porcentaje_s2 ?? '0');
+            $sheet->setCellValue('BL' . $row, 'GRATUITO');
+            $sheet->setCellValue('BM' . $row, $inability->tipo_identidad_s2 ?? '0');
+            $sheet->setCellValue('BN' . $row, $inability->n_identificacion_s2 ?? '0');
+            $sheet->setCellValue('BO' . $row, $inability->nombres_s3 ?? '0');
+            $sheet->setCellValue('BP' . $row, $inability->parentesco_s3 ?? '0');
+            $sheet->setCellValue('BQ' . $row, $inability->porcentaje_s3 ?? '0');
+            $sheet->setCellValue('BR' . $row, 'GRATUITO');
+            $sheet->setCellValue('BS' . $row, $inability->tipo_identidad_s3 ?? '0');
+            $sheet->setCellValue('BT' . $row, $inability->n_identificacion_s3 ?? '0');
+            $sheet->setCellValue('BU' . $row, $inability->cancer ?? '0');
+            $sheet->setCellValue('BV' . $row, $inability->corazon ?? '0');
+            $sheet->setCellValue('BW' . $row, $inability->diabetes ?? '0');
+            $sheet->setCellValue('BX' . $row, $inability->enf_hepaticas ?? '0');
+            $sheet->setCellValue('BY' . $row, $inability->enf_neurologicas ?? '0');
+            $sheet->setCellValue('BZ' . $row, $inability->pulmones ?? '0');
 
-            $sheet->setCellValue('CA' . $row, $inability->presion_arterial);
-            $sheet->setCellValue('CB' . $row, $inability->rinones);
-            $sheet->setCellValue('CC' . $row, $inability->infeccion_vih);
-            $sheet->setCellValue('CD' . $row, $inability->perdida_funcional_anatomica);
-            $sheet->setCellValue('CE' . $row, $inability->accidentes_labores_ocupacion);
-            $sheet->setCellValue('CF' . $row, $inability->hospitalizacion_intervencion_quirurgica);
-            $sheet->setCellValue('CG' . $row, $inability->enfermedad_diferente);
-            $sheet->setCellValue('CH' . $row, $inability->descripcion_de_enfermedades);
-            $sheet->setCellValue('CI' . $row, $inability->nombres_apellidos_r1);
-            $sheet->setCellValue('CJ' . $row, $inability->telefono_r1);
-            $sheet->setCellValue('CK' . $row, $inability->entidad_r1);
-            $sheet->setCellValue('CL' . $row, $inability->nombres_apellidos_r2);
-            $sheet->setCellValue('CM' . $row, $inability->telefono_r2);
-            $sheet->setCellValue('CN' . $row, $inability->entidad_r2);
-            $sheet->setCellValue('CO' . $row, $inability->nombres_apellidos_r3);
-            $sheet->setCellValue('CP' . $row, $inability->telefono_r3);
-            $sheet->setCellValue('CQ' . $row, $inability->entidad_r3);
-            $sheet->setCellValue('CR' . $row, $inability->nombre_asesor);
-            $sheet->setCellValue('CS' . $row, $inability->codigo_asesor);
+            $sheet->setCellValue('CA' . $row, $inability->presion_arterial ?? '0');
+            $sheet->setCellValue('CB' . $row, $inability->rinones ?? '0');
+            $sheet->setCellValue('CC' . $row, $inability->infeccion_vih ?? '0');
+            $sheet->setCellValue('CD' . $row, $inability->perdida_funcional_anatomica ?? '0');
+            $sheet->setCellValue('CE' . $row, $inability->accidentes_labores_ocupacion ?? '0');
+            $sheet->setCellValue('CF' . $row, $inability->hospitalizacion_intervencion_quirurgica ?? '0');
+            $sheet->setCellValue('CG' . $row, $inability->enfermedad_diferente ?? '0');
+            $sheet->setCellValue('CH' . $row, $inability->descripcion_de_enfermedades ?? '0');
+            $sheet->setCellValue('CI' . $row, $inability->nombres_apellidos_r1 ?? '0');
+            $sheet->setCellValue('CJ' . $row, $inability->telefono_r1 ?? '0');
+            $sheet->setCellValue('CK' . $row, $inability->entidad_r1 ?? '0');
+            $sheet->setCellValue('CL' . $row, $inability->nombres_apellidos_r2 ?? '0');
+            $sheet->setCellValue('CM' . $row, $inability->telefono_r2 ?? '0');
+            $sheet->setCellValue('CN' . $row, $inability->entidad_r2 ?? '0');
+            $sheet->setCellValue('CO' . $row, $inability->nombres_apellidos_r3 ?? '0');
+            $sheet->setCellValue('CP' . $row, $inability->telefono_r3 ?? '0');
+            $sheet->setCellValue('CQ' . $row, $inability->entidad_r3 ?? '0');
+            $sheet->setCellValue('CR' . $row, $inability->nombre_asesor ?? '0');
+            $sheet->setCellValue('CS' . $row, $inability->codigo_asesor ?? '0');
 
             $fontSize = 9; // Tamaño de fuente deseado
 
@@ -307,6 +326,85 @@ class ReportController extends Controller
         }, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="plano_focus_' . time() . '.xlsx"',
+        ]);
+    }
+
+    public function descargarSeguimientoVentas(Request $request)
+    {
+        // Obtener los IDs seleccionados
+        $selectedRecords = json_decode($request->input('selected_records'));
+
+        // Obtener los datos de los registros seleccionados como una colección
+        $inabilities = Inability::whereIn('id', $selectedRecords)->get();
+
+        if ($inabilities->isEmpty()) {
+            // Si no se encontraron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontraron registros para descargar.'
+            ]);
+        }
+
+        // Crear una instancia de FocusExport con la colección
+        $export = new FocusExport($inabilities);
+
+        // Cargar la plantilla existente
+        $spreadsheet = IOFactory::load(public_path('plano_focus/seguimiento.xlsx'));
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $row = 2; // Fila donde comenzaremos a escribir los datos
+
+        // Obtener la colección desde el export
+        $data = $export->collection();
+
+        // Agregar datos a la plantilla
+        foreach ($data as $inability) {
+            // Escribir datos en las celdas
+            $sheet->setCellValue('A' . $row, $inability->no_solicitud);
+            $sheet->setCellValue('B' . $row, $inability->nombre_asesor);
+            $sheet->setCellValue('C' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
+            $sheet->setCellValue('D' . $row, $inability->no_identificacion);
+            $sheet->setCellValue('E' . $row, $inability->updated_at->format('Y-m-d'));
+            $sheet->setCellValue('F' . $row, 'Fecha firmado');
+            $sheet->setCellValue('G' . $row, 'Firmado');
+            $sheet->setCellValue('H' . $row, $inability->entidad_pagadora_sucursal);
+            $sheet->setCellValue('I' . $row, $inability->celular);
+            $sheet->setCellValue('J' . $row, $inability->email_corporativo);
+            $sheet->setCellValue('K' . $row, $inability->fecha_nacimiento_asesor);
+            $sheet->setCellValue('L' . $row, $inability->edad);
+            $sheet->setCellValue('M' . $row, $inability->valor_ibc_basico);
+            $sheet->setCellValue('N' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('O' . $row, $inability->amparo_basico);
+            $sheet->setCellValue('P' . $row, $inability->prima_pago_prima_seguro);
+            $sheet->setCellValue('Q' . $row, $inability->gastos_administrativos);
+            $sheet->setCellValue('R' . $row, '0');
+            $tipo_pago = '';
+            if ($inability->forma_pago === 'mensual_libranza') {
+                $tipo_pago = 'Mensual Libranza';
+            } else {
+                $tipo_pago = 'Debito Automatico';
+            }
+            $sheet->setCellValue('S' . $row, $tipo_pago);
+            $sheet->setCellValue('T' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->no_cuenta : '0');
+            $sheet->setCellValue('U' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->tipo_cuenta : '0');    
+            $sheet->setCellValue('V' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->banco : '0');
+
+            $fontSize = 8; // Tamaño de fuente deseado
+
+            $sheet->getStyle('A' . $row . ':V' . $row)->getFont()->setSize($fontSize);
+
+            $row++;
+        }
+
+        // Crear el escritor de Excel
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        // Hacer que la respuesta sea una descarga
+        return response()->stream(function () use ($writer) {
+            $writer->save('php://output');
+        }, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="plano_seguimiento_' . time() . '.xlsx"',
         ]);
     }
 

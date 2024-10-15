@@ -184,15 +184,16 @@
                         <div class="form-group col-md-3">
                             <label for="telefono_fijo">Teléfono fijo</label>
                             <input type="number" class="form-control @error('telefono_fijo') is-invalid @enderror"
-                                id="telefono_fijo" name="telefono_fijo" placeholder="sin comas ni puntos">
+                                id="telefono_fijo" name="telefono_fijo" placeholder="sin comas ni puntos" required>
                             @error('telefono_fijo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="form-group col-md-3">
                             <label for="celular">Teléfono celular</label>
                             <input type="number" class="form-control @error('celular') is-invalid @enderror"
-                                id="celular" name="celular" placeholder="sin comas ni puntos">
+                                id="celular" name="celular" placeholder="sin comas ni puntos" required>
                             @error('celular')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
