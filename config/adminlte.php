@@ -329,8 +329,6 @@ return [
                     'text' => 'Consulta afiliaciones',
                     'url' => 'reportes',
                     'icon' => 'fa fa-search',
-                    'label' => 'Nuevo',
-                    'label_color' => 'success',
                 ],
             ],
         ],
