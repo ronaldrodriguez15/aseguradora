@@ -58,6 +58,20 @@ document
         } else {
             edadInput.classList.add("is-valid");
         }
+
+        // Validación de la fecha de nacimiento
+        const maxDate = new Date("2005-12-31");
+        const selectedDate = new Date(fechaNacimiento);
+
+        if (selectedDate > maxDate) {
+            this.classList.add("is-invalid");
+            this.setCustomValidity(
+                "La fecha no puede ser posterior al 31 de diciembre de 2005."
+            );
+        } else {
+            this.classList.remove("is-invalid");
+            this.setCustomValidity(""); // Restablecer el estado del mensaje de error
+        }
     });
 
 // Función para calcular la edad a partir de la fecha de nacimiento
@@ -71,8 +85,3 @@ function calcularEdad(fechaNacimiento) {
     }
     return edad;
 }
-
-
-
-
-
