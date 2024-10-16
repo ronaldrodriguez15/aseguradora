@@ -331,8 +331,20 @@ class ReportController extends Controller
 
     public function descargarSeguimientoVentas(Request $request)
     {
-        // Obtener los IDs seleccionados
+        // Obtener los IDs seleccionados desde la solicitud
         $selectedRecords = json_decode($request->input('selected_records'));
+
+        // Log para verificar si los datos están llegando correctamente
+        Log::info('Registros seleccionados: ', ['selectedRecords' => $selectedRecords]);
+
+        // Validar si los registros seleccionados están vacíos
+        if (empty($selectedRecords)) {
+            // Si no se seleccionaron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se han enviado registros seleccionados.'
+            ]);
+        }
 
         // Obtener los datos de los registros seleccionados como una colección
         $inabilities = Inability::whereIn('id', $selectedRecords)->get();
@@ -345,28 +357,62 @@ class ReportController extends Controller
             ]);
         }
 
-        // Crear una instancia de FocusExport con la colección
-        $export = new FocusExport($inabilities);
+        try {
+            // Cargar la plantilla existente
+            $spreadsheet = IOFactory::load(public_path('plano_focus/seguimiento.xlsx'));
+        } catch (\Exception $e) {
+            // Manejar cualquier error al cargar el archivo Excel
+            Log::error('Error al cargar la plantilla de Excel: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar la plantilla de Excel.'
+            ], 500);
+        }
 
-        // Cargar la plantilla existente
-        $spreadsheet = IOFactory::load(public_path('plano_focus/seguimiento.xlsx'));
+        // Continuar con el proceso normal para agregar los datos al Excel
         $sheet = $spreadsheet->getActiveSheet();
-
         $row = 2; // Fila donde comenzaremos a escribir los datos
 
         // Obtener la colección desde el export
+        $export = new FocusExport($inabilities);
         $data = $export->collection();
 
         // Agregar datos a la plantilla
         foreach ($data as $inability) {
-            // Escribir datos en las celdas
             $sheet->setCellValue('A' . $row, $inability->no_solicitud);
             $sheet->setCellValue('B' . $row, $inability->nombre_asesor);
             $sheet->setCellValue('C' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
             $sheet->setCellValue('D' . $row, $inability->no_identificacion);
             $sheet->setCellValue('E' . $row, $inability->updated_at->format('Y-m-d'));
-            $sheet->setCellValue('F' . $row, 'Fecha firmado');
-            $sheet->setCellValue('G' . $row, 'Firmado');
+
+            $signedDocumentsCount = DocumentSigned::where('inability_id', $inability->id)->count();
+
+            // Determinar el estado del firmado
+            if ($signedDocumentsCount === 0) {
+                $estadoFirmado = 'Sin firmar';
+                $fechaFirmado = '';
+                $colorEstado = 'ff6961'; // Rojo
+            } elseif ($signedDocumentsCount < 3) {
+                $estadoFirmado = 'Pendiente';
+                $fechaFirmado = '';
+                $colorEstado = '84b6f4'; // Azul
+            } else {
+                $estadoFirmado = 'Firmado';
+                $ultimoDocumentoFirmado = DocumentSigned::where('inability_id', $inability->id)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $fechaFirmado = $ultimoDocumentoFirmado->created_at->format('Y-m-d');
+                $colorEstado = '77dd77'; // Verde
+            }
+
+            $sheet->setCellValue('F' . $row, $fechaFirmado);
+            $sheet->setCellValue('G' . $row, $estadoFirmado);
+
+            // Aplicar color a la celda de estado
+            $sheet->getStyle('G' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $sheet->getStyle('G' . $row)->getFill()->getStartColor()->setARGB($colorEstado);
+
+
             $sheet->setCellValue('H' . $row, $inability->entidad_pagadora_sucursal);
             $sheet->setCellValue('I' . $row, $inability->celular);
             $sheet->setCellValue('J' . $row, $inability->email_corporativo);
@@ -378,19 +424,14 @@ class ReportController extends Controller
             $sheet->setCellValue('P' . $row, $inability->prima_pago_prima_seguro);
             $sheet->setCellValue('Q' . $row, $inability->gastos_administrativos);
             $sheet->setCellValue('R' . $row, '0');
-            $tipo_pago = '';
-            if ($inability->forma_pago === 'mensual_libranza') {
-                $tipo_pago = 'Mensual Libranza';
-            } else {
-                $tipo_pago = 'Debito Automatico';
-            }
+
+            $tipo_pago = $inability->forma_pago === 'mensual_libranza' ? 'Mensual Libranza' : 'Debito Automatico';
             $sheet->setCellValue('S' . $row, $tipo_pago);
             $sheet->setCellValue('T' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->no_cuenta : '0');
-            $sheet->setCellValue('U' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->tipo_cuenta : '0');    
+            $sheet->setCellValue('U' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->tipo_cuenta : '0');
             $sheet->setCellValue('V' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->banco : '0');
 
             $fontSize = 8; // Tamaño de fuente deseado
-
             $sheet->getStyle('A' . $row . ':V' . $row)->getFont()->setSize($fontSize);
 
             $row++;
@@ -444,6 +485,9 @@ class ReportController extends Controller
                 // Obtener los documentos relacionados con la afiliación
                 $documents = DocumentSigned::where('inability_id', $inabilityId)->get();
 
+                // Log de la variable $inability para depuración
+                Log::info('Detalles de los documentos: ', ['inability' => $inabilityId]);
+
                 // Solo agregar carpeta si hay documentos
                 if ($documents->isNotEmpty()) {
                     $hasDocuments = true; // Hay al menos un documento
@@ -453,7 +497,10 @@ class ReportController extends Controller
 
                     // Agregar cada documento al archivo ZIP
                     foreach ($documents as $document) {
-                        $filePath = storage_path('app/' . $document->document_path);
+                        // Construir la ruta correcta para el archivo
+                        $filePath = public_path("storage/{$document->document_path}"); // Asegúrate de que la ruta sea correcta
+
+                        Log::info('Ruta del archivo que se intenta agregar al ZIP: ', ['file_path' => $filePath]);
 
                         if (File::exists($filePath)) {
                             $zip->addFile($filePath, "$folderName/" . basename($filePath));

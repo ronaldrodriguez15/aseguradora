@@ -102,9 +102,10 @@ Route::middleware([
     Route::post('/reportes', [ReportController::class, 'index']);
     Route::post('/descargar-pdfs', [ReportController::class, 'descargarPDFs']);
     Route::post('/descargar-plano-focus', [ReportController::class, 'descargarPlanoFocus']);
-    Route::post('/descargar-seguimiento_ventas', [ReportController::class, 'descargarSeguimientoVentas']);
+    Route::post('/descargar-seguimiento-ventas', [ReportController::class, 'descargarSeguimientoVentas']);
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

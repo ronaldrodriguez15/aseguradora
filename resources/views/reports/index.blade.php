@@ -227,7 +227,7 @@
                 <a class="btn btn-success mb-4" id="descargar-plano" href="#">
                     Descargar Plano Focus <i class="fas fa-file-excel ml-2"></i>
                 </a>
-                <a class="btn btn-primary mb-4" id="descargar-seguimiento" href="#">
+                <a class="btn btn-success mb-4" id="descargar-seguimiento" href="#">
                     Descargar Seguimiento Ventas <i class="fas fa-file-excel ml-2"></i>
                 </a>                
                 <a class="btn btn-danger mb-4" id="descargar-pdfs" href="#">

@@ -183,7 +183,7 @@ document.getElementById("descargar-seguimiento").addEventListener("click", funct
     form.append("_token", csrfToken);
     form.append("selected_records", JSON.stringify(selectedRecords));
 
-    fetch("/descargar-seguimiento_ventas", {
+    fetch("/descargar-seguimiento-ventas", {
         method: "POST",
         body: form,
     })
