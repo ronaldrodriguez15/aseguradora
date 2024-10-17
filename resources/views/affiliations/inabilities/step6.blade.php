@@ -85,11 +85,10 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-right">
-                        <a class="btn btn-danger mb-4 pdf-btn" id="btn-estasseguro"
-                            href="{{ route('incapacidades.generarPDF', $inabilityId) }}">
+                        <a class="btn btn-danger mb-4 pdf-btn" id="generar-pdf"
+                            data-url="{{ route('incapacidades.generarPDF', $inabilityId) }}">
                             <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Estasseguro)
                         </a>
-
                         @if ($aseguradora === 'Positiva Seguros')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-positiva"
                                 href="{{ route('incapacidades.generarPDFpositiva', $inabilityId) }}">
@@ -129,6 +128,7 @@
     </div>
     <br>
 
+
     <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true"
         data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg">
@@ -142,6 +142,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="closeModalBtn" class="btn btn-primary">Ir a inicio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar el PDF -->
+    <div class="modal fade" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="modalPDFLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPDFLabel">Visualizar Documento PDF</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="pdfViewerCanvas" style="width: 100%;"></canvas>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -298,6 +319,74 @@
             $('#documentModal').modal({
                 backdrop: 'static',
                 keyboard: false
+            });
+        });
+
+        $(document).ready(function() {
+            $('#generar-pdf').on('click', function(e) {
+                e.preventDefault();
+
+                var url = $(this).data('url'); // Obtener la URL del PDF desde el botón
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close(); // Cerrar el loader
+
+                        if (response.pdf_url) {
+                            var pdfUrl = response.pdf_url;
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvas');
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(
+                                    renderContext); // Renderiza la página en el canvas
+                                });
+                            });
+
+                            // Abre el modal para mostrar el PDF
+                            $('#modalPDF').modal('show');
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON); // Verifica el error en la consola
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
             });
         });
     </script>

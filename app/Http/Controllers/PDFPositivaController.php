@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
 use setasign\Fpdi\Fpdi;
-    use Illuminate\Support\Facades\DB;
 
 class PDFPositivaController extends Controller
 {
@@ -35,18 +34,18 @@ class PDFPositivaController extends Controller
         }
 
         // Obtener el consecutivo máximo en la tabla inabilities
-        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
+        $maxInability = Inability::orderBy('no_solicitud', 'desc')->first();
 
         // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
+        $maxConsecutivo = $maxInability ? $maxInability->no_solicitud : 0;
 
         // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->consecutivo < $maxConsecutivo) {
+        if ($inability->no_solicitud < $maxConsecutivo) {
             // Actualizar el consecutivo al máximo + 1
-            $inability->consecutivo = $maxConsecutivo + 1;
+            $inability->no_solicitud = $maxConsecutivo + 1;
         } else {
             // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->consecutivo += 1;
+            $inability->no_solicitud += 1;
         }
 
         // Guardar los cambios en el registro

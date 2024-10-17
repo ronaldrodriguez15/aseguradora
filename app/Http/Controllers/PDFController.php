@@ -6,6 +6,7 @@ use setasign\Fpdi\Fpdi;
 use App\Models\Inability;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Docuuments;
+use Illuminate\Support\Facades\Log;
 
 class PDFController extends Controller
 {
@@ -15,7 +16,7 @@ class PDFController extends Controller
         $inability = Inability::find($id);
 
         if (!$inability) {
-            abort(404, 'Incapacidad no encontrada.');
+            return response()->json(['error' => 'Incapacidad no encontrada.'], 404);
         }
 
         // Obtener el documento desde el modelo Documents
@@ -23,7 +24,7 @@ class PDFController extends Controller
 
         // Asegúrate de que exista el documento
         if (!$document || empty($document->estasseguro_document)) {
-            abort(404, 'Documento no encontrado.');
+            return response()->json(['error' => 'Documento no encontrado.'], 404);
         }
 
         // Obtener la ruta del archivo PDF almacenado
@@ -31,32 +32,31 @@ class PDFController extends Controller
 
         // Verificar si el archivo existe en Storage
         if (!Storage::disk('public')->exists($pdfFilePath)) {
-            abort(404, 'Archivo PDF no encontrado.');
+            return response()->json(['error' => 'Archivo PDF no encontrado.'], 404);
         }
 
         // Obtener la ruta completa del archivo
         $fullPath = Storage::disk('public')->path($pdfFilePath);
 
-        // Obtener el consecutivo máximo en la tabla
-        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
+        $maxInability = Inability::orderBy('no_solicitud', 'desc')->first();
 
         // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
+        $maxConsecutivo = $maxInability ? $maxInability->no_solicitud : 0;
 
         // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->consecutivo < $maxConsecutivo) {
-            // Actualizar el consecutivo al máximo + 1
-            $inability->consecutivo = $maxConsecutivo + 1;
+        if ($inability->no_solicitud < $maxConsecutivo) {
+            $inability->no_solicitud = $maxConsecutivo + 1;
         } else {
-            // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->consecutivo += 1;
+            $inability->no_solicitud += 1;
         }
 
-        // Guardar los cambios en el registro
         $inability->save();
 
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $fullPath);
+        $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $fullPath);
+
+        // Retornar la URL del PDF generado
+        return response()->json(['pdf_url' => asset('storage/' . $inability->path_estasseguro)]);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -407,11 +407,13 @@ class PDFController extends Controller
 
         $rutaArchivo = $rutaCarpeta . '/' . $nombreArchivo;
 
-        $pdf->Output('F', $rutaArchivo); // 'F' indica que se guarda en un archivo
+        $pdf->Output('F', $rutaArchivo); // Guarda el archivo
 
+        // Guardar la ruta en el modelo
         $inability->path_estasseguro = 'documentos_estasseguro/' . $nombreArchivo;
         $inability->save();
 
-        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
+        // Retorna la ruta del archivo
+        return $nombreArchivo; // Asegúrate de retornar solo el nombre o la ruta aquí
     }
 }
