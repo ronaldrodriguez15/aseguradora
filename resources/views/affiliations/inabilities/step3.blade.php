@@ -349,8 +349,8 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="n_identificacion_s1">Número de identificación</label>
-                            <input type="number" class="form-control" id="n_identificacion_s1"
-                                name="n_identificacion_s1" placeholder="Introduce el No de indetificación">
+                            <input type="text" class="form-control" id="n_identificacion_s1"
+                                name="n_identificacion_s1" placeholder="Introduce el No de identificación">
                         </div>
                     </div>
                 </div>
@@ -405,11 +405,6 @@
                             <input type="text" class="form-control" id="edad_s2" name="edad_s2"
                                 placeholder="Introduce la edad">
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="porcentaje_s2">Porcentaje</label>
-                            <input type="text" class="form-control" id="porcentaje_s2" name="porcentaje_s2"
-                                placeholder="%0">
-                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
@@ -432,8 +427,8 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="n_identificacion_s2">Número de identificación</label>
-                            <input type="number" class="form-control" id="n_identificacion_s2"
-                                name="n_identificacion_s2" placeholder="Introduce el No de indetificación">
+                            <input type="text" class="form-control" id="n_identificacion_s2"
+                                name="n_identificacion_s2" placeholder="Introduce el No de identificación">
                         </div>
                     </div>
                 </div>
@@ -514,9 +509,9 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="n_identificacion_s1">Número de identificación</label>
-                            <input type="number" class="form-control" id="n_identificacion_s3"
-                                name="n_identificacion_s3" placeholder="Introduce el No de indetificación">
+                            <label for="n_identificacion_s3">Número de identificación</label>
+                            <input type="text" class="form-control" id="n_identificacion_s3"
+                                name="n_identificacion_s3" placeholder="Introduce el No de identificación">
                         </div>
                     </div>
                 </div>

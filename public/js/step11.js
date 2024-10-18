@@ -85,3 +85,45 @@ function calcularEdad(fechaNacimiento) {
     }
     return edad;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const valorIbcBasico = document.getElementById("valor_ibc_basico");
+    const errorValor = document.getElementById("errorValor");
+
+    const min = 1300000; // Valor mínimo (1.300.000)
+    const max = 41600000; // Valor máximo (41.600.000)
+
+    // Función para formatear el número con puntos
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+
+    // Función para validar si el valor numérico está en el rango
+    function validarMonto(valorNumerico) {
+        if (valorNumerico < min || valorNumerico > max) {
+            errorValor.style.display = "block"; // Muestra el mensaje de error
+            return false;
+        } else {
+            errorValor.style.display = "none"; // Oculta el mensaje de error
+            return true;
+        }
+    }
+
+    // Escuchar el evento 'input' para formatear el número y validar
+    valorIbcBasico.addEventListener("input", function () {
+        // Formatear el valor con puntos
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+
+        // Convertir el valor formateado a número sin puntos para validación
+        const valorNumerico = parseInt(this.value.replace(/\./g, ''), 10);
+
+        // Validar si el valor numérico está dentro del rango permitido
+        if (!isNaN(valorNumerico)) {
+            validarMonto(valorNumerico);
+        }
+    });
+});
+
+

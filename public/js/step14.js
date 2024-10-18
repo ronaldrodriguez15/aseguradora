@@ -89,3 +89,55 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const noIdentificacion = document.getElementById("no_identificacion");
+    const confirmNoIdentificacion = document.getElementById("confirm_no_identificacion");
+
+    // Función para formatear el número con puntos al escribir
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+
+    // Escuchar los eventos de entrada para formatear el campo
+    noIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    confirmNoIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    // Función para validar si ambos campos coinciden
+    function validarIdentificaciones() {
+        const noIdentificacionValor = noIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+        const confirmNoIdentificacionValor = confirmNoIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+
+        if (noIdentificacionValor !== "" && confirmNoIdentificacionValor !== "") {
+            if (noIdentificacionValor === confirmNoIdentificacionValor) {
+                noIdentificacion.classList.add("is-valid");
+                noIdentificacion.classList.remove("is-invalid");
+                confirmNoIdentificacion.classList.add("is-valid");
+                confirmNoIdentificacion.classList.remove("is-invalid");
+            } else {
+                noIdentificacion.classList.add("is-invalid");
+                noIdentificacion.classList.remove("is-valid");
+                confirmNoIdentificacion.classList.add("is-invalid");
+                confirmNoIdentificacion.classList.remove("is-valid");
+            }
+        }
+    }
+
+    // Bloquear copiar/pegar en el campo de confirmación
+    confirmNoIdentificacion.addEventListener('paste', function (e) {
+        e.preventDefault(); // Evita que se pegue contenido
+    });
+    confirmNoIdentificacion.addEventListener('copy', function (e) {
+        e.preventDefault(); // Evita que se copie contenido
+    });
+});

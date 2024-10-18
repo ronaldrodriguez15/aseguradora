@@ -213,3 +213,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const noIdentificacions1 = document.getElementById("n_identificacion_s1");
+    const noIdentificacions2 = document.getElementById("n_identificacion_s2");
+    const noIdentificacions3 = document.getElementById("n_identificacion_s3");
+
+    // Función para formatear el número con puntos al escribir
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+
+    // Escuchar los eventos de entrada para formatear el campo
+    noIdentificacions1.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+    });
+
+    noIdentificacions2.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+    });
+
+    noIdentificacions3.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+    });
+});
+
+
+
+
+

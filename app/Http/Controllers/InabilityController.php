@@ -12,6 +12,7 @@ use App\Models\Eps;
 use App\Models\Entity;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
+use App\Models\DocumentSigned;
 
 class InabilityController extends Controller
 {
@@ -127,34 +128,31 @@ class InabilityController extends Controller
             'val_total_desc_mensual' => 'required',
             'tu_pierdes' => 'required',
             'te_pagamos' => 'required',
+            'no_identificacion' => 'required',
             'forma_pago' => 'required|string|in:debito_automatico,mensual_libranza',
         ];
 
         $messages = [
-            'aseguradora.required' => 'El campo aseguradora es obligatorio.',
-            'no_poliza.required' => 'El campo número de póliza es obligatorio.',
-            'codigo_asesor.required' => 'El campo código de asesor es obligatorio.',
-            'nombre_asesor.required' => 'El campo nombre del asesor es obligatorio.',
-            'nombre_eps.required' => 'El campo nombre de la EPS es obligatorio.',
-            'fecha_nacimiento_asesor.required' => 'El campo fecha de nacimiento del asesor es obligatorio.',
-            'email_corporativo.required' => 'El campo correo corporativo es obligatorio.',
-            'descuento_eps.required' => 'El campo descuento EPS es obligatorio.',
-            'numero_dias.required' => 'El campo número de días es obligatorio.',
-            'valor_ibc_basico.required' => 'El campo valor IBC básico es obligatorio.',
-            'desea_valor.required' => 'El campo desea valor es obligatorio.',
-            'total.required' => 'El campo total es obligatorio.',
-            'amparo_basico.numeric' => 'El campo amparo básico debe ser numérico.',
-            'val_prevexequial_eclusivo.required' => 'El campo valor previ-exequial exclusivo es obligatorio.',
-            'prima_pago_prima_seguro.required' => 'El campo prima de pago prima de seguro es obligatorio.',
-            'val_total_desc_mensual.required' => 'El campo valor total descuento mensual es obligatorio.',
-            'tu_pierdes.required' => 'El campo tú pierdes es obligatorio.',
-            'te_pagamos.required' => 'El campo te pagamos es obligatorio.',
-            'forma_pago.required' => 'El campo forma de pago es obligatorio.',
-            'forma_pago.string' => 'La forma de pago debe ser una cadena de texto.',
-            'forma_pago.in' => 'La forma de pago seleccionada no es válida.',
+            //
         ];
 
         $this->validate($request, $rules, $messages);
+
+        // Buscar afiliaciones con el mismo número de cédula
+        $afiliacionesPrevias = Inability::where('no_identificacion', $request->no_identificacion)->get();
+
+        // Recorrer todas las afiliaciones previas y verificar el estado firmado
+        foreach ($afiliacionesPrevias as $afiliacion) {
+            // Contar los documentos relacionados con la afiliación actual
+            $documentosFirmados = DocumentSigned::where('inability_id', $afiliacion->id)->count();
+
+            if ($documentosFirmados >= 3) {
+                return redirect()->back()->with('error', 'Esta persona ya tiene una afiliación en estado firmado.');
+            }
+        }
+
+        // Si llegó hasta aquí, significa que no hay afiliaciones firmadas, por lo tanto, eliminar todas las afiliaciones anteriores
+        Inability::where('no_identificacion', $request->no_identificacion)->delete();
 
         try {
             $inability = new Inability();
@@ -197,6 +195,7 @@ class InabilityController extends Controller
             $inability->prima_pago_prima_seguro = $request->prima_pago_prima_seguro;
             $inability->gastos_administrativos = $request->gastos_administrativos;
             $inability->val_total_desc_mensual = $request->val_total_desc_mensual;
+            $inability->no_identificacion = $request->no_identificacion;
 
             // TIPO PAGO
             $inability->forma_pago = $request->forma_pago;
@@ -244,7 +243,6 @@ class InabilityController extends Controller
         }
     }
 
-
     public function formStepTree(Request $request)
     {
         // Recuperar el ID del registro desde la sesión
@@ -275,7 +273,6 @@ class InabilityController extends Controller
             'segundo_apellido' => 'required',
             'nombres_completos' => 'required',
             'tipo_identificacion' => 'required',
-            'no_identificacion' => 'required',
             'ciudad_expedicion' => 'required',
             'genero' => 'required',
             'direccion_residencia' => 'required',
@@ -292,7 +289,6 @@ class InabilityController extends Controller
             'segundo_apellido.required' => 'El campo segundo apellido es obligatorio.',
             'nombres_completos.required' => 'El campo nombres completos es obligatorio.',
             'tipo_identificacion.required' => 'El campo tipo de identificación es obligatorio.',
-            'no_identificacion.required' => 'El campo número de identificación es obligatorio.',
             'ciudad_expedicion.required' => 'El campo ciudad de expedición es obligatorio.',
             'genero.required' => 'El campo género es obligatorio.',
             'direccion_residencia.required' => 'El campo dirección de residencia es obligatorio.',
