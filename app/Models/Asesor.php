@@ -12,6 +12,7 @@ class Asesor extends Model
     protected $fillable = [
         'name',
         'asesor_code',
+        'consecutivo',
         'status'
     ];
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Facades\Storage;
 
 class PDFPositivaController extends Controller
 {
@@ -33,26 +34,14 @@ class PDFPositivaController extends Controller
             abort(404, 'Archivo PDF no encontrado en la ruta especificada.');
         }
 
-        // Obtener el consecutivo máximo en la tabla inabilities
-        $maxInability = Inability::orderBy('no_solicitud', 'desc')->first();
-
-        // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->no_solicitud : 0;
-
-        // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->no_solicitud < $maxConsecutivo) {
-            // Actualizar el consecutivo al máximo + 1
-            $inability->no_solicitud = $maxConsecutivo + 1;
-        } else {
-            // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->no_solicitud += 1;
-        }
-
-        // Guardar los cambios en el registro
-        $inability->save();
-
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $pdfFilePath);
+        $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $pdfFilePath);
+
+        // Generar la URL pública del archivo PDF generado
+        $pdfUrl = asset('storage/' . $inability->path_aseguradora);
+
+        // Retornar la URL del PDF generado
+        return response()->json(['pdf_url' => $pdfUrl]);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -494,6 +483,8 @@ class PDFPositivaController extends Controller
         $inability->path_aseguradora = 'documentos_positiva/' . $nombreArchivo;
         $inability->save();
 
-        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
+        // Retorna la ruta del archivo
+        return $nombreArchivo;
+
     }
 }

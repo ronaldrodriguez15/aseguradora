@@ -22,42 +22,31 @@ class PDFController extends Controller
         // Obtener el documento desde el modelo Documents
         $document = Docuuments::first();
 
-        // Asegúrate de que exista el documento
+        // Verificar si el documento y el archivo PDF existen
         if (!$document || empty($document->estasseguro_document)) {
             return response()->json(['error' => 'Documento no encontrado.'], 404);
         }
 
-        // Obtener la ruta del archivo PDF almacenado
+        // Obtener la ruta completa del archivo PDF en storage
         $pdfFilePath = $document->estasseguro_document;
 
-        // Verificar si el archivo existe en Storage
         if (!Storage::disk('public')->exists($pdfFilePath)) {
             return response()->json(['error' => 'Archivo PDF no encontrado.'], 404);
         }
 
-        // Obtener la ruta completa del archivo
+        // Obtener la ruta completa en el sistema de archivos
         $fullPath = Storage::disk('public')->path($pdfFilePath);
-
-        $maxInability = Inability::orderBy('no_solicitud', 'desc')->first();
-
-        // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->no_solicitud : 0;
-
-        // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->no_solicitud < $maxConsecutivo) {
-            $inability->no_solicitud = $maxConsecutivo + 1;
-        } else {
-            $inability->no_solicitud += 1;
-        }
-
-        $inability->save();
 
         // Generar el PDF con la plantilla
         $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $fullPath);
 
+        // Generar la URL pública del archivo PDF generado
+        $pdfUrl = asset('storage/' . $inability->path_estasseguro);
+
         // Retornar la URL del PDF generado
-        return response()->json(['pdf_url' => asset('storage/' . $inability->path_estasseguro)]);
+        return response()->json(['pdf_url' => $pdfUrl]);
     }
+
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
     {
@@ -414,6 +403,6 @@ class PDFController extends Controller
         $inability->save();
 
         // Retorna la ruta del archivo
-        return $nombreArchivo; // Asegúrate de retornar solo el nombre o la ruta aquí
+        return $nombreArchivo;
     }
 }

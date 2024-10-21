@@ -132,3 +132,9 @@ select[multiple].form-control {
 .border-orange {
     border-color: #fd7e14 !important;
 }
+
+select.form-control {
+    border-radius: 0.25rem !important; /* Sobrescribir bordes */
+    border: 1px solid #ced4da !important; /* Sobrescribir color del borde */
+    background-color: #ffffff !important; /* Sobrescribir fondo */
+}

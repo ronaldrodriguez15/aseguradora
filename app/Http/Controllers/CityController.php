@@ -14,13 +14,11 @@ class CityController extends Controller
      */
     public function index()
     {
-        $cities = City::orderBy('status', 'DESC')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
+        $cities = City::orderBy('name', 'ASC')->get();
 
         return view('general.cities.index', compact('cities'));
     }
+
 
     /**
      * Show the form for creating a new resource.

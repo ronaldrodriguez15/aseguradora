@@ -16,6 +16,7 @@ class CreateAsesorsTable extends Migration
         Schema::create('asesors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('consecutivo');
             $table->string('asesor_code', 50);
             $table->unsignedInteger('status')->default(1);
             $table->timestamps();

@@ -88,6 +88,9 @@
                             <option value="{{ $company['name'] }}">{{ $company['name'] }}</option>
                             @endforeach
                         </select>
+                        @error('entidad_r1')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group col-md-2">
                         <label for="seleccion_opcion_r1">¿Otro?</label>
@@ -131,7 +134,7 @@
                     </div>
                     <div class="form-group col-md-2">
                         <label for="seleccion_opcion_r2">¿Otro?</label>
-                        <select class="form-control" id="seleccion_opcion_r2" name="seleccion_opcion_r2" >
+                        <select class="form-control" id="seleccion_opcion_r2" name="seleccion_opcion_r2">
                             <option value="no" selected>No</option>
                             <option value="si">Sí</option>
                         </select>
@@ -162,7 +165,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-4" id="entidad-group-r3">
                         <label for="entidad_r3">Entidad pagadora / sucursal <span class="required">*</span></label>
-                        <select class="form-control @error('entidad_r3') is-invalid @enderror" id="entidad_r3" name="entidad_r3">
+                        <select class="form-control select2-entity @error('entidad_r3') is-invalid @enderror" id="entidad_r3" name="entidad_r3">
                             <option value="">Selecciona la entidad</option>
                             @foreach ($companies as $company)
                             <option value="{{ $company['name'] }}">{{ $company['name'] }}</option>
@@ -171,7 +174,7 @@
                     </div>
                     <div class="form-group col-md-2">
                         <label for="seleccion_opcion_r3">¿Otro?</label>
-                        <select class="form-control" id="seleccion_opcion_r3" name="seleccion_opcion_r3" >
+                        <select class="form-control" id="seleccion_opcion_r3" name="seleccion_opcion_r3">
                             <option value="no" selected>No</option>
                             <option value="si">Sí</option>
                         </select>
@@ -310,11 +313,11 @@
                         </div>
                         <div class="form-group col-md-3">
                             <label for="edad_m2">Edad</label>
-                            <input type="number" class="form-control" id="edad_m2" name="edad_m2" placeholder="Coloca la edad, solo números" >
+                            <input type="number" class="form-control" id="edad_m2" name="edad_m2" placeholder="Coloca la edad, solo números">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="valor_prima_m2">Valor de prima</label>
-                            <input type="number" class="form-control" id="valor_prima_m2" name="valor_prima_m2" placeholder="Digita el valor" >
+                            <input type="number" class="form-control" id="valor_prima_m2" name="valor_prima_m2" placeholder="Digita el valor">
                         </div>
                     </div>
                     <br><br>
@@ -340,17 +343,17 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label for="raza_m3">Raza</label>
-                            <input type="text" class="form-control" id="raza_m3" name="raza_m3" placeholder="Coloca la entidad" >
+                            <input type="text" class="form-control" id="raza_m3" name="raza_m3" placeholder="Coloca la entidad">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label for="color_m3">Color</label>
-                            <input type="text" class="form-control" id="color_m3" name="color_m3" placeholder="Escribe el color de tu mascota" >
+                            <input type="text" class="form-control" id="color_m3" name="color_m3" placeholder="Escribe el color de tu mascota">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="genero_m3">Género</label>
-                            <select class="form-control @error('genero_m3') is-invalid @enderror" id="genero_m3" name="genero_m3" >
+                            <select class="form-control @error('genero_m3') is-invalid @enderror" id="genero_m3" name="genero_m3">
                                 <option value="">Selecciona</option>
                                 <option value="hembra">Hembra</option>
                                 <option value="macho">Macho</option>
@@ -361,12 +364,11 @@
                         </div>
                         <div class="form-group col-md-3">
                             <label for="edad_m3">Edad</label>
-                            <input type="number" class="form-control" id="edad_m3" name="edad_m3" placeholder="Coloca la edad, solo números" >
+                            <input type="number" class="form-control" id="edad_m3" name="edad_m3" placeholder="Coloca la edad, solo números">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="valor_prima_m3">Valor de prima</label>
-                            <input type="number" class="form-control" id="valor_prima_m3" name="valor_prima_m3" placeholder="Digita el valor"
-                            >
+                            <input type="number" class="form-control" id="valor_prima_m3" name="valor_prima_m3" placeholder="Digita el valor">
                         </div>
                     </div>
                 </div>
@@ -388,17 +390,32 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @stop
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Tu archivo de script personalizado -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
 <script>
     $(document).ready(function() {
-        $('input').attr('autocomplete', 'off');
+        $('#entidad_r1').select2({
+            placeholder: "Selecciona la entidad",
+            allowClear: true
+        });
+
+        $('#entidad_r2').select2({
+            placeholder: "Selecciona la entidad",
+            allowClear: true
+        });
+
+        $('#entidad_r3').select2({
+            placeholder: "Selecciona la entidad",
+            allowClear: true
+        });
     });
 </script>
 <script src="{{ asset('js/step6.js') }}"></script>

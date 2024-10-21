@@ -41,7 +41,7 @@ class InabilityController extends Controller
         $asesors = Asesor::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
         $banks = Bank::where('status', 1)->get();
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
 
         return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities'));
     }
@@ -157,18 +157,16 @@ class InabilityController extends Controller
         try {
             $inability = new Inability();
 
-            // Obtener el número máximo de solicitud actual
-            $maxSolicitud = Inability::pluck('no_solicitud')->max();
+            $identificador = $request->identificador;
 
-            // Determinar el nuevo número de solicitud
-            if ($request->identificador > $maxSolicitud) {
-                $newSolicitudNumber = $request->identificador;
-            } else {
-                $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
-            }
+            // Obtener el asesor
+            $asesor = Asesor::where('asesor_code', $request->codigo_asesor)->first();
 
-            // Asignar el nuevo número de solicitud al modelo
-            $inability->no_solicitud = $newSolicitudNumber;
+            // Asignar el nuevo consecutivo al asesor
+            $inability->no_solicitud = $identificador += 1;
+            $asesor->consecutivo = $identificador += 1;
+            $asesor->save();
+
             $inability->insurer_id = $request->aseguradora;
 
             $insurer = Insurer::find($request->aseguradora);
@@ -213,12 +211,6 @@ class InabilityController extends Controller
             // Guardar el incapacidad
             $inability->save();
 
-            // Actualizar el identificador de la aseguradora
-            if ($insurer) {
-                $insurer->identificador = $newSolicitudNumber; // Asignar el nuevo número
-                $insurer->save();
-            }
-
             // Guardar el ID en la sesión
             $request->session()->put('inability_id', $inability->id);
 
@@ -228,7 +220,7 @@ class InabilityController extends Controller
             $te_pagamos = $request->te_pagamos;
             $edad = $request->edad;
             $banks = Bank::where('status', 1)->get();
-            $cities = City::where('status', 1)->get();
+            $cities = City::orderBy('name', 'ASC')->get();
             $message = "La información se guardó correctamente.";
 
             return view(
@@ -254,7 +246,7 @@ class InabilityController extends Controller
         $tu_pierdes = $inability->tu_pierdes;
         $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
         $companies = Entity::where('status', 1)->get();
         $message = "La información se guardó correctamente.";
@@ -461,7 +453,7 @@ class InabilityController extends Controller
         $tu_pierdes = $inability->tu_pierdes;
         $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
         $companies = Entity::where('status', 1)->get();
         $message = "La información se guardó correctamente.";

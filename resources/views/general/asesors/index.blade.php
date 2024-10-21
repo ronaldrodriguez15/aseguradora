@@ -28,6 +28,16 @@
         @endif
     </div>
     <div class="col-md-12">
+        @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+    </div>
+    <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-body">
                 <div class="table-responsive">
@@ -35,6 +45,7 @@
                         <thead class="text-center">
                             <tr class="table-dark text-white">
                                 <th>Codigo</th>
+                                <th>Consecutivo</th>
                                 <th>Nombres</th>
                                 <th>Fecha creación</th>
                                 <th>Estado</th>
@@ -45,6 +56,7 @@
                             @foreach ($asesors as $asesor)
                             <tr>
                                 <td>{{ $asesor['asesor_code'] }}</td>
+                                <td class="text-success">{{ $asesor['consecutivo'] }}</td>
                                 <td>{{ $asesor['name'] }}</td>
                                 <td>{{ $asesor['created_at']->format('Y-m-d - H:m') }}</td>
                                 <td>
@@ -97,6 +109,12 @@
                             @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="consecutivo">Consecutivo <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="consecutivo" name="consecutivo"
+                                placeholder="Introduce el consecutivo para las afiliaciones">
+                            <div id="consecutivo-error" class="error-message">El consecutivo es obligatorio</div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="asesor_code">Código <span class="required">*</span></label>

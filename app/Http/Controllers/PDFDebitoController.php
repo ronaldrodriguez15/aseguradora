@@ -35,26 +35,14 @@ class PDFDebitoController extends Controller
         // Obtener la ruta completa del archivo
         $fullPath = Storage::disk('public')->path($pdfFilePath);
 
-        // Obtener el consecutivo máximo en la tabla
-        $maxInability = Inability::orderBy('no_solicitud', 'desc')->first();
-
-        // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->no_solicitud : 0;
-
-        // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->no_solicitud < $maxConsecutivo) {
-            // Actualizar el consecutivo al máximo + 1
-            $inability->no_solicitud = $maxConsecutivo + 1;
-        } else {
-            // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->no_solicitud += 1;
-        }
-
-        // Guardar los cambios en el registro
-        $inability->save();
-
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $fullPath);
+        $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $fullPath);
+
+        // Generar la URL pública del archivo PDF generado
+        $pdfUrl = asset('storage/' . $inability->path_pago);
+
+        // Retornar la URL del PDF generado
+        return response()->json(['pdf_url' => $pdfUrl]);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -120,11 +108,13 @@ class PDFDebitoController extends Controller
                 $pdf->SetXY(58, 67);
                 $pdf->Write(0, convertToISO88591($inability->email_corporativo));
 
-                //entidad
+                //
+                $pdf->SetFont('Arial', '', 6);
                 $pdf->SetXY(136, 67);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 //banco
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->SetXY(55, 78);
                 $pdf->Write(0, convertToISO88591($inability->banco));
 
@@ -227,6 +217,7 @@ class PDFDebitoController extends Controller
         $inability->path_pago = 'documentos_debito/' . $nombreArchivo;
         $inability->save();
 
-        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
+        // Retorna la ruta del archivo
+        return $nombreArchivo;
     }
 }
