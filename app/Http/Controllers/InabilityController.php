@@ -301,7 +301,6 @@ class InabilityController extends Controller
         $inability->segundo_apellido = $request->segundo_apellido;
         $inability->nombres_completos = $request->nombres_completos;
         $inability->tipo_identificacion = $request->tipo_identificacion;
-        $inability->no_identificacion = $request->no_identificacion;
         $inability->ciudad_expedicion = $request->ciudad_expedicion;
         $inability->genero = $request->genero;
         $inability->fecha_nacimiento_asegurado = $request->fecha_nacimiento_asegurado;
