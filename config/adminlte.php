@@ -370,22 +370,6 @@ return [
         ],
         ['header' => 'ADMINISTRACIÓN'],
         [
-            'text' => 'Gestión RP',
-            'icon' => 'fas fa-user-cog',
-            'submenu' => [
-                [
-                    'text' => 'Roles',
-                    'url' => '#',
-                    'icon' => 'fas fa-user-tag',
-                ],
-                [
-                    'text' => 'Permisos',
-                    'url' => '#',
-                    'icon' => 'fas fa-key',
-                ],
-            ],
-        ],
-        [
             'text' => 'Usuarios',
             'url' => 'usuarios',
             'icon' => 'fas fa-fw fa-users',

@@ -52,11 +52,15 @@ document
         // Limpiar clases previas
         edadInput.classList.remove("is-valid", "is-invalid");
 
-        // Añadir la clase correcta dependiendo de la edad
-        if (edad < 18) {
+        // Validación de la edad
+        if (edad < 18 || edad > 58) { // Cambiar && por ||
             edadInput.classList.add("is-invalid");
+            // Aquí puedes agregar un mensaje de error
+            document.getElementById("edadError").textContent = 'La edad debe estar entre 18 y 58 años.';
+            document.getElementById("edadError").style.display = 'block'; // Mostrar el mensaje de error
         } else {
             edadInput.classList.add("is-valid");
+            document.getElementById("edadError").style.display = 'none'; // Ocultar el mensaje de error
         }
 
         // Validación de la fecha de nacimiento
@@ -86,12 +90,13 @@ function calcularEdad(fechaNacimiento) {
     return edad;
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
     const valorIbcBasico = document.getElementById("valor_ibc_basico");
     const errorValor = document.getElementById("errorValor");
 
     const min = 1300000; // Valor mínimo (1.300.000)
-    const max = 41600000; // Valor máximo (41.600.000)
+    const max = 32500000; // Valor máximo (41.600.000)
 
     // Función para formatear el número con puntos
     function formatearConPuntos(valor) {

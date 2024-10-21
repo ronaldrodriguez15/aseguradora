@@ -89,12 +89,12 @@
                             data-url="{{ route('incapacidades.generarPDF', $inabilityId) }}">
                             <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Estasseguro)
                         </a>
-                        @if ($aseguradora !== 'Positiva Seguros')
+                        @if ($aseguradora === 'Positiva Seguros')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-positiva"
                                 data-url="{{ route('incapacidades.generarPDFpositiva', $inabilityId) }}">
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Positiva)
                             </a>
-                        @elseif ($aseguradora !== 'Confianza Seguros')
+                        @elseif ($aseguradora === 'Confianza Seguros')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-confianza"
                                 href="{{ route('incapacidades.generarPDFconfianza', $inabilityId) }}">
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Confianza)

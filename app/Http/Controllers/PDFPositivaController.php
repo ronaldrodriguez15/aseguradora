@@ -72,9 +72,8 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 //consecutivo
-                $insurer = Insurer::find($inability->insurer_id);
                 $pdf->SetXY(134, 12.8);
-                $pdf->Write(0, convertToISO88591($insurer->identificador));
+                $pdf->Write(0, convertToISO88591($inability->no_solicitud));
 
                 // Nombre asesor
                 $pdf->SetXY(57, 43);

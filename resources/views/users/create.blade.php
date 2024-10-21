@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-    <p>En este modulo puedes crear un nuevo usuario.</p>
+    <p>En este módulo puedes crear un nuevo usuario.</p>
     <br><br><br>
 
     <div class="container">
@@ -27,7 +27,7 @@
                 <div class="form-group col-md-6">
                     <label for="document">Documento <span class="required">*</span></label>
                     <input type="number" class="form-control @error('document') is-invalid @enderror" id="document"
-                        name="document" placeholder="Introduce tus número de documento" required>
+                        name="document" placeholder="Introduce tu número de documento" required>
                     @error('document')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -77,6 +77,24 @@
                     @enderror
                 </div>
             </div>
+
+            <!-- Desplegable para seleccionar rol -->
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="role_id">Rol <span class="required">*</span></label>
+                    <select id="role_id" name="role_id" class="form-control @error('role_id') is-invalid @enderror"
+                        required>
+                        <option value="">Seleccione un rol</option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('role_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-success">
                 <i class="fas fa-save mr-2"></i>Registrar
             </button>

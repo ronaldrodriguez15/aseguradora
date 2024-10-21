@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -29,7 +30,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        // Obtener todos los roles disponibles
+        $roles = Role::all();
+
+        // Pasar la variable $roles a la vista
+        return view('users.create', compact('roles'));
     }
 
     /**
@@ -40,11 +45,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Obtener reglas de validación y mensajes
         $rules = $this->getValidationRules();
         $messages = $this->getValidationMessages();
 
+        // Validar los datos
         $request->validate($rules, $messages);
 
+        // Crear un nuevo usuario
         $user = new User();
         $user->name = $request->name;
         $user->document = $request->document;
@@ -52,11 +60,18 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->birthdate = $request->birthdate;
         $user->password = Hash::make($request->password);
-        $user->status = 1; //1: Activo, 0: Inactivo
+        $user->status = 1; // 1: Activo, 0: Inactivo
         $user->save();
 
+        // Asignar el rol al usuario
+        if ($request->role) {
+            $user->assignRole($request->role);
+        }
+
+        // Redirigir con un mensaje de éxito
         return redirect()->route('usuarios.index')->with('success', 'Excelente!!, El usuario ha sido creado.');
     }
+
 
     /**
      * Display the specified resource.
