@@ -64,8 +64,8 @@ class UserController extends Controller
         $user->save();
 
         // Asignar el rol al usuario
-        if ($request->role) {
-            $user->assignRole($request->role);
+        if ($request->role_id) {
+            $user->assignRole($request->role_id);
         }
 
         // Redirigir con un mensaje de éxito

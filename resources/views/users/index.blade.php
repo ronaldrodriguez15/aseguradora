@@ -38,6 +38,7 @@
                                 <th>Celular</th>
                                 <th>Correo electrónico</th>
                                 <th>Nacimiento</th>
+                                <td>Rol</td>
                                 <th>Creación</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -50,6 +51,24 @@
                                 <td>{{ $usuario['phone'] }}</td>
                                 <td>{{ $usuario['email'] }}</td>
                                 <td>{{ $usuario['birthdate'] }}</td>
+                                <td>
+                                    @php
+                                    $roles = $usuario->getRoleNames(); // Obtener los roles del usuario
+                                    $roleColor = 'badge-secondary'; // Color por defecto para "sin definir"
+                                    $roleName = 'Sin definir'; // Valor por defecto
+
+                                    if ($roles->isNotEmpty()) {
+                                    $roleName = $roles->first(); // Tomar el primer rol
+                                    // Definir el color según el rol
+                                    if ($roleName === 'Administrador') {
+                                    $roleColor = 'badge-primary'; // Azul
+                                    } elseif ($roleName === 'Ventas') {
+                                    $roleColor = 'badge-success'; // Verde
+                                    }
+                                    }
+                                    @endphp
+                                    <span class="badge {{ $roleColor }}">{{ $roleName }}</span>
+                                </td>
                                 <td>{{ $usuario['created_at']->format('Y-m-d') }}</td>
                                 <td>
                                     @if($usuario['status'] === 1)

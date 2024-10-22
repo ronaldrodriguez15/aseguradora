@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+
+        // Gate para administrar el sistema, visible solo para Administradores
+        Gate::define('manage-system', function ($user) {
+            return $user->hasRole('Administrador');
+        });
+
+        // Gate para el área de ventas, visible solo para el rol Ventas
+        Gate::define('access-sales', function ($user) {
+            return $user->hasRole('Ventas');
+        });
+
+        // Gate para agregar un nuevo post en el blog (si aplica para ambos roles)
+        Gate::define('add-blog-post', function ($user) {
+            return $user->hasRole('Administrador') || $user->hasRole('Ventas');
+        });
     }
 }

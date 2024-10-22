@@ -309,12 +309,14 @@ return [
             'text' => 'Panel',
             'url' => 'bienvenido',
             'icon' => 'fa fa-columns',
+            'can' => 'add-blog-post',
         ],
-        ['header' => 'FUNCIONALIDADES'],
+        ['header' => 'VENTAS Y CONSULTA'],
         [
             'text' => 'Documentos',
             'url' => 'documentos',
             'icon' => 'fa fa-file-alt',
+            'can' => 'add-blog-post',
         ],
         [
             'text' => 'Afiliaciones',
@@ -335,6 +337,7 @@ return [
         [
             'text' => 'Datos generales',
             'icon' => 'fas fa-clipboard-list',
+            'can' => 'manage-system',
             'submenu' => [
                 [
                     'text' => 'Ciudades',
@@ -368,11 +371,15 @@ return [
                 ],
             ],
         ],
-        ['header' => 'ADMINISTRACIÓN'],
+        [
+            'header' => 'ADMINISTRACIÓN',
+            'can' => 'manage-system'
+        ],
         [
             'text' => 'Usuarios',
             'url' => 'usuarios',
             'icon' => 'fas fa-fw fa-users',
+            'can' => 'manage-system'
         ],
     ],
 
