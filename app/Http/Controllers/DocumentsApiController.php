@@ -50,7 +50,8 @@ class DocumentsApiController extends Controller
                 if ($documentPath === $inability->path_estasseguro) {
                     $templateCode = "Afiliacion1estaSSeguro";
                 } elseif ($documentPath === $inability->path_aseguradora) {
-                    $templateCode = "Afiliacion2Positiva";
+                    //$templateCode = "Afiliacion2Positiva";
+                    $templateCode = "Afiliacion2SegConfianza";
                 } elseif ($documentPath === $inability->path_pago) {
                     $templateCode = "Afiliacion3DescuentoporNomina";
                 }

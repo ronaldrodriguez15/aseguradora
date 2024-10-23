@@ -6,6 +6,7 @@ use App\Models\Insurer;
 use App\Models\Inability;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PDFConfianzaController extends Controller
 {

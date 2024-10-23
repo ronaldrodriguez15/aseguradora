@@ -35,15 +35,6 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-// enlace simbolico
-Route::get('storage-link', function () {
-    Artisan::call('storage:link');
-
-    return response()->json([
-        'status' => 'Correctly Storage.',
-    ]);
-});
-
 Route::get('clear-caches', function () {
     Artisan::call('config:clear');
     Artisan::call('route:clear');
@@ -51,9 +42,50 @@ Route::get('clear-caches', function () {
     Artisan::call('view:clear');
 
     return response()->json([
-        'status' => 'Cachés limpiados correctamente.',
+        'status' => 'Cach茅s limpiados correctamente.',
     ]);
 });
+
+Route::get('seed-roles', function () {
+    try {
+        // Ejecutar el seeder
+        Artisan::call('db:seed', [
+            '--class' => 'RolesTableSeeder'
+        ]);
+
+        return response()->json([
+            'status' => 'Se ejecutó el seeder correctamente.',
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'Hubo un error al ejecutar el seeder.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+
+Route::get('seed-users', function () {
+    try {
+        // Ejecutar el seeder
+        Artisan::call('db:seed', [
+            '--class' => 'UsersTableSeeder'
+        ]);
+
+        // Capturar la salida del comando
+        $output = Artisan::output();
+
+        return response()->json([
+            'status' => 'Se ejecutó el seeder correctamente.',
+            'output' => utf8_encode($output), // Asegurarse que la salida esté codificada en UTF-8
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'Hubo un error al ejecutar el seeder.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+
 
 Route::middleware([
     'auth:sanctum',
@@ -108,4 +140,3 @@ Route::middleware([
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
