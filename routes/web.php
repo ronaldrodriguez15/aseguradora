@@ -19,6 +19,7 @@ use App\Http\Controllers\PDFLibranzaController;
 use App\Http\Controllers\PDFConfianzaController;
 use App\Http\Controllers\DocumentsApiController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,9 +94,7 @@ Route::middleware([
     'verified'
 ])->group(function () {
 
-    Route::get('/bienvenido', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/bienvenido', [DashboardController::class, 'index'])->name('dashboard');;
 
     // General
     Route::resource('usuarios', UserController::class);
