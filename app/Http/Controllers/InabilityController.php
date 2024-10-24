@@ -13,6 +13,7 @@ use App\Models\Entity;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 use App\Models\DocumentSigned;
+use Illuminate\Support\Facades\Auth;
 
 class InabilityController extends Controller
 {
@@ -23,10 +24,19 @@ class InabilityController extends Controller
      */
     public function index()
     {
-        $inabilities = Inability::orderBy('status', 'DESC')
-            ->orderBy('created_at', 'DESC')
-            ->paginate();
+        // Iniciar la consulta
+        $query = Inability::orderBy('status', 'DESC')
+            ->orderBy('created_at', 'DESC');
 
+        // Aplicar el filtro si el usuario tiene el rol 'Ventas'
+        if (Auth::user()->hasRole('Ventas')) {
+            $query->where('inabilities.nombre_asesor', Auth::user()->name); // O cambiar a un campo que relacione asesor y usuario
+        }
+
+        // Finalizar la consulta con la paginación
+        $inabilities = $query->paginate();
+
+        // Retornar la vista con los datos filtrados
         return view('affiliations.inabilities.index', compact('inabilities'));
     }
 
