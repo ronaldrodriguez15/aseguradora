@@ -196,19 +196,19 @@
         $(document).ready(function() {
 
             // Limpiar las claves específicas del localStorage cuando la página se carga
-            localStorage.removeItem('firmadoIniciado');
-            localStorage.removeItem('pdfGenerated');
-            localStorage.removeItem('pdfGeneratedPositiva');
-            localStorage.removeItem('pdfGeneratedLibranza');
-            localStorage.removeItem('pdfGeneratedDebito');
-            localStorage.removeItem('pdfGeneratedConfianza');
+            // localStorage.removeItem('firmadoIniciado');
+            // localStorage.removeItem('pdfGenerated');
+            // localStorage.removeItem('pdfGeneratedPositiva');
+            // localStorage.removeItem('pdfGeneratedLibranza');
+            // localStorage.removeItem('pdfGeneratedDebito');
+            // localStorage.removeItem('pdfGeneratedConfianza');
 
-            $('#generar-pdf').show();
-            $('#iniciar-firmado').show();
-            $('#btn-positiva').show();
-            $('#btn-libranza').show();
-            $('#btn-debito').show();
-            $('#btn-confianza').show();
+            // $('#generar-pdf').show();
+            // $('#iniciar-firmado').show();
+            // $('#btn-positiva').show();
+            // $('#btn-libranza').show();
+            // $('#btn-debito').show();
+            // $('#btn-confianza').show();
 
             if (localStorage.getItem('firmadoIniciado') === 'true') {
                 $('#iniciar-firmado').hide();
@@ -340,10 +340,12 @@
                 localStorage.removeItem('pdfGeneratedDebito');
                 localStorage.removeItem('pdfGeneratedConfianza');
 
-                $('#botonPositiva').show();
-                $('#botonLibranza').show();
-                $('#botonDebito').show();
-                $('#botonConfianza').show();
+                $('#generar-pdf').show();
+                $('#iniciar-firmado').show();
+                $('#btn-positiva').show();
+                $('#btn-libranza').show();
+                $('#btn-debito').show();
+                $('#btn-confianza').show();
 
                 // Redirigir al usuario a la ruta deseada
                 window.location.href = "{{ route('incapacidades.index') }}";
