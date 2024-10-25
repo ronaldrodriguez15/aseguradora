@@ -11,42 +11,46 @@
         gráficas relacionadas a la información de los módulos.</p>
     <br>
     <div class="row">
-        <div class="col-lg-4 col-sm-12 col-12">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>Aseguradoras</h3>
-                    <p>Total Aseguradoras</p>
+        @if (Auth::user()->hasRole('Administrador'))
+            
+            <div class="col-lg-4 col-sm-12 col-12">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>Aseguradoras</h3>
+                        <p><b>{{ $totalAseguradoras }}</b></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <a href="{{ route('aseguradoras.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-        </div>
-        <div class="col-lg-4 col-sm-12 col-12">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>Afiliaciones</h3>
-                    <p>Afiliaciones totales</p>
+            <div class="col-lg-4 col-sm-12 col-12">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>Afiliaciones</h3>
+                        <p><b>{{ $totalAfiliaciones }}</b></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <a href="{{ route('incapacidades.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-handshake"></i>
-                </div>
-                <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-        </div>
-        <div class="col-lg-4 col-sm-12 col-12">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>Usuarios</h3>
-                    <p>Total Usuarios</p>
+            <div class="col-lg-4 col-sm-12 col-12">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>Usuarios</h3>
+                        <p><b>{{ $totalUsuarios }}</b></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="{{ route('usuarios.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-        </div>
+        @endif
+
     </div>
 @stop
 

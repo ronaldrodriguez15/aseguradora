@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Exports\FocusExport;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -25,18 +26,19 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($request->all());
-        // Iniciamos la consulta base
         $query = Inability::select('inabilities.*', 'insurers.name as insurer_name', DB::raw('
             CASE
                 WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) >= 3 THEN "Firmado"
-                WHEN path_estasseguro IS NULL AND path_aseguradora IS NULL AND path_pago IS NULL THEN "Sin firmar"
-                WHEN path_estasseguro IS NOT NULL AND path_aseguradora IS NOT NULL AND path_pago IS NOT NULL THEN "Pendiente"
-                ELSE "En espera"
+                WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) < 3 AND (path_estasseguro IS NOT NULL OR path_aseguradora IS NOT NULL OR path_pago IS NOT NULL) THEN "Pendiente"
+                ELSE "Sin firmar"
             END as estado_firmado
         '))
             ->leftJoin('insurers', 'inabilities.insurer_id', '=', 'insurers.id');
 
+
+        if (Auth::user()->hasRole('Ventas')) {
+            $query->where('inabilities.nombre_asesor', Auth::user()->name); // Asumiendo que el id del asesor es el mismo que el id del usuario
+        }
 
         // Aplicamos los filtros si están presentes
         if ($request->filled('fecha_desde')) {

@@ -105,7 +105,7 @@ class PDFConfianzaController extends Controller
                 }
 
                 // No identificacion
-                $pdf->SetXY(22, 50);
+                $pdf->SetXY(160, 44.5);
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 
                 // Fecha nacimiento
@@ -142,8 +142,8 @@ class PDFConfianzaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->edad));
 
                 //nombre empresa
-                $pdf->SetFont('Arial', '', 6);
-                $pdf->SetXY(150, 60.5);
+                $pdf->SetFont('Arial', '', 5);
+                $pdf->SetXY(148, 60.5);
                 $pdf->Write(0, convertToISO88591($inability->entidad_pagadora_sucursal));
 
                 // amparo basico
@@ -195,23 +195,23 @@ class PDFConfianzaController extends Controller
                 }
 
                 // tipo identidad
-                $pdf->SetXY(29.4, 110.5);
+                $pdf->SetXY(20, 110.8);
                 $pdf->Write(0, convertToISO88591($documento_abreviado));
 
                 // no identificacion
-                $pdf->SetXY(30, 110.5);
+                $pdf->SetXY(30, 110.8);
                 $pdf->Write(0, convertToISO88591($inability->n_identificacion_s1));
 
                 // nombres y apellidos
-                $pdf->SetXY(90, 110.5);
+                $pdf->SetXY(90, 110.8);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s1 . ' ' . $inability->apellidos_s1));
 
                 // parentesco
-                $pdf->SetXY(153, 110.5);
+                $pdf->SetXY(156, 110.8);
                 $pdf->Write(0, convertToISO88591($inability->parentesco_s1));
 
                 // %
-                $pdf->SetXY(180, 110.5);
+                $pdf->SetXY(188, 110.8);
                 $pdf->Write(0, $inability->porcentaje_s1);
 
                 // ------------------ Referido 2

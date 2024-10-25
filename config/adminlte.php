@@ -316,7 +316,7 @@ return [
             'text' => 'Documentos',
             'url' => 'documentos',
             'icon' => 'fa fa-file-alt',
-            'can' => 'add-blog-post',
+            'can' => 'manage-system',
         ],
         [
             'text' => 'Afiliaciones',

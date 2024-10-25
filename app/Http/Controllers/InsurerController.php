@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Insurer;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class InsurerController extends Controller
 {
@@ -94,7 +95,8 @@ class InsurerController extends Controller
      */
     public function edit($id)
     {
-        //
+        $insurer = Insurer::findOrFail($id);
+        return response()->json($insurer);
     }
 
     /**
@@ -111,26 +113,29 @@ class InsurerController extends Controller
             'no_poliza' => 'required',
             'name' => 'required|string|max:255',
             'document_path' => 'nullable|file|mimes:pdf,PDF|max:2048',
-            'identificador' => 'required',
         ];
         $messages = [
-            'poliza.required' => 'El campo poliza es obligatorio.',
-            'identificador.required' => 'El campo código es obligatorio.',
-
+            'no_poliza.required' => 'El campo póliza es obligatorio.',
             'name.required' => 'El campo nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
             'name.max' => 'El nombre no debe exceder los 255 caracteres.',
-
-            'document.file' => 'El documento debe ser un archivo.',
-            'document.mimes' => 'El documento debe ser un archivo de tipo: pdf.',
-            'document.max' => 'El documento no debe exceder los 2048 KB.',
+            'document_path.file' => 'El documento debe ser un archivo.',
+            'document_path.mimes' => 'El documento debe ser un archivo de tipo: pdf.',
+            'document_path.max' => 'El documento no debe exceder los 2048 KB.',
         ];
 
-        $this->validate($request, $rules, $messages);
+        // Validar el request
+        $validator = Validator::make($request->all(), $rules, $messages);
 
-        $insurer = Insurer::find();
+        if ($validator->fails()) {
+            // Redirigir de nuevo con errores de validación
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput(); // Para mantener la entrada anterior
+        }
 
-        $document_path = null;
+        $insurer = Insurer::find($id); // Asegúrate de buscar por ID
+
         if ($request->hasFile('document_path')) {
             // Eliminar el archivo antiguo si existe
             if ($insurer->document_path && Storage::disk('public')->exists($insurer->document_path)) {
@@ -140,13 +145,14 @@ class InsurerController extends Controller
             $insurer->document_path = $request->file('document_path')->store('insurers', 'public');
         }
 
+        // Asignar los otros campos
         $insurer->no_poliza = $request->no_poliza;
         $insurer->name = $request->name;
-        $insurer->document_path = $document_path;
-        $insurer->status = 1; //Activo 1, Inactivo 2
+        // No vuelvas a asignar $document_path aquí, ya que ya se ha manejado arriba
+        $insurer->status = 1; // Activo 1, Inactivo 2
         $insurer->save();
 
-        return redirect()->route('aseguradoras.index')->with('success', 'Excelente!!, La aseguradora ha sido creada.');
+        return redirect()->route('aseguradoras.index')->with('success', 'Excelente!!, La aseguradora ha sido actualizada.');
     }
 
     /**

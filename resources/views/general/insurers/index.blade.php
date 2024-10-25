@@ -27,6 +27,20 @@
                     </button>
                 </div>
             @endif
+
+            <!-- Mensajes de error -->
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
         </div>
         <div class="col-md-12">
             <div class="card mb-5">
@@ -70,6 +84,13 @@
                                         <td>
                                             @if ($insurer['status'] === 1)
                                                 <div class="button-container">
+
+                                                    <button class="btn btn-success btn-sm edit-btn"
+                                                        data-id="{{ $insurer['id'] }}" data-toggle="modal"
+                                                        data-target="#modalEditAseguradora">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+
                                                     <form action="{{ route('aseguradoras.destroy', $insurer['id']) }}"
                                                         method="POST" id="formDelete-{{ $insurer['id'] }}">
                                                         @method('DELETE')
@@ -143,6 +164,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para editar aseguradora -->
+    <div class="modal fade" id="modalEditAseguradora" tabindex="-1" role="dialog"
+        aria-labelledby="modalEditAseguradoraLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditAseguradoraLabel">Editar Aseguradora</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditAseguradora" action="{{ route('aseguradoras.update', 'id') }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="editId">
+                        <div class="form-group">
+                            <label for="editName">Nombre <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="editName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editNoPoliza">No Poliza <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="editNoPoliza" name="no_poliza" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="document_path"
+                                        id="editDocumentPath" accept=".pdf">
+                                    <label class="custom-file-label" for="editDocumentPath"
+                                        data-browse="Cargar* (PDF)">Seleccionar archivo</label>
+                                </div>
+                            </div>
+                            <div id="document_path-error" class="error-message">El documento es obligatorio</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="formEditAseguradora" class="btn btn-success">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -157,4 +223,61 @@
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.edit-btn').on('click', function() {
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url: '/aseguradoras/' + id + '/edit',
+                    type: 'GET',
+                    success: function(response) {
+                        // Pasa los datos al modal
+                        $('#editId').val(response.id);
+                        $('#editName').val(response.name);
+                        $('#editNoPoliza').val(response.no_poliza);
+                        $('#formEditAseguradora').attr('action', '/aseguradoras/' + response
+                            .id);
+                    }
+                });
+            });
+
+            $('#formEditAseguradora').on('submit', function(e) {
+                var isValid = true;
+
+                // Validar el campo 'name'
+                if ($('#editName').val().trim() === '') {
+                    isValid = false;
+                    alert('El campo Nombre es obligatorio.');
+                }
+
+                // Validar el campo 'no_poliza'
+                if ($('#editNoPoliza').val().trim() === '') {
+                    isValid = false;
+                    alert('El campo No Poliza es obligatorio.');
+                }
+
+                if ($('#editDocumentPath').val() === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'El documento PDF es obligatorio.',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault(); // Detener el envío si la validación falla
+                }
+            });
+
+            $('#editDocumentPath').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').addClass("selected").html(
+                    fileName);
+            });
+        });
+    </script>
 @stop

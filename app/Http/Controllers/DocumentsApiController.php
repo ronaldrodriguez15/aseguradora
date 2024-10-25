@@ -109,7 +109,11 @@ class DocumentsApiController extends Controller
 
             session(['via_firma_codes' => $codes]); // Almacena en la sesión
 
-            return response()->json(['data' => $responseData]);
+            return response()->json([
+                'success' => true,
+                'message' => 'El correo fue enviado exitosamente.',
+                'data' => $responseData
+            ]);
         } catch (\Exception $e) {
             Log::error('Error en sendToViaFirma: ' . $e->getMessage());
             return response()->json(['error' => 'An unexpected error occurred'], 500);
@@ -171,6 +175,15 @@ class DocumentsApiController extends Controller
                     $documentSigned->inability_id = $validated['id']; // Corregido el campo 'inability_id'
                     $documentSigned->document_path = $storagePath; // Guardamos la ruta de almacenamiento
                     $documentSigned->save();
+
+                    // Log para mostrar lo que se almacena en la base de datos
+                    Log::info('Documento firmado almacenado en la BD:', [
+                        'file_name' => $fileName,
+                        'signed_id' => $signedID,
+                        'expires' => $expires->toDateTimeString(),
+                        'inability_id' => $validated['id'],
+                        'document_path' => $storagePath
+                    ]);
                 } else {
                     Log::error('messagesCode no encontrado en el objeto: ', (array)$code);
                 }
