@@ -369,6 +369,11 @@ return [
                     'url' => 'asesores',
                     'icon' => 'fa fa-user-friends',
                 ],
+                [
+                    'text' => 'Salario minimo',
+                    'url' => 'asesores',
+                    'icon' => 'fa fa-money-bill-wave',
+                ],
             ],
         ],
         [
@@ -379,7 +384,7 @@ return [
             'text' => 'Usuarios',
             'url' => 'usuarios',
             'icon' => 'fas fa-fw fa-users',
-            'can' => 'manage-system'
+            //'can' => 'manage-system'
         ],
     ],
 

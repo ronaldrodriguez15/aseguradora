@@ -69,6 +69,10 @@ class InsurerController extends Controller
         $insurer = new Insurer();
         $insurer->no_poliza = $request->no_poliza;
         $insurer->name = $request->name;
+        $insurer->val_incapacidad = $request->val_incapacidad;
+        $insurer->val_vida = $request->val_vida;
+        $insurer->val_previexequial = $request->val_previexequial;
+        $insurer->val_banco = $request->val_banco;
         $insurer->document_path = $document_path;
         $insurer->status = 1; //Activo 1, Inactivo 2
         $insurer->save();
@@ -148,7 +152,10 @@ class InsurerController extends Controller
         // Asignar los otros campos
         $insurer->no_poliza = $request->no_poliza;
         $insurer->name = $request->name;
-        // No vuelvas a asignar $document_path aquí, ya que ya se ha manejado arriba
+        $insurer->val_incapacidad = $request->val_incapacidad;
+        $insurer->val_vida = $request->val_vida;
+        $insurer->val_previexequial = $request->val_previexequial;
+        $insurer->val_banco = $request->val_banco;
         $insurer->status = 1; // Activo 1, Inactivo 2
         $insurer->save();
 

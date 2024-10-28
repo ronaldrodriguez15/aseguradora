@@ -51,7 +51,11 @@
                                 <tr class="table-dark text-white">
                                     <th>No Poliza</th>
                                     <th>Nombres</th>
-                                    <th>Documento</th>
+                                    <th>Documentos</th>
+                                    <th>Val Incapacidad</th>
+                                    <th>Val Vida</th>
+                                    <th>Val Previexequial</th>
+                                    <th>Val Bancos</th>
                                     <th>Fecha creación</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -73,6 +77,10 @@
                                                 <span class="text-muted">No disponible</span>
                                             @endif
                                         </td>
+                                        <td>{{ $insurer['val_incapacidad'] }}</td>
+                                        <td>{{ $insurer['val_vida'] }}</td>
+                                        <td>{{ $insurer['val_previexequial'] }}</td>
+                                        <td>{{ $insurer['val_banco'] }}</td>
                                         <td>{{ $insurer['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
                                             @if ($insurer['status'] === 1)
@@ -142,6 +150,30 @@
                                     placeholder="Introduce el número de la poliza">
                                 <div id="poliza-error" class="error-message">La poliza es obligatorio</div>
                             </div>
+                            <div class="form-group col-md-12">
+                                <label for="val_incapacidad">Valor Incapacidad <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="val_incapacidad" name="val_incapacidad"
+                                    placeholder="Introduce el valor de la incapacidad">
+                                <div id="poliza-error" class="error-message">El valor incapacidad es obligatorio</div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="val_vida">Valor vida <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="val_vida" name="val_vida"
+                                    placeholder="Introduce el valor de la vida">
+                                <div id="poliza-error" class="error-message">El valor vida es obligatorio</div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="val_previexequial">Valor previexequial <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="val_previexequial"
+                                    name="val_previexequial" placeholder="Introduce el valor previexequial">
+                                <div id="poliza-error" class="error-message">El valor previexequial es obligatorio</div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="val_banco">Valor banco <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="val_banco" name="val_banco"
+                                    placeholder="Introduce el valor del banco">
+                                <div id="poliza-error" class="error-message">El valor banco es obligatorio</div>
+                            </div>
                             <div class="form-group col-md-12 mt-3">
                                 <div class="input-group mb-3">
                                     <div class="custom-file">
@@ -189,6 +221,30 @@
                         <div class="form-group">
                             <label for="editNoPoliza">No Poliza <span class="required">*</span></label>
                             <input type="number" class="form-control" id="editNoPoliza" name="no_poliza" required>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="val_incapacidad">Valor Incapacidad <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="val_incapacidad" name="val_incapacidad"
+                                placeholder="Introduce el valor de la incapacidad">
+                            <div id="poliza-error" class="error-message">El valor incapacidad es obligatorio</div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="val_vida">Valor vida <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="val_vida" name="val_vida"
+                                placeholder="Introduce el valor de la vida">
+                            <div id="poliza-error" class="error-message">El valor vida es obligatorio</div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="val_previexequial">Valor previexequial <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="val_previexequial" name="val_previexequial"
+                                placeholder="Introduce el valor previexequial">
+                            <div id="poliza-error" class="error-message">El valor previexequial es obligatorio</div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="val_banco">Valor banco <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="val_banco" name="val_banco"
+                                placeholder="Introduce el valor del banco">
+                            <div id="poliza-error" class="error-message">El valor banco es obligatorio</div>
                         </div>
                         <div class="form-group">
                             <div class="input-group mb-3">

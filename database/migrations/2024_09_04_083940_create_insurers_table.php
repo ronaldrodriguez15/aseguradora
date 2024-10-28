@@ -18,6 +18,10 @@ class CreateInsurersTable extends Migration
             $table->string('name');
             $table->string('no_poliza');
             $table->string('document_path')->nullable();
+            $table->string('val_incapacidad')->nullable();
+            $table->string('val_vida')->nullable();
+            $table->string('val_previexequial')->nullable();
+            $table->string('val_banco')->nullable();
             $table->unsignedInteger('status')->default(1);
             $table->timestamps();
         });
