@@ -21,6 +21,8 @@ class PDFConfianzaController extends Controller
 
         $insurer = Insurer::find($inability->insurer_id);
 
+        Log::info('Ruta encontrada: ', ['insurer_id' => $inability->insurer_id]);
+
         $pdfFilePath = public_path("storage/" . $insurer->document_path);
 
         if (!file_exists($pdfFilePath)) {
@@ -32,6 +34,8 @@ class PDFConfianzaController extends Controller
 
         // Generar la URL pública del archivo PDF generado
         $pdfUrl = asset('storage/' . $inability->path_aseguradora);
+
+        Log::info('Ruta encontrada: ', ['pdfUrl' => $pdfUrl]);
 
         // Retornar la URL del PDF generado
         return response()->json(['pdf_url' => $pdfUrl]);
@@ -163,7 +167,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(170, 83);
                 $pdf->Write(0, '$ ' . $inability->amparo_basico);
 
-                // prima_pago_prima_seguro 
+                // prima_pago_prima_seguro
                 $pdf->SetXY(170, 93);
                 $pdf->Write(0, '$ ' . $inability->prima_pago_prima_seguro);
 
