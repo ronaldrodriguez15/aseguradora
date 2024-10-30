@@ -371,8 +371,13 @@ return [
                 ],
                 [
                     'text' => 'Salario minimo',
-                    'url' => 'asesores',
+                    'url' => 'salarios',
                     'icon' => 'fa fa-money-bill-wave',
+                ],
+                [
+                    'text' => 'Ambiente',
+                    'url' => 'ambiente',
+                    'icon' => 'fa fa-laptop-code',
                 ],
             ],
         ],

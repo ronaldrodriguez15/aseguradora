@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(EntitiesTableSeeder::class);
         $this->call(EpsTableSeeder::class);
         $this->call(RolesTableSeeder::class);
+        $this->call(AtmosphereTableSeeder::class);
         // \App\Models\User::factory(10)->create();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Atmosphere;
 use App\Models\Inability;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
@@ -22,6 +23,9 @@ class DocumentsApiController extends Controller
 
             // Encontrar la incapacidad por ID
             $inability = Inability::find($validated['id']);
+
+            // Registrar el valor de path_aseguradora en el log
+            Log::info('Valor de path_aseguradora: ' . $inability->path_aseguradora);
 
             // Obtener los documentos
             $documents = [
@@ -50,8 +54,13 @@ class DocumentsApiController extends Controller
                 if ($documentPath === $inability->path_estasseguro) {
                     $templateCode = "Afiliacion1estaSSeguro";
                 } elseif ($documentPath === $inability->path_aseguradora) {
-                    //$templateCode = "Afiliacion2Positiva";
-                    $templateCode = "Afiliacion2SegConfianza";
+
+                    // Verifica si la ruta contiene 'documentos_positiva/'
+                    if (strpos($documentPath, 'documentos_positiva/') !== false) {
+                        $templateCode = "Afiliacion2Positiva";
+                    } else {
+                        $templateCode = "Afiliacion2SegConfianza";
+                    }
                 } elseif ($documentPath === $inability->path_pago) {
                     $templateCode = "Afiliacion3DescuentoporNomina";
                 }
@@ -86,13 +95,15 @@ class DocumentsApiController extends Controller
                 "messages" => $messages
             ];
 
+            $atmosphere = Atmosphere::latest()->first();
+
             // Enviar los datos a ViaFirma usando Guzzle
             $client = new Client();
-            $response = $client->post(env('URL_VIA_FIRMA') . '/api/v3/set', [
+            $response = $client->post('https://' . $atmosphere->key . '.viafirma.com/documents/api/v3/set', [
                 'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Basic c3Znc2VndXJvczpTZWd1cm81MDYwKi4u',
+                    'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),
                 ],
             ]);
 
@@ -138,15 +149,17 @@ class DocumentsApiController extends Controller
                 return response()->json(['error' => 'No hay códigos disponibles para descargar.'], 400);
             }
 
+            $atmosphere = Atmosphere::latest()->first();
+
             $client = new Client();
             $allResponses = [];
 
             foreach ($codes as $code) {
                 if (isset($code['messagesCode'])) {
-                    $response = $client->get(env('URL_VIA_FIRMA') . '/api/v3/documents/download/signed/' . $code['messagesCode'], [
+                    $response = $client->get('https://' . $atmosphere->key . '.viafirma.com/documents/api/v3/documents/download/signed/' . $code['messagesCode'], [
                         'headers' => [
                             'Content-Type' => 'application/json',
-                            'Authorization' => 'Basic c3Znc2VndXJvczpTZWd1cm81MDYwKi4u',
+                            'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),
                         ],
                     ]);
 

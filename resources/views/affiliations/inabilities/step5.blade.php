@@ -402,6 +402,13 @@
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
 <script>
     $(document).ready(function() {
+        localStorage.removeItem('firmadoIniciado');
+        localStorage.removeItem('pdfGenerated'); 
+        localStorage.removeItem('pdfGeneratedPositiva'); 
+        localStorage.removeItem('pdfGeneratedLibranza'); 
+        localStorage.removeItem('pdfGeneratedDebito');
+        localStorage.removeItem('pdfGeneratedConfianza');
+        
         $('#entidad_r1').select2({
             placeholder: "Selecciona la entidad",
             allowClear: true

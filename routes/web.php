@@ -20,6 +20,8 @@ use App\Http\Controllers\PDFConfianzaController;
 use App\Http\Controllers\DocumentsApiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AtmosphereController;
+use App\Http\Controllers\SalaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +45,7 @@ Route::get('clear-caches', function () {
     Artisan::call('view:clear');
 
     return response()->json([
-        'status' => 'Cach茅s limpiados correctamente.',
+        'status' => 'Caches limpiados correctamente.',
     ]);
 });
 
@@ -104,6 +106,8 @@ Route::middleware([
     Route::resource('aseguradoras', InsurerController::class);
     Route::resource('eps', EpsController::class);
     Route::resource('asesores', AsesorController::class);
+    Route::resource('ambiente', AtmosphereController::class);
+    Route::resource('salarios', SalaryController::class);
 
     // Documents
     Route::resource('documentos', DocumentController::class);
