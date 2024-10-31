@@ -45,7 +45,7 @@
                                 @foreach ($wages as $salary)
                                     <tr>
                                         <td>{{ $salary['año'] }}</td>
-                                        <td>{{ $salary['valor']->format('Y-m-d - H:m') }}</td>
+                                        <td>{{ '$ ' . $salary['valor'] }}</td>
                                         <td>{{ $salary['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
                                             <div class="button-container">

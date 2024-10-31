@@ -38,8 +38,18 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Gate para agregar un nuevo post en el blog (si aplica para ambos roles)
+        Gate::define('sales-manager', function ($user) {
+            return $user->hasRole('Jefe de ventas');
+        });
+
+        // Gate para agregar un nuevo post en el blog (si aplica para ambos roles)
         Gate::define('add-blog-post', function ($user) {
-            return $user->hasRole('Administrador') || $user->hasRole('Ventas');
+            return $user->hasRole('Administrador') || $user->hasRole('Ventas') || $user->hasRole('Jefe de ventas');
+        });
+
+        // Gate para modulos de administracion (si aplica para ambos roles)
+        Gate::define('add-blog-manager', function ($user) {
+            return $user->hasRole('Administrador') || $user->hasRole('Jefe de ventas');
         });
     }
 }

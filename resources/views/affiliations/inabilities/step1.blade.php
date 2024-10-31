@@ -51,22 +51,18 @@
 
                 <div class="card-body">
                     <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="aseguradora">Aseguradora <span class="required">*</span></label>
-                            <select class="form-control @error('aseguradora') is-invalid @enderror" id="aseguradora"
-                                name="aseguradora" required>
-                                <option value="">Selecciona la aseguradora</option>
-                                @foreach ($insurers as $insurer)
-                                    <option value="{{ $insurer['id'] }}" data-poliza="{{ $insurer['no_poliza'] }}">
-                                        {{ $insurer['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('aseguradora')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
+                        <select class="form-control @error('aseguradora') is-invalid @enderror" id="aseguradora"
+                            name="aseguradora" required>
+                            <option value="">Selecciona la aseguradora</option>
+                            @foreach ($insurers as $insurer)
+                                <option value="{{ $insurer['id'] }}" data-poliza="{{ $insurer['no_poliza'] }}"
+                                    data-val-prevexequial="{{ $insurer['val_previexequial'] }}"
+                                    data-val-incapacidad="{{ $insurer['val_incapacidad'] }}"
+                                    data-val-vida="{{ $insurer['val_vida'] }}" data-val-banco="{{ $insurer['val_banco'] }}">
+                                    {{ $insurer['name'] }}
+                                </option>
+                            @endforeach
+                        </select>
                         <div class="form-group col-md-3">
                             <label for="identificador">Consecutivo <span class="required">*</span></label>
                             <input type="text" class="form-control @error('identificador') is-invalid @enderror"
@@ -385,6 +381,10 @@
                     </div>
                 </div>
             </div>
+            <input type="hidden" id="latest_salary" name="latest_salary" value="{{ $salary->valor ?? 0 }}">
+            <input type="hidden" id="val_incapacidad" name="val_incapacidad">
+            <input type="hidden" id="val_vida" name="val_vida">
+            <input type="hidden" id="val_banco" name="val_banco">
             <br>
             <div class="card" id="debito_automatico_fields" style="display: none">
                 <div class="card-body">
@@ -479,6 +479,16 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Importante!!',
+                text: 'Ten en cuenta haber configurado los valores de la aseguradora para los calculos, de lo contrario los resultados no serán los correctos.',
+                confirmButtonText: 'Entendido'
+            });
+        });
+    </script>
     <!-- Tu archivo de script personalizado -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>

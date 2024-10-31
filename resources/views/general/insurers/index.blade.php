@@ -152,8 +152,8 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="val_incapacidad">Valor Incapacidad <span class="required">*</span></label>
-                                <input type="number" class="form-control" id="val_incapacidad" name="val_incapacidad"
-                                    placeholder="Introduce el valor de la incapacidad">
+                                <input type="text" class="form-control" id="val_incapacidad" name="val_incapacidad"
+                                    placeholder="Introduce el valor de la incapacidad" step="any" required>
                                 <div id="poliza-error" class="error-message">El valor incapacidad es obligatorio</div>
                             </div>
                             <div class="form-group col-md-12">
@@ -224,25 +224,25 @@
                         </div>
                         <div class="form-group col-md-12">
                             <label for="val_incapacidad">Valor Incapacidad <span class="required">*</span></label>
-                            <input type="number" class="form-control" id="val_incapacidad" name="val_incapacidad"
+                            <input type="text" class="form-control" id="editValIncapacidad" name="val_incapacidad"
                                 placeholder="Introduce el valor de la incapacidad">
                             <div id="poliza-error" class="error-message">El valor incapacidad es obligatorio</div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="val_vida">Valor vida <span class="required">*</span></label>
-                            <input type="number" class="form-control" id="val_vida" name="val_vida"
+                            <input type="number" class="form-control" id="editValVida" name="val_vida"
                                 placeholder="Introduce el valor de la vida">
                             <div id="poliza-error" class="error-message">El valor vida es obligatorio</div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="val_previexequial">Valor previexequial <span class="required">*</span></label>
-                            <input type="number" class="form-control" id="val_previexequial" name="val_previexequial"
+                            <input type="number" class="form-control" id="editValPreviexequial" name="val_previexequial"
                                 placeholder="Introduce el valor previexequial">
                             <div id="poliza-error" class="error-message">El valor previexequial es obligatorio</div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="val_banco">Valor banco <span class="required">*</span></label>
-                            <input type="number" class="form-control" id="val_banco" name="val_banco"
+                            <input type="number" class="form-control" id="editValBanco" name="val_banco"
                                 placeholder="Introduce el valor del banco">
                             <div id="poliza-error" class="error-message">El valor banco es obligatorio</div>
                         </div>
@@ -281,6 +281,23 @@
     <script src="{{ asset('js/script.js') }}"></script>
 
     <script>
+        const valIncapacidadInput = document.getElementById("val_incapacidad");
+
+        // Reemplazar comas por puntos y permitir solo números y puntos
+        valIncapacidadInput.addEventListener("input", function() {
+            this.value = this.value.replace(/,/g, '.'); // Reemplaza comas por puntos
+        });
+
+        // Validación del formulario
+        document.querySelector("form").addEventListener("submit", function(e) {
+            const valor = parseFloat(valIncapacidadInput.value);
+            if (isNaN(valor) || valor <= 0) {
+                e.preventDefault(); // Evita el envío del formulario
+                alert("Por favor, introduce un valor válido para la incapacidad.");
+                valIncapacidadInput.focus(); // Lleva el foco al campo
+            }
+        });
+
         $(document).ready(function() {
             $('.edit-btn').on('click', function() {
                 var id = $(this).data('id');
@@ -293,6 +310,10 @@
                         $('#editId').val(response.id);
                         $('#editName').val(response.name);
                         $('#editNoPoliza').val(response.no_poliza);
+                        $('#editValIncapacidad').val(response.val_incapacidad);
+                        $('#editValVida').val(response.val_vida);
+                        $('#editValPreviexequial').val(response.val_previexequial);
+                        $('#editValBanco').val(response.val_banco);
                         $('#formEditAseguradora').attr('action', '/aseguradoras/' + response
                             .id);
                     }

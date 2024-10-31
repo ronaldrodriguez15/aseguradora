@@ -38,7 +38,7 @@
                                 <th>Celular</th>
                                 <th>Correo electrónico</th>
                                 <th>Nacimiento</th>
-                                <td>Rol</td>
+                                <th>Rol</th>
                                 <th>Creación</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -61,9 +61,9 @@
                                     $roleName = $roles->first(); // Tomar el primer rol
                                     // Definir el color según el rol
                                     if ($roleName === 'Administrador') {
-                                    $roleColor = 'badge-primary'; // Azul
-                                    } elseif ($roleName === 'Ventas') {
-                                    $roleColor = 'badge-success'; // Verde
+                                    $roleColor = 'badge-success'; // Azul
+                                    } else {
+                                    $roleColor = 'badge-primary'; // Verde
                                     }
                                     }
                                     @endphp

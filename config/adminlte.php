@@ -337,7 +337,7 @@ return [
         [
             'text' => 'Datos generales',
             'icon' => 'fas fa-clipboard-list',
-            'can' => 'manage-system',
+            //'can' => 'manage-system',
             'submenu' => [
                 [
                     'text' => 'Ciudades',
@@ -389,7 +389,7 @@ return [
             'text' => 'Usuarios',
             'url' => 'usuarios',
             'icon' => 'fas fa-fw fa-users',
-            //'can' => 'manage-system'
+            'can' => 'manage-system'
         ],
     ],
 

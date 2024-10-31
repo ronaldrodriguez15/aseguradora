@@ -13,6 +13,7 @@ use App\Models\Entity;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 use App\Models\DocumentSigned;
+use App\Models\Salary;
 use Illuminate\Support\Facades\Auth;
 
 class InabilityController extends Controller
@@ -52,8 +53,9 @@ class InabilityController extends Controller
         $epss = Eps::where('status', 1)->get();
         $banks = Bank::where('status', 1)->get();
         $cities = City::orderBy('name', 'ASC')->get();
+        $salary = Salary::latest('created_at')->first();
 
-        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities'));
+        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities', 'salary'));
     }
 
     /**

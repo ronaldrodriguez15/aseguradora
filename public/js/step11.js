@@ -94,9 +94,13 @@ function calcularEdad(fechaNacimiento) {
 document.addEventListener("DOMContentLoaded", function () {
     const valorIbcBasico = document.getElementById("valor_ibc_basico");
     const errorValor = document.getElementById("errorValor");
+    const latestSalaryString = document.getElementById("latest_salary").value; // Obtener el salario más reciente como string
 
-    const min = 1300000; // Valor mínimo (1.300.000)
-    const max = 32500000; // Valor máximo (41.600.000)
+    // Limpiar el valor y convertirlo a número
+    const latestSalary = parseInt(latestSalaryString.replace(/\./g, ''), 10); // Elimina puntos antes de convertir
+
+    const min = latestSalary; // Salario mínimo
+    const max = latestSalary * 25; // Salario máximo (25 veces el salario más reciente)
 
     // Función para formatear el número con puntos
     function formatearConPuntos(valor) {
@@ -107,6 +111,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para validar si el valor numérico está en el rango
     function validarMonto(valorNumerico) {
         if (valorNumerico < min || valorNumerico > max) {
+            // Mostrar mensaje de error dinámico
+            errorValor.innerHTML = `El valor debe estar entre $${formatearConPuntos(min.toString())} y $${formatearConPuntos(max.toString())}.`;
             errorValor.style.display = "block"; // Muestra el mensaje de error
             return false;
         } else {
@@ -130,5 +136,39 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const aseguradoraSelect = document.getElementById("aseguradora");
+    const valPrevexequialInput = document.getElementById("val_prevexequial_eclusivo");
+
+    aseguradoraSelect.addEventListener("change", function () {
+        // Limpiar el input antes de actualizarlo
+        valPrevexequialInput.value = "";
+
+        // Obtener el valor del atributo data-val-prevexequial de la opción seleccionada
+        const selectedOption = aseguradoraSelect.options[aseguradoraSelect.selectedIndex];
+        const valPrevexequial = selectedOption.getAttribute("data-val-prevexequial");
+
+        // Actualizar el valor del input, formateando si es necesario
+        if (valPrevexequial) {
+            valPrevexequialInput.value = formatearConPuntos(valPrevexequial);
+            valPrevexequialInput.classList.add("is-valid");
+        } else {
+            valPrevexequialInput.classList.add("is-invalid");
+        }
+    });
+
+    // Función para formatear el número con puntos
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+});
+
+
+
+
+
+
 
 

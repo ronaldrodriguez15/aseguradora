@@ -50,7 +50,7 @@ class ReportController extends Controller
         }
 
         if ($request->filled('vendedor')) {
-            $query->where('inabilities.nombre_asesor', $request->input('vendedor'));
+            $query->whereIn('inabilities.nombre_asesor', $request->input('vendedor'));
         }
 
         if ($request->filled('aseguradora')) {
@@ -79,6 +79,17 @@ class ReportController extends Controller
 
         if ($request->filled('edad')) {
             $query->where('inabilities.edad', $request->input('edad'));
+        }
+
+        // Mapeo de los valores de estado
+        $estadoMap = [
+            'sin_firmar' => 'Sin firmar',
+            'pendiente' => 'Pendiente',
+            'firmado' => 'Firmado'
+        ];
+
+        if ($request->filled('estado') && isset($estadoMap[$request->input('estado')])) {
+            $query->having('estado_firmado', $estadoMap[$request->input('estado')]);
         }
 
         // Finalizamos la consulta con los filtros aplicados

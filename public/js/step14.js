@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const formaPago = document.getElementById("forma_pago");
     const gastosAdministrativos = document.getElementById("gastos_administrativos");
     const valTotalDescMensual = document.getElementById("val_total_desc_mensual");
+    const aseguradoraSelect = document.getElementById("aseguradora");
 
-    let seSumo1400 = false; // Bandera para controlar si se han sumado los 1400
+    let valBanco = 0; // Variable para almacenar el valor de val_banco
+    let seSumoBanco = false; // Bandera para controlar si se ha sumado val_banco
 
     // Función para limpiar formato (elimina puntos y convierte a número)
     function limpiarFormato(valor) {
@@ -68,26 +70,49 @@ document.addEventListener("DOMContentLoaded", function () {
         return valor.toLocaleString('de-DE');
     }
 
+    // Evento para actualizar gastos administrativos al seleccionar la aseguradora
+    aseguradoraSelect.addEventListener("change", function () {
+        const selectedOption = aseguradoraSelect.options[aseguradoraSelect.selectedIndex];
+        valBanco = parseFloat(selectedOption.getAttribute("data-val-banco")) || 0; // Obtener el valor de val_banco
+
+        // Asignar el valor de val_banco a gastosAdministrativos
+        gastosAdministrativos.value = valBanco;
+        gastosAdministrativos.readOnly = true; // Hacerlo de solo lectura
+        actualizarValidacion(); // Actualizar las clases de validación
+    });
+
     formaPago.addEventListener("change", function () {
         let valorTotal = limpiarFormato(valTotalDescMensual.value); // Limpiar formato del valor
 
-        if (this.value === "debito_automatico" && !seSumo1400) {
-            gastosAdministrativos.value = 1400;
-            gastosAdministrativos.readOnly = true;
-            valorTotal += 1400; // Sumar 1.400
+        if (this.value === "debito_automatico") {
+            gastosAdministrativos.value = valBanco; // Asignar el valor de val_banco
+            valorTotal += valBanco; // Sumar el valor de val_banco
             valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumo1400 = true;
-        } else if (this.value === "mensual_libranza" && seSumo1400) {
-            gastosAdministrativos.value = 0;
-            gastosAdministrativos.readOnly = true;
-            valorTotal -= 1400; // Restar 1.400
+            seSumoBanco = true; // Marcar que se ha sumado
+        } else if (this.value === "mensual_libranza") {
+            gastosAdministrativos.value = 0; // Limpiar el valor
+            valorTotal -= valBanco; // Restar el valor de val_banco
             valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumo1400 = false; // Marcar que los 1400 se han restado
-        } else if (this.value !== "debito_automatico" && this.value !== "mensual_libranza") {
-            gastosAdministrativos.value = 0;
-            gastosAdministrativos.readOnly = true;
+            seSumoBanco = false; // Marcar que se ha restado
+        } else {
+            gastosAdministrativos.value = 0; // Limpiar el valor para otras opciones
+            gastosAdministrativos.readOnly = true; // Mantenerlo como solo lectura
         }
+
+        // Actualizar las clases de validación después de la lógica de suma/resta
+        actualizarValidacion();
     });
+
+    // Función para actualizar la clase de validación del input
+    function actualizarValidacion() {
+        if (gastosAdministrativos.value > 0) {
+            gastosAdministrativos.classList.add("is-valid");
+            gastosAdministrativos.classList.remove("is-invalid");
+        } else {
+            gastosAdministrativos.classList.remove("is-valid");
+            gastosAdministrativos.classList.add("is-invalid");
+        }
+    }
 });
 
 document.addEventListener("DOMContentLoaded", function () {

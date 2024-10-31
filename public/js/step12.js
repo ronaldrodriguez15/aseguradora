@@ -1,9 +1,9 @@
-// VALOR TOTAL DE DESCUENTO TOTAL
 document.addEventListener("DOMContentLoaded", function () {
     const valorIbcBasico = document.getElementById("valor_ibc_basico");
     const descuentoEps = document.getElementById("descuento_eps");
     const deseaValor = document.getElementById("desea_valor");
     const valorAdicional = document.getElementById("valor_adicional");
+    const aseguradoraSelect = document.getElementById("aseguradora");
     const valPrevexequialExclusivo = document.getElementById(
         "val_prevexequial_eclusivo"
     );
@@ -21,9 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const tuPierdesInput = document.getElementById("tu_pierdes");
     const tePagamosInput = document.getElementById("te_pagamos");
 
+    let valIncapacidad = 0; // Variable para almacenar el valor de val_incapacidad
+    let valVida = 0; // Variable para almacenar el valor de val_vida
+
     // Función para calcular el descuento, valor adicional, total, valor previ-exequial exclusivo, prima de seguro, y valor total de descuento mensual
     function calcularValores() {
-        // Obtén el valor IBC básico y realiza el cálculo del descuento
         const ibcBasicoValue = valorIbcBasico.value.replace(/\./g, "");
         const valor = parseFloat(ibcBasicoValue.replace(/[^0-9.-]/g, ""));
         const deseaValorAdicional = deseaValor.value.toLowerCase() === "si";
@@ -71,13 +73,13 @@ document.addEventListener("DOMContentLoaded", function () {
             valPrevexequialExclusivo.value = "";
         }
 
-        // Calcular la prima de pago prima de seguro
+        // Calcular la prima de pago prima de seguro usando valIncapacidad y valVida
         let prima;
         if (descuento > 0) {
             if (totalValue <= 2681240) {
                 prima = 14000;
             } else {
-                const calculo = totalValue * 0.004712 + 1366;
+                const calculo = totalValue * valIncapacidad + valVida;
                 prima = Math.ceil(calculo / 500) * 500; // Redondea hacia arriba al múltiplo más cercano de 500
             }
             primaPagoPrimaSeguro.value = prima.toLocaleString("es-CO", {
@@ -89,24 +91,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Calcular el valor total de descuento mensual
-        const gastos = parseFloat(
-            gastosAdministrativos.value.replace(/[^0-9.-]/g, "")
-        );
+        const gastos = parseFloat(gastosAdministrativos.value.replace(/[^0-9.-]/g, ""));
         if (!isNaN(totalValue) && !isNaN(prima) && !isNaN(gastos)) {
             const valorTotalDescMensual =
-                (parseFloat(
-                    valPrevexequialExclusivo.value.replace(/[^0-9.-]/g, "")
-                ) || 0) +
+                (parseFloat(valPrevexequialExclusivo.value.replace(/[^0-9.-]/g, "")) || 0) +
                 prima +
                 gastos;
-            valTotalDescMensual.value = valorTotalDescMensual.toLocaleString(
-                "es-CO",
-                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-            );
+            valTotalDescMensual.value = valorTotalDescMensual.toLocaleString("es-CO", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
         } else {
             valTotalDescMensual.value = "";
         }
     }
+
+    // Evento para actualizar los valores de valIncapacidad y valVida al seleccionar la aseguradora
+    aseguradoraSelect.addEventListener("change", function () {
+        const selectedOption = aseguradoraSelect.options[aseguradoraSelect.selectedIndex];
+        valIncapacidad = parseFloat(selectedOption.getAttribute("data-val-incapacidad")) || 0;
+        valVida = parseFloat(selectedOption.getAttribute("data-val-vida")) || 0;
+        calcularValores(); // Llama a calcularValores para actualizar cálculos
+    });
+
 
     // Calcular en tiempo real mientras se escribe en los campos y se cambia el select
     valorIbcBasico.addEventListener("input", calcularValores);
