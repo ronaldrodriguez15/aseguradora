@@ -434,7 +434,7 @@ class ReportController extends Controller
             $sheet->setCellValue('M' . $row, $inability->valor_ibc_basico);
             $sheet->setCellValue('N' . $row, $inability->valor_adicional);
             $sheet->setCellValue('O' . $row, $inability->amparo_basico);
-            $sheet->setCellValue('P' . $row, $inability->prima_pago_prima_seguro);
+            $sheet->setCellValue('P' . $row, $inability->val_total_desc_mensual);
             $sheet->setCellValue('Q' . $row, $inability->gastos_administrativos);
             $sheet->setCellValue('R' . $row, '0');
 

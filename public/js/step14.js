@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const aseguradoraSelect = document.getElementById("aseguradora");
 
     let valBanco = 0; // Variable para almacenar el valor de val_banco
-    let seSumoBanco = false; // Bandera para controlar si se ha sumado val_banco
+    let seSumoBanco = false; // Variable de control para verificar si se sumó
 
     // Función para limpiar formato (elimina puntos y convierte a número)
     function limpiarFormato(valor) {
@@ -73,47 +73,50 @@ document.addEventListener("DOMContentLoaded", function () {
     // Evento para actualizar gastos administrativos al seleccionar la aseguradora
     aseguradoraSelect.addEventListener("change", function () {
         const selectedOption = aseguradoraSelect.options[aseguradoraSelect.selectedIndex];
-        valBanco = parseFloat(selectedOption.getAttribute("data-val-banco")) || 0; // Obtener el valor de val_banco
+        valBanco = parseFloat(selectedOption.getAttribute("data-val-banco")) || 0;
 
-        // Asignar el valor de val_banco a gastosAdministrativos
-        gastosAdministrativos.value = valBanco;
-        gastosAdministrativos.readOnly = true; // Hacerlo de solo lectura
-        actualizarValidacion(); // Actualizar las clases de validación
+        // Mostrar el valor de val_banco solo si la forma de pago es "Débito automático"
+        if (formaPago.value === "debito_automatico") {
+            gastosAdministrativos.value = valBanco;
+            if (!seSumoBanco) {
+                actualizarTotal(valBanco); // Sumar al total
+                seSumoBanco = true; // Marcar que se ha sumado
+            }
+        } else {
+            gastosAdministrativos.value = 0;
+            if (seSumoBanco) {
+                actualizarTotal(-valBanco); // Restar del total
+                seSumoBanco = false; // Marcar que se ha restado
+            }
+        }
     });
 
+    // Evento para verificar la forma de pago y actualizar el valor de gastos administrativos
     formaPago.addEventListener("change", function () {
-        let valorTotal = limpiarFormato(valTotalDescMensual.value); // Limpiar formato del valor
-
         if (this.value === "debito_automatico") {
-            gastosAdministrativos.value = valBanco; // Asignar el valor de val_banco
-            valorTotal += valBanco; // Sumar el valor de val_banco
-            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumoBanco = true; // Marcar que se ha sumado
-        } else if (this.value === "mensual_libranza") {
-            gastosAdministrativos.value = 0; // Limpiar el valor
-            valorTotal -= valBanco; // Restar el valor de val_banco
-            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumoBanco = false; // Marcar que se ha restado
+            gastosAdministrativos.value = valBanco;
+            if (!seSumoBanco) {
+                actualizarTotal(valBanco); // Sumar al total
+                seSumoBanco = true; // Marcar que se ha sumado
+            }
         } else {
-            gastosAdministrativos.value = 0; // Limpiar el valor para otras opciones
-            gastosAdministrativos.readOnly = true; // Mantenerlo como solo lectura
+            gastosAdministrativos.value = 0;
+            if (seSumoBanco) {
+                actualizarTotal(-valBanco); // Restar del total
+                seSumoBanco = false; // Marcar que se ha restado
+            }
         }
-
-        // Actualizar las clases de validación después de la lógica de suma/resta
-        actualizarValidacion();
     });
 
-    // Función para actualizar la clase de validación del input
-    function actualizarValidacion() {
-        if (gastosAdministrativos.value > 0) {
-            gastosAdministrativos.classList.add("is-valid");
-            gastosAdministrativos.classList.remove("is-invalid");
-        } else {
-            gastosAdministrativos.classList.remove("is-valid");
-            gastosAdministrativos.classList.add("is-invalid");
-        }
+    // Función para actualizar el total de descuento mensual
+    function actualizarTotal(valor) {
+        let valorTotal = limpiarFormato(valTotalDescMensual.value);
+        valorTotal += valor;
+        valTotalDescMensual.value = formatearConPuntos(valorTotal);
     }
 });
+
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const noIdentificacion = document.getElementById("no_identificacion");

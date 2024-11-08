@@ -175,8 +175,9 @@ class InabilityController extends Controller
             $asesor = Asesor::where('asesor_code', $request->codigo_asesor)->first();
 
             // Asignar el nuevo consecutivo al asesor
-            $inability->no_solicitud = $identificador += 1;
-            $asesor->consecutivo = $identificador += 1;
+            $identificador += 1;
+            $inability->no_solicitud = $identificador;
+            $asesor->consecutivo = $identificador;
             $asesor->save();
 
             $inability->insurer_id = $request->aseguradora;

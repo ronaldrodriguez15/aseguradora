@@ -67,11 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Calcular el valor previ-exequial exclusivo
-        if (descuento > 0) {
-            valPrevexequialExclusivo.value = "2400";
-        } else {
-            valPrevexequialExclusivo.value = "";
-        }
+
 
         // Calcular la prima de pago prima de seguro usando valIncapacidad y valVida
         let prima;
@@ -90,13 +86,15 @@ document.addEventListener("DOMContentLoaded", function () {
             primaPagoPrimaSeguro.value = "";
         }
 
-        // Calcular el valor total de descuento mensual
-        const gastos = parseFloat(gastosAdministrativos.value.replace(/[^0-9.-]/g, ""));
-        if (!isNaN(totalValue) && !isNaN(prima) && !isNaN(gastos)) {
-            const valorTotalDescMensual =
-                (parseFloat(valPrevexequialExclusivo.value.replace(/[^0-9.-]/g, "")) || 0) +
-                prima +
-                gastos;
+        // Limpiar y convertir valores a números
+        const gastos = parseFloat(gastosAdministrativos.value.replace(/[^0-9.-]/g, "")) || 0;
+
+        // Para valPrevexequialExclusivo, reemplaza solo el punto que funciona como separador de miles
+        const prevExequial = parseFloat(valPrevexequialExclusivo.value.replace(/\.(?=\d{3})/g, "").replace(/,/g, ".")) || 0;
+
+        if (!isNaN(gastos) && !isNaN(prevExequial) && !isNaN(prima)) {
+            const valorTotalDescMensual = gastos + prevExequial + prima;
+
             valTotalDescMensual.value = valorTotalDescMensual.toLocaleString("es-CO", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

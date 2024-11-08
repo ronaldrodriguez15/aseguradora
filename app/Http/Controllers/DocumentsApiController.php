@@ -62,7 +62,13 @@ class DocumentsApiController extends Controller
                         $templateCode = "Afiliacion2SegConfianza";
                     }
                 } elseif ($documentPath === $inability->path_pago) {
-                    $templateCode = "Afiliacion3DescuentoporNomina";
+
+                    // Verifica si la ruta contiene 'documentos_libranza/'
+                    if (strpos($documentPath, 'documentos_libranza/') !== false) {
+                        $templateCode = "Afiliacion3DescuentoporNomina";
+                    } else {
+                        $templateCode = "Afiliacion3DebitoAutomatico";
+                    }
                 }
                 return [
                     "document" => [

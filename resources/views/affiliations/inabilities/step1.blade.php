@@ -286,7 +286,7 @@
                                     <span class="input-group-text">$</span>
                                 </div>
                                 <input type="text" class="form-control" name="val_prevexequial_eclusivo"
-                                    id="val_prevexequial_eclusivo" value="2400" placeholder="sin comas ni puntos"
+                                    id="val_prevexequial_eclusivo" placeholder="sin comas ni puntos"
                                     required readonly>
                             </div>
                             @error('val_prevexequial_eclusivo')
