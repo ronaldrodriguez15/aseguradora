@@ -166,344 +166,343 @@
                             @enderror
                         </div>
 
-                        <div class="form-group col-md-3">
-                            <label for="celular">Teléfono celular</label>
-                            <input type="number" class="form-control @error('celular') is-invalid @enderror"
-                                id="celular" name="celular" placeholder="sin comas ni puntos" required>
-                            @error('celular')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="ciudad_residencia">Ciudad de residencia <span class="required">*</span></label>
-                            <select class="form-control @error('ciudad_residencia') is-invalid @enderror"
-                                id="ciudad_residencia" name="ciudad_residencia" required>
-                                <option value="">Selecciona la ciudad</option>
-                                @foreach ($cities as $city)
-                                    <option value="{{ $city['name'] }}">
-                                        {{ $city['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('ciudad_residencia')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="form-group col-md-3">
+                        <label for="celular">Teléfono celular</label>
+                        <input type="number" class="form-control @error('celular') is-invalid @enderror"
+                            id="celular" name="celular" placeholder="sin comas ni puntos" required>
+                        @error('celular')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="fuente_recursos">Fuente de recursos <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('fuente_recursos') is-invalid @enderror"
-                                id="fuente_recursos" name="fuente_recursos" value="SALARIO"
-                                placeholder="Introduce la fuente de recursos" required>
-                            @error('fuente_recursos')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="ocupacion_asegurado">Ocupación <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('ocupacion_asegurado') is-invalid @enderror"
-                                id="ocupacion_asegurado" name="ocupacion_asegurado" placeholder="Introduce la ocupación"
-                                required>
-                            @error('ocupacion_asegurado')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label for="ciudad_residencia">Ciudad de residencia <span class="required">*</span></label>
+                        <select class="form-control @error('ciudad_residencia') is-invalid @enderror"
+                            id="ciudad_residencia" name="ciudad_residencia" required>
+                            <option value="">Selecciona la ciudad</option>
+                            @foreach ($cities as $city)
+                            <option value="{{ $city['name'] }}">
+                                {{ $city['name'] }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('ciudad_residencia')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="entidad_pagadora_sucursal">Entidad pagadora / sucursal <span
-                                    class="required">*</span></label>
-                            <select class="form-control @error('entidad_pagadora_sucursal') is-invalid @enderror"
-                                id="entidad_pagadora_sucursal" name="entidad_pagadora_sucursal" required>
-                                <option value="">Selecciona la entidad</option>
-                                @foreach ($companies as $company)
-                                    <option value="{{ $company['name'] }}">
-                                        {{ $company['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('entidad_pagadora_sucursal')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="n_beneficiarios">Beneficiarios del solicitante <span
-                                    class="required">*</span></label>
-                            <select class="form-control @error('n_beneficiarios') is-invalid @enderror"
-                                id="n_beneficiarios" name="n_beneficiarios" required>
-                                <option value="">Selecciona el número de beneficiarios</option>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
-                            @error('n_beneficiarios')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="fuente_recursos">Fuente de recursos <span class="required">*</span></label>
+                        <input type="text" class="form-control @error('fuente_recursos') is-invalid @enderror"
+                            id="fuente_recursos" name="fuente_recursos" value="SALARIO"
+                            placeholder="Introduce la fuente de recursos" required>
+                        @error('fuente_recursos')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ocupacion_asegurado">Ocupación <span class="required">*</span></label>
+                        <input type="text" class="form-control @error('ocupacion_asegurado') is-invalid @enderror"
+                            id="ocupacion_asegurado" name="ocupacion_asegurado" placeholder="Introduce la ocupación"
+                            required>
+                        @error('ocupacion_asegurado')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="entidad_pagadora_sucursal">Entidad pagadora / sucursal <span class="required">*</span></label>
+                        <select class="form-control @error('entidad_pagadora_sucursal') is-invalid @enderror"
+                            id="entidad_pagadora_sucursal" name="entidad_pagadora_sucursal" required>
+                            <option value="">Selecciona la entidad</option>
+                            @foreach ($companies as $company)
+                            <option value="{{ $company['name'] }}">
+                                {{ $company['name'] }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('entidad_pagadora_sucursal')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="n_beneficiarios">Beneficiarios del solicitante <span
+                                class="required">*</span></label>
+                        <select class="form-control @error('n_beneficiarios') is-invalid @enderror"
+                            id="n_beneficiarios" name="n_beneficiarios" required>
+                            <option value="">Selecciona el número de beneficiarios</option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                        @error('n_beneficiarios')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="card" id="beneficiario1" style="display:none;">
-                <div class="card-header pastel-blue-color">
-                    <div class="col-md-6"><span>Primer beneficiario del solicitante</span></div>
+        </div>
+        <br>
+        <div class="card" id="beneficiario1" style="display:none;">
+            <div class="card-header pastel-blue-color">
+                <div class="col-md-6"><span>Primer beneficiario del solicitante</span></div>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="nombres_s1">Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="nombres_s1" name="nombres_s1"
+                            placeholder="Nombres completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="apellidos_s1">Apellidos <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="apellidos_s1" name="apellidos_s1"
+                            placeholder="Apellidos completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="genero_s1">Género <span class="required">*</span></label>
+                        <select class="form-control @error('genero_s1') is-invalid @enderror" id="genero_s1"
+                            name="genero_s1">
+                            <option value="">Selecciona el género</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        @error('genero_s1')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="nombres_s1">Nombres <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="nombres_s1" name="nombres_s1"
-                                placeholder="Nombres completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="apellidos_s1">Apellidos <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="apellidos_s1" name="apellidos_s1"
-                                placeholder="Apellidos completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="genero_s1">Género <span class="required">*</span></label>
-                            <select class="form-control @error('genero_s1') is-invalid @enderror" id="genero_s1"
-                                name="genero_s1">
-                                <option value="">Selecciona el género</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                            @error('genero_s1')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="parentesco_s1">Parentesco <span class="required">*</span></label>
+                        <select class="form-control @error('parentesco_s1') is-invalid @enderror" id="parentesco_s1"
+                            name="parentesco_s1">
+                            <option value="">Selecciona el género</option>
+                            <option value="conyugue">Conyugue</option>
+                            <option value="hermano">Hermano</option>
+                            <option value="hijo">Hijo</option>
+                            <option value="madre">Madre</option>
+                            <option value="padre">Padre</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        @error('parentesco_s1')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="parentesco_s1">Parentesco <span class="required">*</span></label>
-                            <select class="form-control @error('parentesco_s1') is-invalid @enderror" id="parentesco_s1"
-                                name="parentesco_s1">
-                                <option value="">Selecciona el género</option>
-                                <option value="conyugue">Conyugue</option>
-                                <option value="hermano">Hermano</option>
-                                <option value="hijo">Hijo</option>
-                                <option value="madre">Madre</option>
-                                <option value="padre">Padre</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                            @error('parentesco_s1')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="edad_s1">Edad</label>
-                            <input type="text" class="form-control" id="edad_s1" name="edad_s1"
-                                placeholder="Introduce la edad">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="porcentaje_s1">Porcentaje</label>
-                            <input type="text" class="form-control" id="porcentaje_s1" name="porcentaje_s1"
-                                placeholder="%0">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="edad_s1">Edad</label>
+                        <input type="text" class="form-control" id="edad_s1" name="edad_s1"
+                            placeholder="Introduce la edad">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="tipo_identidad_s1">Tipo de identidad <span class="required">*</span></label>
-                            <select class="form-control @error('tipo_identidad_s1') is-invalid @enderror"
-                                id="tipo_identidad_s1" name="tipo_identidad_s1">
-                                <option value="">Selecciona el tipo</option>
-                                <option value="cedula_ciudadania">Cédula de ciudadanía</option>
-                                <option value="cedula_extranjeria">Cédula de extranjeria</option>
-                                <option value="documento_identificacion">Documento de identificación</option>
-                                <option value="nit">Nit</option>
-                                <option value="pasaporte">Pasaporte</option>
-                                <option value="registro_civil">Registro civil</option>
-                                <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
-                                <option value="tarjeta_identidad">Tarjeta de identidad</option>
-                            </select>
-                            @error('tipo_identidad_s1')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="n_identificacion_s1">Número de identificación</label>
-                            <input type="text" class="form-control" id="n_identificacion_s1"
-                                name="n_identificacion_s1" placeholder="Introduce el No de identificación">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="porcentaje_s1">Porcentaje</label>
+                        <input type="text" class="form-control" id="porcentaje_s1" name="porcentaje_s1"
+                            placeholder="%0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tipo_identidad_s1">Tipo de identidad <span class="required">*</span></label>
+                        <select class="form-control @error('tipo_identidad_s1') is-invalid @enderror"
+                            id="tipo_identidad_s1" name="tipo_identidad_s1">
+                            <option value="">Selecciona el tipo</option>
+                            <option value="cedula_ciudadania">Cédula de ciudadanía</option>
+                            <option value="cedula_extranjeria">Cédula de extranjeria</option>
+                            <option value="documento_identificacion">Documento de identificación</option>
+                            <option value="nit">Nit</option>
+                            <option value="pasaporte">Pasaporte</option>
+                            <option value="registro_civil">Registro civil</option>
+                            <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
+                            <option value="tarjeta_identidad">Tarjeta de identidad</option>
+                        </select>
+                        @error('tipo_identidad_s1')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="n_identificacion_s1">Número de identificación</label>
+                        <input type="text" class="form-control" id="n_identificacion_s1"
+                            name="n_identificacion_s1" placeholder="Introduce el No de identificación">
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="card" id="beneficiario2" style="display:none;">
-                <div class="card-header pastel-blue-color">
-                    <div class="col-md-6"><span>Segundo beneficiario del solicitante</span></div>
+        </div>
+        <br>
+        <div class="card" id="beneficiario2" style="display:none;">
+            <div class="card-header pastel-blue-color">
+                <div class="col-md-6"><span>Segundo beneficiario del solicitante</span></div>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="nombres_s2">Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="nombres_s2" name="nombres_s2"
+                            placeholder="Nombres completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="apellidos_s2">Apellidos <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="apellidos_s2" name="apellidos_s2"
+                            placeholder="Apellidos completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="genero_s2">Género <span class="required">*</span></label>
+                        <select class="form-control @error('genero_s2') is-invalid @enderror" id="genero_s2"
+                            name="genero_s2">
+                            <option value="">Selecciona el género</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="nombres_s2">Nombres <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="nombres_s2" name="nombres_s2"
-                                placeholder="Nombres completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="apellidos_s2">Apellidos <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="apellidos_s2" name="apellidos_s2"
-                                placeholder="Apellidos completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="genero_s2">Género <span class="required">*</span></label>
-                            <select class="form-control @error('genero_s2') is-invalid @enderror" id="genero_s2"
-                                name="genero_s2">
-                                <option value="">Selecciona el género</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="parentesco_s2">Parentesco <span class="required">*</span></label>
+                        <select class="form-control @error('parentesco_s2') is-invalid @enderror" id="parentesco_s2"
+                            name="parentesco_s2">
+                            <option value="">Selecciona el género</option>
+                            <option value="conyugue">Conyugue</option>
+                            <option value="hermano">Hermano</option>
+                            <option value="hijo">Hijo</option>
+                            <option value="madre">Madre</option>
+                            <option value="padre">Padre</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        @error('parentesco_s2')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="parentesco_s2">Parentesco <span class="required">*</span></label>
-                            <select class="form-control @error('parentesco_s2') is-invalid @enderror" id="parentesco_s2"
-                                name="parentesco_s2">
-                                <option value="">Selecciona el género</option>
-                                <option value="conyugue">Conyugue</option>
-                                <option value="hermano">Hermano</option>
-                                <option value="hijo">Hijo</option>
-                                <option value="madre">Madre</option>
-                                <option value="padre">Padre</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                            @error('parentesco_s2')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="edad_s2">Edad <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="edad_s2" name="edad_s2"
-                                placeholder="Introduce la edad">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="edad_s2">Edad <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="edad_s2" name="edad_s2"
+                            placeholder="Introduce la edad">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="tipo_identidad_s2">Tipo de identidad <span class="required">*</span></label>
-                            <select class="form-control @error('tipo_identidad_s2') is-invalid @enderror"
-                                id="tipo_identidad_s2" name="tipo_identidad_s2">
-                                <option value="">Selecciona el tipo</option>
-                                <option value="cedula_ciudadania">Cédula de ciudadanía</option>
-                                <option value="cedula_extranjeria">Cédula de extranjeria</option>
-                                <option value="documento_identificacion">Documento de identificación</option>
-                                <option value="nit">Nit</option>
-                                <option value="pasaporte">Pasaporte</option>
-                                <option value="registro_civil">Registro civil</option>
-                                <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
-                                <option value="tarjeta_identidad">Tarjeta de identidad</option>
-                            </select>
-                            @error('tipo_identidad_s2')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="n_identificacion_s2">Número de identificación</label>
-                            <input type="text" class="form-control" id="n_identificacion_s2"
-                                name="n_identificacion_s2" placeholder="Introduce el No de identificación">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tipo_identidad_s2">Tipo de identidad <span class="required">*</span></label>
+                        <select class="form-control @error('tipo_identidad_s2') is-invalid @enderror"
+                            id="tipo_identidad_s2" name="tipo_identidad_s2">
+                            <option value="">Selecciona el tipo</option>
+                            <option value="cedula_ciudadania">Cédula de ciudadanía</option>
+                            <option value="cedula_extranjeria">Cédula de extranjeria</option>
+                            <option value="documento_identificacion">Documento de identificación</option>
+                            <option value="nit">Nit</option>
+                            <option value="pasaporte">Pasaporte</option>
+                            <option value="registro_civil">Registro civil</option>
+                            <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
+                            <option value="tarjeta_identidad">Tarjeta de identidad</option>
+                        </select>
+                        @error('tipo_identidad_s2')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="n_identificacion_s2">Número de identificación</label>
+                        <input type="text" class="form-control" id="n_identificacion_s2"
+                            name="n_identificacion_s2" placeholder="Introduce el No de identificación">
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="card" id="beneficiario3" style="display:none;">
-                <div class="card-header pastel-blue-color">
-                    <div class="col-md-6"><span>Tercer beneficiario del solicitante</span></div>
+        </div>
+        <br>
+        <div class="card" id="beneficiario3" style="display:none;">
+            <div class="card-header pastel-blue-color">
+                <div class="col-md-6"><span>Tercer beneficiario del solicitante</span></div>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="nombres_s3">Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="nombres_s3" name="nombres_s3"
+                            placeholder="Nombres completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="apellidos_s3">Apellidos <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="apellidos_s3" name="apellidos_s3"
+                            placeholder="Apellidos completos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="genero_s3">Género <span class="required">*</span></label>
+                        <select class="form-control @error('genero_s3') is-invalid @enderror" id="genero_s3"
+                            name="genero_s3">
+                            <option value="">Selecciona el género</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="nombres_s3">Nombres <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="nombres_s3" name="nombres_s3"
-                                placeholder="Nombres completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="apellidos_s3">Apellidos <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="apellidos_s3" name="apellidos_s3"
-                                placeholder="Apellidos completos">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="genero_s3">Género <span class="required">*</span></label>
-                            <select class="form-control @error('genero_s3') is-invalid @enderror" id="genero_s3"
-                                name="genero_s3">
-                                <option value="">Selecciona el género</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="parentesco_s3">Parentesco <span class="required">*</span></label>
+                        <select class="form-control @error('parentesco_s3') is-invalid @enderror" id="parentesco_s3"
+                            name="parentesco_s3">
+                            <option value="">Selecciona el género</option>
+                            <option value="conyugue">Conyugue</option>
+                            <option value="hermano">Hermano</option>
+                            <option value="hijo">Hijo</option>
+                            <option value="madre">Madre</option>
+                            <option value="padre">Padre</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        @error('parentesco_s3')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="parentesco_s3">Parentesco <span class="required">*</span></label>
-                            <select class="form-control @error('parentesco_s3') is-invalid @enderror" id="parentesco_s3"
-                                name="parentesco_s3">
-                                <option value="">Selecciona el género</option>
-                                <option value="conyugue">Conyugue</option>
-                                <option value="hermano">Hermano</option>
-                                <option value="hijo">Hijo</option>
-                                <option value="madre">Madre</option>
-                                <option value="padre">Padre</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                            @error('parentesco_s3')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="edad_s3">Edad <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="edad_s3" name="edad_s3"
-                                placeholder="Introduce la edad">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="porcentaje_s3">Porcentaje</label>
-                            <input type="text" class="form-control" id="porcentaje_s3" name="porcentaje_s3"
-                                placeholder="%0">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="edad_s3">Edad <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="edad_s3" name="edad_s3"
+                            placeholder="Introduce la edad">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="tipo_identidad_s3">Tipo de identidad <span class="required">*</span></label>
-                            <select class="form-control @error('tipo_identidad_s3') is-invalid @enderror"
-                                id="tipo_identidad_s3" name="tipo_identidad_s3">
-                                <option value="">Selecciona el tipo</option>
-                                <option value="cedula_ciudadania">Cédula de ciudadanía</option>
-                                <option value="cedula_extranjeria">Cédula de extranjeria</option>
-                                <option value="documento_identificacion">Documento de identificación</option>
-                                <option value="nit">Nit</option>
-                                <option value="pasaporte">Pasaporte</option>
-                                <option value="registro_civil">Registro civil</option>
-                                <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
-                                <option value="tarjeta_identidad">Tarjeta de identidad</option>
-                            </select>
-                            @error('tipo_identidad_s3')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="n_identificacion_s3">Número de identificación</label>
-                            <input type="text" class="form-control" id="n_identificacion_s3"
-                                name="n_identificacion_s3" placeholder="Introduce el No de identificación">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="porcentaje_s3">Porcentaje</label>
+                        <input type="text" class="form-control" id="porcentaje_s3" name="porcentaje_s3"
+                            placeholder="%0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tipo_identidad_s3">Tipo de identidad <span class="required">*</span></label>
+                        <select class="form-control @error('tipo_identidad_s3') is-invalid @enderror"
+                            id="tipo_identidad_s3" name="tipo_identidad_s3">
+                            <option value="">Selecciona el tipo</option>
+                            <option value="cedula_ciudadania">Cédula de ciudadanía</option>
+                            <option value="cedula_extranjeria">Cédula de extranjeria</option>
+                            <option value="documento_identificacion">Documento de identificación</option>
+                            <option value="nit">Nit</option>
+                            <option value="pasaporte">Pasaporte</option>
+                            <option value="registro_civil">Registro civil</option>
+                            <option value="tarjeta_extranjeria">Tarjeta de extranjeria</option>
+                            <option value="tarjeta_identidad">Tarjeta de identidad</option>
+                        </select>
+                        @error('tipo_identidad_s3')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="n_identificacion_s3">Número de identificación</label>
+                        <input type="text" class="form-control" id="n_identificacion_s3"
+                            name="n_identificacion_s3" placeholder="Introduce el No de identificación">
                     </div>
                 </div>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-6 text-right mb-5">
-                </div>
-                <div class="col-md-6 text-right mb-5">
-                    <button type="submit" class="btn btn-success" id="submitBtn">
-                        Siguiente<i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 text-right mb-5">
             </div>
-    </div>
-    </form>
-    </div>
+            <div class="col-md-6 text-right mb-5">
+                <button type="submit" class="btn btn-success" id="submitBtn">
+                    Siguiente<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+</div>
+</form>
+</div>
 
 @stop
 
