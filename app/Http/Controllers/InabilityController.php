@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Asesor;
 use App\Models\Bank;
 use App\Models\City;
+use App\Models\Departments;
 use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
@@ -260,13 +261,14 @@ class InabilityController extends Controller
         $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
         $cities = City::orderBy('name', 'ASC')->get();
+        $departments = Departments::orderBy('descripcion', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
         $companies = Entity::where('status', 1)->get();
         $message = "La información se guardó correctamente.";
 
         return view(
             'affiliations.inabilities.step3',
-            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'epss', 'companies', 'message')
+            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'departments', 'epss', 'companies', 'message')
         );
     }
 
@@ -315,6 +317,7 @@ class InabilityController extends Controller
         $inability->nombres_completos = $request->nombres_completos;
         $inability->tipo_identificacion = $request->tipo_identificacion;
         $inability->ciudad_expedicion = $request->ciudad_expedicion;
+        $inability->department = $request->department;
         $inability->genero = $request->genero;
         $inability->fecha_nacimiento_asegurado = $request->fecha_nacimiento_asegurado;
         $inability->direccion_residencia = $request->direccion_residencia;
