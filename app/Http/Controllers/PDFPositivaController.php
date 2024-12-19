@@ -248,7 +248,7 @@ class PDFPositivaController extends Controller
 
                 // no identificacion
                 $pdf->SetXY(179.5, 144.3);
-                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s2));
+                $pdf->Write(0, convertToISO88591($inability->n_identificacion_s2));
 
                 // ------------------ Referido 3
                 // nombres y apellidos
@@ -271,7 +271,7 @@ class PDFPositivaController extends Controller
 
                 // no identificacion
                 $pdf->SetXY(179.5, 147.3);
-                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s3));
+                $pdf->Write(0, convertToISO88591($inability->n_identificacion_s3));
 
                 // ------------------ Declaraciòn de asegurabilidad
 
