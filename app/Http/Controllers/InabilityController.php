@@ -309,6 +309,8 @@ class InabilityController extends Controller
 
         $this->validate($request, $rules, $messages);
 
+        dd($request->all());
+
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');
         $inability = Inability::find($inabilityId);
