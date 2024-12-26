@@ -116,4 +116,10 @@ class CityController extends Controller
 
         return redirect()->route('ciudades.index')->with('success', 'Excelente!!, La ciudad ha sido eliminada.');
     }
+
+    public function getCities($departmentId)
+    {
+        $cities = City::where('department_id', $departmentId)->get(['id', 'name']);
+        return response()->json($cities);
+    }
 }

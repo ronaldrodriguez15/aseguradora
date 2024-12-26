@@ -22,7 +22,6 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AtmosphereController;
 use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\DepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,7 +139,8 @@ Route::middleware([
     Route::post('/descargar-plano-focus', [ReportController::class, 'descargarPlanoFocus']);
     Route::post('/descargar-seguimiento-ventas', [ReportController::class, 'descargarSeguimientoVentas']);
 
-    Route::get('/departments/{city_id}', [DepartmentController::class, 'getDepartmentsByCity']);
+    Route::get('/get-cities/{department}', [CityController::class, 'getCities'])->name('get-cities');
+
 });
 
 Auth::routes();

@@ -119,12 +119,8 @@
                             <select class="form-control select2 @error('ciudad_expedicion') is-invalid @enderror"
                                 id="ciudad_expedicion" name="ciudad_expedicion" required>
                                 <option value="">Selecciona la ciudad</option>
-                                @foreach ($cities as $city)
-                                    <option value="{{ $city['id'] }}"> <!-- Aquí cambias 'name' por 'id' -->
-                                        {{ $city['name'] }}
-                                    </option>
-                                @endforeach
                             </select>
+
                             @error('ciudad_expedicion')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -544,27 +540,32 @@
                 allowClear: true
             });
 
-            $('#ciudad_expedicion').change(function() {
-                let cityId = $(this).val();
-                let departamentoSelect = $('#departamento');
+            $('#department').select2({
+                tags: true,
+                placeholder: 'Selecciona el departamento',
+                allowClear: true
+            });
 
-                departamentoSelect.empty(); // Limpia el select de departamentos
-                departamentoSelect.append('<option value="">Selecciona el departamento</option>');
-                console.log(cityId);
+            $('#department').change(function() {
+                let departmentId = $(this).val();
+                let citySelect = $('#ciudad_expedicion');
+                citySelect.empty(); // Limpiar opciones previas
+                citySelect.append('<option value="">Selecciona la ciudad</option>');
 
-                if (cityId) {
+                if (departmentId) {
                     $.ajax({
-                        url: `/departments/${cityId}`, // URL al controlador
+                        url: `/get-cities/${departmentId}`,
                         type: 'GET',
+                        dataType: 'json',
                         success: function(data) {
-                            data.forEach(function(department) {
-                                departamentoSelect.append(
-                                    `<option value="${department.id_departamento}">${department.descripcion}</option>`
+                            $.each(data, function(key, city) {
+                                citySelect.append(
+                                    `<option value="${city.id}">${city.name}</option>`
                                 );
                             });
                         },
                         error: function() {
-                            console.log('No se encontró los departamentos.');
+                            alert('Hubo un error al cargar las ciudades.');
                         }
                     });
                 }
