@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asesor;
+use App\Models\City;
+use App\Models\Departments;
 use Illuminate\Http\Request;
 use App\Models\Entity;
 
@@ -28,8 +31,12 @@ class EntityController extends Controller
      */
     public function create()
     {
-        //
+        $asesors = Asesor::where('status', 1)->get();
+        $departments = Departments::all();
+
+        return view('general.entities.create', compact('asesors', 'departments'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -76,8 +83,10 @@ class EntityController extends Controller
     public function edit($id)
     {
         $entity = Entity::find($id);
+        $asesors = Asesor::where('status', 1)->get();
+        $departments = Departments::all();
 
-        return view('general.entities.edit', compact('entity'));
+        return view('general.entities.edit', compact('entity', 'asesors', 'departments'));
     }
 
     /**
@@ -116,6 +125,13 @@ class EntityController extends Controller
 
         return redirect()->route('entidades.index')->with('success', 'La entidad ha sido eliminada.');
     }
+
+    public function getCitiesByDepartment($departmentId)
+    {
+        $cities = City::where('id', $departmentId)->get();
+        return response()->json($cities);
+    }
+
 
     private function getValidationRules()
     {

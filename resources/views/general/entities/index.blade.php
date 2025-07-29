@@ -12,7 +12,7 @@
 
 <div class="row justify-content-center">
     <div class="col-md-12 text-right mb-5">
-        <a class="btn btn-success" id="btnNuevaCiudad">
+        <a class="btn btn-success" href="{{ route('entidades.create') }}">
             <i class="fas fa-plus-circle mr-2"></i>Nueva Entidad
         </a>
     </div>
@@ -47,7 +47,7 @@
                             <tr>
                                 <td>{{ $entity['name'] }}</td>
                                 <td>{{ $entity['nemo'] }}</td>
-                                <td>{{ $entity['cnitpagador'] }}</td>
+                                <td><span class="badge bg-info">{{ $entity['cnitpagador'] }}</span></td>
                                 <td>{{ $entity['sucursal'] }}</td>
                                 <td>
                                     @if($entity['status'] === 1)
@@ -58,15 +58,26 @@
                                 </td>
                                 <td>
                                     @if($entity['status'] === 1)
-                                    <div class="button-container">
-                                        <a class="btn btn-success btn-sm" href="{{ route('entidades.edit', $entity['id']) }}" title="Editar"><i class="fas fa-edit"></i></a>
-                                        <form action="{{ route('entidades.destroy', $entity['id']) }}" method="POST" id="formDelete-{{ $entity['id'] }}">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ $entity['id'] }}" onclick="confirmDelete(this)" title="Eliminar">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item text-success" href="{{ route('entidades.edit', $entity['id']) }}">
+                                                    <i class="fas fa-edit me-1"></i> Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('entidades.destroy', $entity['id']) }}" method="POST" id="formDelete-{{ $entity['id'] }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="dropdown-item text-danger delete-btn" data-id="{{ $entity['id'] }}" onclick="confirmDelete(this)">
+                                                        <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
                                     </div>
                                     @endif
                                 </td>
