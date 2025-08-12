@@ -140,7 +140,7 @@ Route::middleware([
     Route::post('/descargar-seguimiento-ventas', [ReportController::class, 'descargarSeguimientoVentas']);
 
     Route::get('/get-cities/{department}', [CityController::class, 'getCities'])->name('get-cities');
-
+    Route::post('/entidades/exportar', [EntityController::class, 'exportarSeleccionadas'])->name('entidades.exportar');
 });
 
 Auth::routes();

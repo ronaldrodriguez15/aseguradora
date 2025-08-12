@@ -3,7 +3,7 @@
 @section('title', 'Entidades')
 
 @section('content_header')
-    <h1>Editar Entidad</h1>
+    <h1>Nueva Entidad</h1>
 @stop
 
 @section('content')
@@ -51,44 +51,44 @@
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="n-apertura">Nombre de quien apertura <span class="required">*</span></label>
-                    <select class="form-control @error('n-apertura') is-invalid @enderror" id="n-apertura" name="n-apertura"
+                    <label for="n_apertura">Nombre de quien apertura <span class="required">*</span></label>
+                    <select class="form-control @error('n_apertura') is-invalid @enderror" id="n_apertura" name="n_apertura"
                         required>
                         <option value="" disabled selected>Seleccione un departamento</option>
                         @foreach ($asesors as $asesor)
                             <option value="{{ $asesor->id }}">{{ $asesor->name }}</option>
                         @endforeach
-                        @error('n-apertura')
+                        @error('n_apertura')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </select>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="fecha-apertura">Fecha apertura <span class="required">*</span></label>
-                    <input type="date" class="form-control @error('fecha-apertura') is-invalid @enderror"
-                        id="fecha-apertura" name="fecha-apertura">
-                    @error('fecha-apertura')
+                    <label for="fecha_apertura">Fecha apertura <span class="required">*</span></label>
+                    <input type="date" class="form-control @error('fecha_apertura') is-invalid @enderror"
+                        id="fecha_apertura" name="fecha_apertura">
+                    @error('fecha_apertura')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="t-empresa">Tipo de empresa <span class="required">*</span></label>
-                    <select class="form-control @error('t-empresa') is-invalid @enderror" id="t-empresa" name="t-empresa"
+                    <label for="t_empresa">Tipo de empresa <span class="required">*</span></label>
+                    <select class="form-control @error('t_empresa') is-invalid @enderror" id="t_empresa" name="t_empresa"
                         required>
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="Publica">Publica</option>
                         <option value="Privada">Privada</option>
                     </select>
-                    @error('t-empresa')
+                    @error('t_empresa')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
                     <label for="direccion">Dirección</label>
-                    <input type="number" class="form-control @error('direccion') is-invalid @enderror"
-                        id="direccion" name="direccion" placeholder="Introduce la dirección">
+                    <input type="text" class="form-control @error('direccion') is-invalid @enderror" id="direccion"
+                        name="direccion" placeholder="Introduce la dirección">
                     @error('direccion')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -130,332 +130,351 @@
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="n-empleados">Número de empleados de planta</label>
-                    <input type="number" class="form-control @error('n-empleados') is-invalid @enderror"
-                        id="n-empleados" name="n-empleados" placeholder="00">
-                    @error('n-empleados')
+                    <label for="n_empleados">Número de empleados de planta</label>
+                    <input type="number" class="form-control @error('n_empleados') is-invalid @enderror"
+                        id="n_empleados" name="n_empleados" placeholder="00">
+                    @error('n_empleados')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="n-contratistas">Número de empleados contratistas</label>
-                    <input type="number" class="form-control @error('n-contratistas') is-invalid @enderror"
-                        id="n-contratistas" name="n-contratistas" placeholder="00">
-                    @error('n-contratistas')
+                    <label for="n_contratistas">Número de empleados contratistas</label>
+                    <input type="number" class="form-control @error('n_contratistas') is-invalid @enderror"
+                        id="n_contratistas" name="n_contratistas" placeholder="00">
+                    @error('n_contratistas')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="p-salario">Número de personas que ganan salario mínimo</label>
-                    <input type="number" class="form-control @error('p-salario') is-invalid @enderror" id="p-salario"
-                        name="p-salario" placeholder="00">
-                    @error('p-salario')
+                    <label for="p_salario">Número de personas que ganan salario mínimo</label>
+                    <input type="number" class="form-control @error('p_salario') is-invalid @enderror" id="p_salario"
+                        name="p_salario" placeholder="00">
+                    @error('p_salario')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="n-sedes">Número de sedes</label>
-                    <input type="number" class="form-control @error('n-sedes') is-invalid @enderror" id="n-sedes"
-                        name="n-sedes" placeholder="00">
-                    @error('n-sedes')
+                    <label for="n_sedes">Número de sedes</label>
+                    <input type="number" class="form-control @error('n-sedes') is-invalid @enderror" id="n_sedes"
+                        name="n_sedes" placeholder="00">
+                    @error('n_sedes')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="t-orden-empresa">Tipo de orden de empresa</label>
-                    <select class="form-control @error('sucursal') is-invalid @enderror" id="sucursal" name="sucursal">
+                    <label for="t_orden_empresa">Tipo de orden de empresa</label>
+                    <select class="form-control @error('t_orden_empresa') is-invalid @enderror" id="t_orden_empresa"
+                        name="t_orden_empresa">
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="publica">Publica</option>
                         <option value="privada">Privada</option>
                     </select>
-                    @error('sucursal')
+                    @error('t_orden_empresa')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="arl-empresa">ARL de la empresa</label>
-                    <input type="number" class="form-control @error('arl-empresa') is-invalid @enderror"
-                        id="arl-empresa" name="arl-empresa" placeholder="Escribe la ARL">
-                    @error('arl-empresa')
+                    <label for="arl_empresa">ARL de la empresa</label>
+                    <input type="text" class="form-control @error('arl_empresa') is-invalid @enderror"
+                        id="arl_empresa" name="arl-empresa" placeholder="Escribe la ARL">
+                    @error('arl_empresa')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="m-hibrido">Modalidad híbrida</label>
-                    <select class="form-control @error('m-hibrido') is-invalid @enderror" id="m-hibrido"
-                        name="m-hibrido">
+                    <label for="m_hibrido">Modalidad híbrida</label>
+                    <select class="form-control @error('m_hibrido') is-invalid @enderror" id="m_hibrido"
+                        name="m_hibrido">
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="Publica">Si</option>
                         <option value="Privada">No</option>
                     </select>
-                    @error('m-hibrido')
+                    @error('m_hibrido')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-4">
-                    <label for="d-asistencia">Dinamica de asistencia</label>
-                    <input type="text" class="form-control @error('d-asistencia') is-invalid @enderror"
-                        id="d-asistencia" name="d-asistencia">
-                    @error('d-asistencia')
+                    <label for="d_asistencia">Dínamica de asistencia</label>
+                    <input type="text" class="form-control @error('d_asistencia') is-invalid @enderror"
+                        id="d_asistencia" name="d_asistencia" placeholder="Introduce la dínamica de asistencia">
+                    @error('d_asistencia')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-8">
-                    <label for="d-numero-personas">Día de la semana donde hay mayor número de personas en la
+                    <label for="d_numero_personas">Día de la semana donde hay mayor número de personas en la
                         entidad</label>
-                    <input type="text" class="form-control @error('d-numero-personas') is-invalid @enderror"
-                        id="d-numero-personas" name="d-numero-personas" placeholder="Introduce el dia">
-                    @error('d-numero-personas')
+                    <input type="text" class="form-control @error('d_numero_personas') is-invalid @enderror"
+                        id="d_numero_personas" name="d_numero_personas" placeholder="Introduce el dia">
+                    @error('d_numero_personas')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="v-salario-minimo">Valor del salario mínimo en la entidad</label>
-                    <input type="number" class="form-control @error('v-salario-minimo') is-invalid @enderror"
-                        id="v-salario-minimo" name="v-salario-minimo" placeholder="COP">
-                    @error('v-salario-minimo')
+                    <label for="v_salario_minimo">Valor del salario mínimo en la entidad</label>
+                    <input type="number" class="form-control @error('v_salario_minimo') is-invalid @enderror"
+                        id="v_salario_minimo" name="v_salario_minimo" placeholder="COP">
+                    @error('v_salario_minimo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="v-salario-maximo">Valor del salario maximo en la entidad</label>
-                    <input type="number" class="form-control @error('v-salario-maximo') is-invalid @enderror"
-                        id="v-salario-maximo" name="v-salario-maximo" placeholder="COP">
-                    @error('v-salario-maximo')
+                    <label for="v_salario_maximo">Valor del salario maximo en la entidad</label>
+                    <input type="number" class="form-control @error('v_salario_maximo') is-invalid @enderror"
+                        id="v_salario_maximo" name="v_salario_maximo" placeholder="COP">
+                    @error('v_salario_maximo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="pago-nomina">Pago de nómina </label>
-                    <select class="form-control @error('pago-nomina') is-invalid @enderror" id="pago-nomina"
-                        name="pago-nomina">
+                    <label for="pago_nomina">Pago de nómina </label>
+                    <select class="form-control @error('pago_nomina') is-invalid @enderror" id="pago_nomina"
+                        name="pago_nomina">
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="quincenal">Quincenal</option>
                         <option value="mensual">Mensual</option>
                     </select>
-                    @error('pago-nomina')
+                    @error('pago_nomina')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="m-socializacion">Metodología de socialización beneficio</label>
-                    <input type="text" class="form-control @error('m-socializacion') is-invalid @enderror"
-                        id="m-socializacion" name="m-socializacion" placeholder="Introduce la metodología">
-                    @error('m-socializacion')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="tthh-nombres">Director de TTHH - Nombres y apellidos</label>
-                    <input type="text" class="form-control @error('tthh-nombres') is-invalid @enderror"
-                        id="tthh-nombres" name="tthh-nombres" placeholder="Introduce los nombres y apellidos">
-                    @error('tthh-nombres')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="tthh-cel1">Director de TTHH - celular 1</label>
-                    <input type="number" class="form-control @error('tthh-cel1') is-invalid @enderror" id="tthh-cel1"
-                        name="tthh-cel1" placeholder="Número de celular 1">
-                    @error('tthh-cel1')
+                    <label for="m_socializacion">Metodología de socialización beneficio</label>
+                    <input type="text" class="form-control @error('m_socializacion') is-invalid @enderror"
+                        id="m_socializacion" name="m_socializacion" placeholder="Introduce la metodología">
+                    @error('m_socializacion')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="tthh-cel2">Director de TTHH - Celular 2</label>
-                    <input type="number" class="form-control @error('tthh-cel2') is-invalid @enderror" id="tthh-cel2"
-                        name="tthh-cel2" placeholder="Número de celular 2">
-                    @error('tthh-cel2')
+                    <label for="tthh_nombres">Director de TTHH - Nombres y apellidos</label>
+                    <input type="text" class="form-control @error('tthh_nombres') is-invalid @enderror"
+                        id="tthh_nombres" name="tthh_nombres" placeholder="Introduce los nombres y apellidos">
+                    @error('tthh_nombres')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="tthh-cel3">Director de TTHH - celular 3</label>
-                    <input type="number" class="form-control @error('tthh-cel3') is-invalid @enderror" id="tthh-cel3"
-                        name="tthh-cel3" placeholder="Número de celular 3">
-                    @error('tthh-cel3')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="tthh-email">Director de TTHH - Email</label>
-                    <input type="email" class="form-control @error('tthh-email') is-invalid @enderror" id="tthh-email"
-                        name="tthh-email" placeholder="alguien@example.com">
-                    @error('tthh-email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="tthh-cargo">Director de TTHH - cargo</label>
-                    <input type="text" class="form-control @error('tthh-cargo') is-invalid @enderror" id="tthh-cargo"
-                        name="tthh-cargo">
-                    @error('tthh-cargo')
+                    <label for="tthh_cel1">Director de TTHH - celular 1</label>
+                    <input type="number" class="form-control @error('tthh_cel1') is-invalid @enderror" id="tthh_cel1"
+                        name="tthh_cel1" placeholder="Número de celular 1">
+                    @error('tthh_cel1')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="tthh-observaciones">Director de TTHH - Observaciones</label>
-                    <input type="text" class="form-control @error('tthh-observaciones') is-invalid @enderror"
-                        id="tthh-observaciones" name="tthh-observaciones">
-                    @error('tthh-observaciones')
+                    <label for="tthh_cel2">Director de TTHH - Celular 2</label>
+                    <input type="number" class="form-control @error('tthh_cel2') is-invalid @enderror" id="tthh_cel2"
+                        name="tthh_cel2" placeholder="Número de celular 2">
+                    @error('tthh_cel2')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="area-nomina-nombres">Encargado del área de nómina - Nombres y apellidos</label>
-                    <input type="text" class="form-control @error('area-nomina-nombres') is-invalid @enderror"
-                        id="area-nomina-nombres" name="area-nomina-nombres"
+                    <label for="tthh_cel3">Director de TTHH - celular 3</label>
+                    <input type="number" class="form-control @error('tthh_cel3') is-invalid @enderror" id="tthh_cel3"
+                        name="tthh_cel3" placeholder="Número de celular 3">
+                    @error('tthh_cel3')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="tthh_email">Director de TTHH - Email</label>
+                    <input type="email" class="form-control @error('tthh_email') is-invalid @enderror" id="tthh_email"
+                        name="tthh_email" placeholder="alguien@example.com">
+                    @error('tthh_email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="tthh_cargo">Director de TTHH - cargo</label>
+                    <input type="text" class="form-control @error('tthh_cargo') is-invalid @enderror" id="tthh_cargo"
+                        name="tthh_cargo">
+                    @error('tthh_cargo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="tthh_observaciones">Director de TTHH - Observaciones</label>
+                    <input type="text" class="form-control @error('tthh_observaciones') is-invalid @enderror"
+                        id="tthh_observaciones" name="tthh_observaciones">
+                    @error('tthh_observaciones')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="area_nomina_nombres">Encargado del área de nómina - Nombres y apellidos</label>
+                    <input type="text" class="form-control @error('area_nomina_nombres') is-invalid @enderror"
+                        id="area_nomina_nombres" name="area_nomina_nombres"
                         placeholder="Introduce los nombres y apellidos">
-                    @error('area-nomina-nombres')
+                    @error('area_nomina_nombres')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="area-nomina-celular">Encargado del área de nómina - Celular 1</label>
-                    <input type="number" class="form-control @error('area-nomina-celular') is-invalid @enderror"
-                        id="area-nomina-celular" name="area-nomina-celular" placeholder="Número de celular">
-                    @error('area-nomina-celular')
+                    <label for="area_nomina_celular">Encargado del área de nómina - Celular 1</label>
+                    <input type="number" class="form-control @error('area_nomina_celular') is-invalid @enderror"
+                        id="area_nomina_celular" name="area_nomina_celular" placeholder="Número de celular">
+                    @error('area_nomina_celular')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="area-nomina-email">Encargado del área de nómina - Email</label>
-                    <input type="email" class="form-control @error('area-nomina-celular') is-invalid @enderror"
-                        id="area-nomina-celular" name="area-nomina-celular" placeholder="alguien@example.com">
-                    @error('area-nomina-celular')
+                    <label for="area_nomina_email">Encargado del área de nómina - Email</label>
+                    <input type="email" class="form-control @error('area_nomina_email') is-invalid @enderror"
+                        id="area_nomina_email" name="area_nomina_email" placeholder="alguien@example.com">
+                    @error('area_nomina_email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="area-nomina-cargo">Encargado del área de nómina - Cargo</label>
-                    <input type="text" class="form-control @error('area-nomina-cargo') is-invalid @enderror"
-                        id="area-nomina-cargo" name="area-nomina-cargo" placeholder="Introduce el cargo">
-                    @error('area-nomina-cargo')
+                    <label for="area_nomina_cargo">Encargado del área de nómina - Cargo</label>
+                    <input type="text" class="form-control @error('area_nomina_cargo') is-invalid @enderror"
+                        id="area_nomina_cargo" name="area_nomina_cargo" placeholder="Introduce el cargo">
+                    @error('area_nomina_cargo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="area-nomina-observaciones">Encargado del área de nómina - Observaciones</label>
-                    <input type="text" class="form-control @error('area-nomina-observaciones') is-invalid @enderror"
-                        id="area-nomina-observaciones" name="area-nomina-observaciones"
+                    <label for="area_nomina_observaciones">Encargado del área de nómina - Observaciones</label>
+                    <input type="text" class="form-control @error('area_nomina_observaciones') is-invalid @enderror"
+                        id="area_nomina_observaciones" name="area_nomina_observaciones"
                         placeholder="Introduce la Observación">
-                    @error('area-nomina-observaciones')
+                    @error('area_nomina_observaciones')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="observaciones-visado">Observaciones/Proceso de visado/Radicado</label>
-                    <input type="text" class="form-control @error('observaciones-visado') is-invalid @enderror"
-                        id="observaciones-visado" name="observaciones-visado"
+                    <label for="observaciones_visado">Observaciones/Proceso de visado/Radicado</label>
+                    <input type="text" class="form-control @error('observaciones_visado') is-invalid @enderror"
+                        id="observaciones_visado" name="observaciones_visado"
                         placeholder="Introduce el Proceso de visado">
-                    @error('observaciones-visado')
+                    @error('observaciones_visado')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="archivos-radicacion">Archivos para radicación</label>
-                    <input type="text" class="form-control @error('archivos-radicacion') is-invalid @enderror"
-                        id="archivos-radicacion" name="archivos-radicacion"
+                    <label for="archivos_radicacion">Archivos para radicación</label>
+                    <input type="text" class="form-control @error('archivos_radicacion') is-invalid @enderror"
+                        id="archivos_radicacion" name="archivos_radicacion"
                         placeholder="Introduce los archivos para radicación">
-                    @error('archivos-radicacion')
+                    @error('archivos_radicacion')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="ea-nombres">Encargado del área de bienestar - Nombres y apellidos</label>
-                    <input type="text" class="form-control @error('ea-nombres') is-invalid @enderror" id="ea-nombres"
-                        name="ea-nombres" placeholder="Introduce los nombres y apellidos">
-                    @error('ea-nombres')
+                    <label for="ea_nombres">Encargado del área de bienestar - Nombres y apellidos</label>
+                    <input type="text" class="form-control @error('ea_nombres') is-invalid @enderror" id="ea_nombres"
+                        name="ea_nombres" placeholder="Introduce los nombres y apellidos">
+                    @error('ea_nombres')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="ea-cel">Encargado del área de bienestar - Celular</label>
-                    <input type="number" class="form-control @error('ea-cel') is-invalid @enderror" id="ea-cel"
-                        name="ea-cel" placeholder="Introduce el número">
-                    @error('ea-cel')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="ea-email">Encargado del área de bienestar - Email</label>
-                    <input type="email" class="form-control @error('ea-email') is-invalid @enderror" id="ea-email"
-                        name="ea-email" placeholder="alguien@example.com">
-                    @error('ea-email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="ea-cargo">Encargado del área de bienestar - Cargo</label>
-                    <input type="text" class="form-control @error('ea-cargo') is-invalid @enderror" id="ea-cargo"
-                        name="ea-cargo" placeholder="Introduce el cargo">
-                    @error('ea-cargo')
+                    <label for="ea_cel">Encargado del área de bienestar - Celular</label>
+                    <input type="number" class="form-control @error('ea_cel') is-invalid @enderror" id="ea_cel"
+                        name="ea_cel" placeholder="Introduce el número">
+                    @error('ea_cel')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="ea-observaciones">Encargado del área de bienestar - Observaciones</label>
-                    <input type="email" class="form-control @error('ea-observaciones') is-invalid @enderror"
-                        id="ea-observaciones" name="ea-observaciones" placeholder="Introduce una observación">
-                    @error('ea-observaciones')
+                    <label for="ea_email">Encargado del área de bienestar - Email</label>
+                    <input type="email" class="form-control @error('ea_email') is-invalid @enderror" id="ea_email"
+                        name="ea_email" placeholder="alguien@example.com">
+                    @error('ea_email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="at-cargo">Encargado del área de tesoreria - Cargo</label>
-                    <input type="text" class="form-control @error('at-cargo') is-invalid @enderror" id="at-cargo"
-                        name="at-cargo" placeholder="Introduce el cargo">
-                    @error('at-cargo')
+                    <label for="ea_cargo">Encargado del área de bienestar - Cargo</label>
+                    <input type="text" class="form-control @error('ea_cargo') is-invalid @enderror" id="ea_cargo"
+                        name="ea_cargo" placeholder="Introduce el cargo">
+                    @error('ea_cargo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="at-observaciones">Encargado del área de tesorería - Observaciones</label>
-                    <textarea class="form-control @error('at-observaciones') is-invalid @enderror" id="at-observaciones"
-                        name="at-observaciones" placeholder="Introduce alguna observación" rows="3"></textarea>
-                    @error('at-observaciones')
+                    <label for="ea_observaciones">Encargado del área de bienestar - Observaciones</label>
+                    <input type="text" class="form-control @error('ea_observaciones') is-invalid @enderror"
+                        id="ea_observaciones" name="ea_observaciones" placeholder="Introduce una observación">
+                    @error('ea_observaciones')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="observaciones-c">Observaciones - Otros contactos</label>
-                    <textarea class="form-control @error('observaciones-c') is-invalid @enderror" id="observaciones-c"
-                        name="observaciones-c" rows="3"></textarea>
-                    @error('observaciones-c')
+                    <label for="at_nombres">Encargado del área de tesoreria - Nombre y apellido</label>
+                    <input type="text" class="form-control @error('at_nombres') is-invalid @enderror" id="at_nombres"
+                        name="at_nombres" placeholder="Introduce los nombres">
+                    @error('at_nombres')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="at_cel">Encargado del área de tesoreria - Celular</label>
+                    <input type="number" class="form-control @error('at_cel') is-invalid @enderror" id="at_cel"
+                        name="at_cel" placeholder="Introduce un número">
+                    @error('at_cel')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="at_email">Encargado del área de tesoreria - Email</label>
+                    <input type="email" class="form-control @error('at_email') is-invalid @enderror" id="at_email"
+                        name="at_email" placeholder="alguien@example.com">
+                    @error('at_email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="at_cargo">Encargado del área de tesoreria - Cargo</label>
+                    <input type="text" class="form-control @error('at_cargo') is-invalid @enderror" id="at_cargo"
+                        name="at_cargo" placeholder="Introduce el cargo">
+                    @error('at_cargo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="at_observaciones">Encargado del área de tesorería - Observaciones</label>
+                    <textarea class="form-control @error('at_observaciones') is-invalid @enderror" id="at_observaciones"
+                        name="at_observaciones" placeholder="Introduce alguna observación" rows="3"></textarea>
+                    @error('at_observaciones')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -473,13 +492,13 @@
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="1-1">¿Permiten 1 a 1?</label>
-                    <select class="form-control @error('1-1') is-invalid @enderror" id="1-1" name="1-1">
+                    <label for="1_1">¿Permiten 1 a 1?</label>
+                    <select class="form-control @error('1_1') is-invalid @enderror" id="1_1" name="1_1">
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="Si">Si</option>
                         <option value="No">No</option>
                     </select>
-                    @error('1-1')
+                    @error('1_1')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -487,7 +506,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="ruta">Ruta</label>
-                    <input type="number" class="form-control @error('ruta') is-invalid @enderror" id="ruta"
+                    <input type="text" class="form-control @error('ruta') is-invalid @enderror" id="ruta"
                         name="ruta" placeholder="Introduce la ruta">
                     @error('ruta')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -495,7 +514,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="zona">Zona</label>
-                    <input type="number" class="form-control @error('zona') is-invalid @enderror" id="zona"
+                    <input type="text" class="form-control @error('zona') is-invalid @enderror" id="zona"
                         name="zona" placeholder="Introduce la zona">
                     @error('zona')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -504,38 +523,38 @@
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="codigo-postal">Código postal</label>
-                    <input type="number" class="form-control @error('codigo-postal') is-invalid @enderror"
-                        id="codigo-postal" name="codigo-postal" placeholder="Introduce el código postal">
-                    @error('codigo-postal')
+                    <label for="codigo_postal">Código postal</label>
+                    <input type="number" class="form-control @error('codigo_postal') is-invalid @enderror"
+                        id="codigo_postal" name="codigo_postal" placeholder="Introduce el código postal">
+                    @error('codigo_postal')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="afiliados-planta">Afiliados planta</label>
-                    <input type="number" class="form-control @error('afiliados-planta') is-invalid @enderror"
-                        id="afiliados-planta" name="afiliados-planta" placeholder="Introduce los afiliados">
-                    @error('afiliados-planta')
+                    <label for="afiliados_planta">Afiliados planta</label>
+                    <input type="text" class="form-control @error('afiliados_planta') is-invalid @enderror"
+                        id="afiliados_planta" name="afiliados_planta" placeholder="Introduce los afiliados">
+                    @error('afiliados_planta')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="afiliados-contratistas">Afiliados contratistas</label>
-                    <input type="number" class="form-control @error('sucursal') is-invalid @enderror"
-                        id="afiliados-contratistas" name="afiliados-contratistas"
+                    <label for="afiliados_contratistas">Afiliados contratistas</label>
+                    <input type="text" class="form-control @error('afiliados_contratistas') is-invalid @enderror"
+                        id="afiliados_contratistas" name="afiliados_contratistas"
                         placeholder="Introduce el número de afiliados">
-                    @error('afiliados-contratistas')
+                    @error('afiliados_contratistas')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="historial-afiliados">Historial de afiliados</label>
-                    <input type="text" class="form-control @error('historial-afiliados') is-invalid @enderror"
-                        id="historial-afiliados" name="historial-afiliados"
+                    <label for="historial_afiliados">Historial de afiliados</label>
+                    <input type="text" class="form-control @error('historial_afiliados') is-invalid @enderror"
+                        id="historial_afiliados" name="historial_afiliados"
                         placeholder="Introduce el historial de afiliados">
-                    @error('historial-afiliados')
+                    @error('historial_afiliados')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -553,13 +572,23 @@
                     @enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="c-codigo">¿Con código?</label>
-                    <select class="form-control @error('c-codigo') is-invalid @enderror" id="c-codigo" name="c-codigo">
+                    <label for="c_codigo">¿Con código?</label>
+                    <select class="form-control @error('c_codigo') is-invalid @enderror" id="c_codigo" name="c_codigo">
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="Si">Si</option>
                         <option value="No">No</option>
                     </select>
-                    @error('c-codigo')
+                    @error('c_codigo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="observaciones_c">Observaciones - Otros contactos</label>
+                    <textarea class="form-control @error('observaciones_c') is-invalid @enderror" id="observaciones_c"
+                        name="observaciones_c" rows="3"></textarea>
+                    @error('observaciones_c')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

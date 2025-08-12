@@ -337,22 +337,24 @@ return [
         [
             'text' => 'Datos generales',
             'icon' => 'fas fa-clipboard-list',
-            'can' => 'manage-system',
             'submenu' => [
                 [
                     'text' => 'Ciudades',
                     'url' => 'ciudades',
                     'icon' => 'fa fa-city',
+                    'can' => 'manage-system',
                 ],
                 [
                     'text' => 'Aseguradoras',
                     'url' => 'aseguradoras',
                     'icon' => 'fa fa-shield-alt',
+                    'can' => 'manage-system',
                 ],
                 [
                     'text' => 'Bancos',
                     'url' => 'bancos',
                     'icon' => 'fa fa-university',
+                    'can' => 'manage-system',
                 ],
                 [
                     'text' => 'Entidades',
@@ -363,22 +365,26 @@ return [
                     'text' => 'Eps',
                     'url' => 'eps',
                     'icon' => 'fa fa-clinic-medical',
+                    'can' => 'manage-system',
                 ],
                 [
                     'text' => 'Asesores',
                     'url' => 'asesores',
                     'icon' => 'fa fa-user-friends',
+                    'can' => 'manage-system',
                 ],
                 [
                     'text' => 'Salario minimo',
                     'url' => 'salarios',
                     'icon' => 'fa fa-money-bill-wave',
+                    'can' => 'manage-system',
                 ],
-                [
-                    'text' => 'Ambiente',
-                    'url' => 'ambiente',
-                    'icon' => 'fa fa-laptop-code',
-                ],
+                // [
+                //     'text' => 'Ambiente',
+                //     'url' => 'ambiente',
+                //     'icon' => 'fa fa-laptop-code',
+                //     'can' => 'manage-system',
+                // ],
             ],
         ],
         [

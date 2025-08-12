@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\DocumentSigned;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentsApiController extends Controller
 {
@@ -101,11 +102,16 @@ class DocumentsApiController extends Controller
                 "messages" => $messages
             ];
 
-            $atmosphere = Atmosphere::latest()->first();
+            // $atmosphere = Atmosphere::latest()->first();
+
+            // Ambiente
+            $atmosphere = ($ambiente === null || $ambiente === '0' || $ambiente === 'sandbox')
+                ? 'sandbox'
+                : 'documents';
 
             // Enviar los datos a ViaFirma usando Guzzle
             $client = new Client();
-            $response = $client->post('https://' . $atmosphere->key . '.viafirma.com/documents/api/v3/set', [
+            $response = $client->post('https://' . $atmosphere . '.viafirma.com/documents/api/v3/set', [
                 'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -155,14 +161,18 @@ class DocumentsApiController extends Controller
                 return response()->json(['error' => 'No hay códigos disponibles para descargar.'], 400);
             }
 
-            $atmosphere = Atmosphere::latest()->first();
+            // $atmosphere = Atmosphere::latest()->first();
+
+            $atmosphere = ($ambiente === null || $ambiente === '0' || $ambiente === 'sandbox')
+                ? 'sandbox'
+                : 'documents';
 
             $client = new Client();
             $allResponses = [];
 
             foreach ($codes as $code) {
                 if (isset($code['messagesCode'])) {
-                    $response = $client->get('https://' . $atmosphere->key . '.viafirma.com/documents/api/v3/documents/download/signed/' . $code['messagesCode'], [
+                    $response = $client->get('https://' . $atmosphere . '.viafirma.com/documents/api/v3/documents/download/signed/' . $code['messagesCode'], [
                         'headers' => [
                             'Content-Type' => 'application/json',
                             'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),

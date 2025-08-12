@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Entity;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -30,11 +31,10 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Obtener todos los roles disponibles
         $roles = Role::all();
+        $entities = Entity::where('status', 1)->get();
 
-        // Pasar la variable $roles a la vista
-        return view('users.create', compact('roles'));
+        return view('users.create', compact('roles', 'entities'));
     }
 
     /**
@@ -60,6 +60,74 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->birthdate = $request->birthdate;
         $user->password = Hash::make($request->password);
+        $user->ambiente = $request->has('ambiente') ? 1 : 0;
+
+        $user->name_entity = $request->has('name_entity') ? 1 : 0;
+        $user->nemo = $request->has('nemo') ? 1 : 0;
+        $user->cnitpagador = $request->has('cnitpagador') ? 1 : 0;
+        $user->sucursal = $request->has('sucursal') ? 1 : 0;
+        $user->n_apertura = $request->has('n_apertura') ? 1 : 0;
+        $user->fecha_apertura = $request->has('fecha_apertura') ? 1 : 0;
+        $user->t_empresa = $request->has('t_empresa') ? 1 : 0;
+        $user->direccion = $request->has('direccion') ? 1 : 0;
+        $user->department = $request->has('department') ? 1 : 0;
+        $user->ciudad_expedicion = $request->has('ciudad_expedicion') ? 1 : 0;
+        $user->pbx = $request->has('pbx') ? 1 : 0;
+        $user->n_empleados = $request->has('n_empleados') ? 1 : 0;
+        $user->n_contratistas = $request->has('n_contratistas') ? 1 : 0;
+        $user->p_salario = $request->has('p_salario') ? 1 : 0;
+        $user->n_sedes = $request->has('n_sedes') ? 1 : 0;
+        $user->t_orden_empresa = $request->has('t_orden_empresa') ? 1 : 0;
+        $user->arl_empresa = $request->has('arl_empresa') ? 1 : 0;
+        $user->d_numero_personas = $request->has('d_numero_personas') ? 1 : 0;
+        $user->v_salario_minimo = $request->has('v_salario_minimo') ? 1 : 0;
+        $user->v_salario_maximo = $request->has('v_salario_maximo') ? 1 : 0;
+
+        // Multiselect en JSON
+        $user->empresas = json_encode($request->empresas ?? []);
+
+        // Más switches
+        $user->tthh_nombres = $request->has('tthh_nombres') ? 1 : 0;
+        $user->tthh_cel1 = $request->has('tthh_cel1') ? 1 : 0;
+        $user->tthh_cel2 = $request->has('tthh_cel2') ? 1 : 0;
+        $user->tthh_cel3 = $request->has('tthh_cel3') ? 1 : 0;
+        $user->tthh_email = $request->has('tthh_email') ? 1 : 0;
+        $user->tthh_cargo = $request->has('tthh_cargo') ? 1 : 0;
+        $user->tthh_observaciones = $request->has('tthh_observaciones') ? 1 : 0;
+
+        $user->area_nomina_nombres = $request->has('area_nomina_nombres') ? 1 : 0;
+        $user->area_nomina_celular = $request->has('area_nomina_celular') ? 1 : 0;
+        $user->area_nomina_email = $request->has('area_nomina_email') ? 1 : 0;
+        $user->area_nomina_cargo = $request->has('area_nomina_cargo') ? 1 : 0;
+        $user->area_nomina_observaciones = $request->has('area_nomina_observaciones') ? 1 : 0;
+
+        $user->observaciones_visado = $request->has('observaciones_visado') ? 1 : 0;
+        $user->archivos_radicacion = $request->has('archivos_radicacion') ? 1 : 0;
+
+        $user->ea_nombres = $request->has('ea_nombres') ? 1 : 0;
+        $user->ea_cel = $request->has('ea_cel') ? 1 : 0;
+        $user->ea_email = $request->has('ea_email') ? 1 : 0;
+        $user->ea_cargo = $request->has('ea_cargo') ? 1 : 0;
+        $user->ea_observaciones = $request->has('ea_observaciones') ? 1 : 0;
+
+        $user->at_nombres = $request->has('at_nombres') ? 1 : 0;
+        $user->at_cel = $request->has('at_cel') ? 1 : 0;
+        $user->at_email = $request->has('at_email') ? 1 : 0;
+        $user->at_cargo = $request->has('at_cargo') ? 1 : 0;
+        $user->at_observaciones = $request->has('at_observaciones') ? 1 : 0;
+
+        $user->observaciones_c = $request->has('observaciones_c') ? 1 : 0;
+        $user->codigo = $request->has('codigo') ? 1 : 0;
+        $user->{'1_1'} = $request->has('1_1') ? 1 : 0;
+        $user->ruta = $request->has('ruta') ? 1 : 0;
+        $user->zona = $request->has('zona') ? 1 : 0;
+        $user->codigo_postal = $request->has('codigo_postal') ? 1 : 0;
+        $user->afiliados_planta = $request->has('afiliados_planta') ? 1 : 0;
+        $user->afiliados_contratistas = $request->has('afiliados_contratistas') ? 1 : 0;
+        $user->historial_afiliados = $request->has('historial_afiliados') ? 1 : 0;
+        $user->apertura = $request->has('apertura') ? 1 : 0;
+        $user->c_codigo = $request->has('c_codigo') ? 1 : 0;
+
         $user->status = 1; // 1: Activo, 0: Inactivo
         $user->save();
 
@@ -93,8 +161,10 @@ class UserController extends Controller
     public function edit($id)
     {
         $usuario = User::find($id);
+        $roles = Role::all();
+        $entities = Entity::where('status', 1)->get();
 
-        return view('users.edit', compact('usuario'));
+        return view('users.edit', compact('usuario', 'roles', 'entities'));
     }
 
     /**
@@ -118,6 +188,74 @@ class UserController extends Controller
         $user->email = $request->get('email');
         $user->birthdate = $request->get('birthdate');
         $user->password = Hash::make($request->get('password'));
+        $user->ambiente = $request->has('ambiente') ? 1 : 0;
+
+        $user->name_entity = $request->has('name_entity') ? 1 : 0;
+        $user->nemo = $request->has('nemo') ? 1 : 0;
+        $user->cnitpagador = $request->has('cnitpagador') ? 1 : 0;
+        $user->sucursal = $request->has('sucursal') ? 1 : 0;
+        $user->n_apertura = $request->has('n_apertura') ? 1 : 0;
+        $user->fecha_apertura = $request->has('fecha_apertura') ? 1 : 0;
+        $user->t_empresa = $request->has('t_empresa') ? 1 : 0;
+        $user->direccion = $request->has('direccion') ? 1 : 0;
+        $user->department = $request->has('department') ? 1 : 0;
+        $user->ciudad_expedicion = $request->has('ciudad_expedicion') ? 1 : 0;
+        $user->pbx = $request->has('pbx') ? 1 : 0;
+        $user->n_empleados = $request->has('n_empleados') ? 1 : 0;
+        $user->n_contratistas = $request->has('n_contratistas') ? 1 : 0;
+        $user->p_salario = $request->has('p_salario') ? 1 : 0;
+        $user->n_sedes = $request->has('n_sedes') ? 1 : 0;
+        $user->t_orden_empresa = $request->has('t_orden_empresa') ? 1 : 0;
+        $user->arl_empresa = $request->has('arl_empresa') ? 1 : 0;
+        $user->d_numero_personas = $request->has('d_numero_personas') ? 1 : 0;
+        $user->v_salario_minimo = $request->has('v_salario_minimo') ? 1 : 0;
+        $user->v_salario_maximo = $request->has('v_salario_maximo') ? 1 : 0;
+
+        // Multiselect en JSON
+        $user->empresas = json_encode($request->empresas ?? []);
+
+        // Más switches
+        $user->tthh_nombres = $request->has('tthh_nombres') ? 1 : 0;
+        $user->tthh_cel1 = $request->has('tthh_cel1') ? 1 : 0;
+        $user->tthh_cel2 = $request->has('tthh_cel2') ? 1 : 0;
+        $user->tthh_cel3 = $request->has('tthh_cel3') ? 1 : 0;
+        $user->tthh_email = $request->has('tthh_email') ? 1 : 0;
+        $user->tthh_cargo = $request->has('tthh_cargo') ? 1 : 0;
+        $user->tthh_observaciones = $request->has('tthh_observaciones') ? 1 : 0;
+
+        $user->area_nomina_nombres = $request->has('area_nomina_nombres') ? 1 : 0;
+        $user->area_nomina_celular = $request->has('area_nomina_celular') ? 1 : 0;
+        $user->area_nomina_email = $request->has('area_nomina_email') ? 1 : 0;
+        $user->area_nomina_cargo = $request->has('area_nomina_cargo') ? 1 : 0;
+        $user->area_nomina_observaciones = $request->has('area_nomina_observaciones') ? 1 : 0;
+
+        $user->observaciones_visado = $request->has('observaciones_visado') ? 1 : 0;
+        $user->archivos_radicacion = $request->has('archivos_radicacion') ? 1 : 0;
+
+        $user->ea_nombres = $request->has('ea_nombres') ? 1 : 0;
+        $user->ea_cel = $request->has('ea_cel') ? 1 : 0;
+        $user->ea_email = $request->has('ea_email') ? 1 : 0;
+        $user->ea_cargo = $request->has('ea_cargo') ? 1 : 0;
+        $user->ea_observaciones = $request->has('ea_observaciones') ? 1 : 0;
+
+        $user->at_nombres = $request->has('at_nombres') ? 1 : 0;
+        $user->at_cel = $request->has('at_cel') ? 1 : 0;
+        $user->at_email = $request->has('at_email') ? 1 : 0;
+        $user->at_cargo = $request->has('at_cargo') ? 1 : 0;
+        $user->at_observaciones = $request->has('at_observaciones') ? 1 : 0;
+
+        $user->observaciones_c = $request->has('observaciones_c') ? 1 : 0;
+        $user->codigo = $request->has('codigo') ? 1 : 0;
+        $user->{'1_1'} = $request->has('1_1') ? 1 : 0;
+        $user->ruta = $request->has('ruta') ? 1 : 0;
+        $user->zona = $request->has('zona') ? 1 : 0;
+        $user->codigo_postal = $request->has('codigo_postal') ? 1 : 0;
+        $user->afiliados_planta = $request->has('afiliados_planta') ? 1 : 0;
+        $user->afiliados_contratistas = $request->has('afiliados_contratistas') ? 1 : 0;
+        $user->historial_afiliados = $request->has('historial_afiliados') ? 1 : 0;
+        $user->apertura = $request->has('apertura') ? 1 : 0;
+        $user->c_codigo = $request->has('c_codigo') ? 1 : 0;
+
         $user->status = 1; //1: Activo, 0: Inactivo
         $user->save();
 

@@ -19,7 +19,7 @@
                         @csrf
 
                         <div>
-                            <x-jet-label for="email" value="{{ __('Correo electronico') }}" />
+                            <x-jet-label for="email" value="{{ __('Correo electrónico') }}" />
                             <x-jet-input id="email" class="block mt-1 w-full" type="email" name="email"
                                 :value="old('email')" required autofocus />
                         </div>
@@ -35,10 +35,17 @@
                             </span>
                         </div>
 
+                        {{-- ALERTA DE HORARIO --}}
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 text-sm mb-4">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            El acceso al sistema está habilitado <strong>de lunes a viernes</strong>
+                            de <strong>7:00 AM a 5:00 PM</strong>.
+                        </div>
+
                         <div class="block mt-4">
                             <label for="remember_me" class="flex items-center">
                                 <x-jet-checkbox id="remember_me" name="remember" />
-                                <span class="ml-2 text-sm text-gray-600">{{ __('Recuerdame') }}</span>
+                                <span class="ml-2 text-sm text-gray-600">{{ __('Recuérdame') }}</span>
                             </label>
                         </div>
 
