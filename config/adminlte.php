@@ -379,6 +379,12 @@ return [
                     'icon' => 'fa fa-money-bill-wave',
                     'can' => 'manage-system',
                 ],
+                [
+                    'text' => 'Horario',
+                    'url' => 'horario',
+                    'icon' => 'fa fa-clock',
+                    'can' => 'manage-system',
+                ],
                 // [
                 //     'text' => 'Ambiente',
                 //     'url' => 'ambiente',

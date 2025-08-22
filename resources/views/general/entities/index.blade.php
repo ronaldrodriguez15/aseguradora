@@ -13,45 +13,48 @@
 
     <div class="row">
 
-        <div class="row align-items-center mb-3">
-            <!-- Formulario de búsqueda (izquierda) -->
-            <div class="col-12 col-md-8">
-                <form action="{{ route('entidades.index') }}" method="GET" class="form-row align-items-center">
-                    <div class="col-12 col-md-4 mb-2">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <label for="filtro_tipo" class="input-group-text">Campo</label>
-                            </div>
-                            <select name="filtro_tipo" id="filtro_tipo" class="form-control select2">
-                                <option value="">Selecciona campo</option>
-                                @foreach ($camposEntidad as $key => $campo)
-                                    <option value="{{ $key }}">{{ $campo }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+        <div class="row align-items-end mb-3">
+            <!-- Buscador -->
+            <div class="col-12 col-lg-8">
+                <form action="{{ route('entidades.index') }}" method="GET" class="form-row g-2 align-items-end">
+                    <!-- Campo -->
+                    <div class="col-12 col-md-4">
+                        <label for="filtro_tipo" class="form-label">Seleccionar campo</label>
+                        <select name="filtro_tipo" id="filtro_tipo" class="form-control select2">
+                            <option value="">Ninguno</option>
+                            @foreach ($camposEntidad as $key => $campo)
+                                <option value="{{ $key }}">{{ $campo }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="col-12 col-md-4 mb-2">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <label for="buscar" class="input-group-text">Buscar</label>
-                            </div>
-                            <input type="text" name="buscar" id="buscar" class="form-control"
-                                placeholder="Buscar...">
-                        </div>
+                    <!-- Buscar -->
+                    <div class="col-12 col-md-4">
+                        <label for="buscar" class="form-label">Buscar</label>
+                        <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar...">
                     </div>
-                    <div class="col-12 col-md-2 mb-2">
+                    <!-- Botón buscar -->
+                    <div class="col-12 col-md-2">
                         <button type="submit" class="btn btn-primary w-100" title="Buscar">
-                            <i class="fas fa-search"></i>
+                            <i class="fas fa-search me-1"></i> Buscar
                         </button>
                     </div>
                 </form>
             </div>
-            <!-- Botón de Nueva Entidad (derecha) -->
-            <div class="col-12 col-md-4 text-md-right">
-                <a href="{{ route('entidades.create') }}" class="btn btn-success">
-                    <i class="fas fa-plus-circle mr-2"></i> Nueva Entidad
-                </a>
+
+            <!-- Botones de acción -->
+            @if (Auth::user()->hasRole('Administrador'))
+            <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-2">
+                    <a href="{{ route('entidades.create') }}"
+                        class="btn btn-success d-inline-flex align-items-center">
+                        <i class="fas fa-plus-circle mr-2"></i> Nueva Entidad
+                    </a>
+                    <a href="{{ route('entities.asign') }}" class="btn btn-info d-inline-flex align-items-center mt-2 ml-2">
+                        <i class="fas fa-building mr-2"></i> Consulta Entidades Asociadas
+                    </a>
+                </div>
             </div>
+            @endif
         </div>
 
         {{-- Mensaje de éxito --}}

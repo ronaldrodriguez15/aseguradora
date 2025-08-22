@@ -38,8 +38,7 @@
                         {{-- ALERTA DE HORARIO --}}
                         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 text-sm mb-4">
                             <i class="fas fa-exclamation-triangle"></i>
-                            El acceso al sistema está habilitado <strong>de lunes a viernes</strong>
-                            de <strong>7:00 AM a 5:00 PM</strong>.
+                            El acceso al sistema está habilitado por los dias y horarios establecidos por el administrador.
                         </div>
 
                         <div class="block mt-4">

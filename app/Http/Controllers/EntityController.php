@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Atmosphere;
+use App\Models\User;
 
 class EntityController extends Controller
 {
@@ -58,59 +59,60 @@ class EntityController extends Controller
             'fecha_apertura' => 'Fecha apertura',
             't_empresa' => 'Tipo de empresa',
             'direccion' => 'Dirección',
-            'ambiente' => 'Departamento',
-            'empresas' => 'Ciudad',
-            'department' => 'PBX',
-            'ciudad_expedicion' => 'Número de empleados de planta',
-            'pbx' => 'Número de empleados contratista',
-            'n_empleados' => 'Número de personas que ganan el salario mínimo',
-            'n_contratistas' => 'Número de personas que ganan el salario máximo',
-            'p_salario' => 'Número de sedes',
-            'n_sedes' => 'Tipo de orden empresa',
-            't_orden_empresa' => 'ARL de la empresa',
-            'arl_empresa' => 'Modalidad híbrida',
-            'm_hibrido' => 'Dínamica de asistencia',
-            'd_asistencia' => 'Día de la semana donde hay mayor número de personas en la entidad',
-            'd_numero_personas' => 'Valor mínimo de la entidad',
-            'v_salario_minimo' => 'Valor del salario maximo en la entidad',
-            'v_salario_maximo' => 'Pago de nómina',
-            'pago_nomina' => 'Metodología de socialización beneficio',
-            'm_socializacion' => 'Director de TTHH - Nombres y apellidos',
-            'tthh_nombres' => 'Director de TTHH - Celular 1',
-            'tthh_cel1' => 'Director de TTHH - Celular 2',
-            'tthh_cel2' => 'Director de TTHH - Celular 3',
-            'tthh_cel3' => 'Director de TTHH - Email',
-            'tthh_email' => 'Director de TTHH - Cargo',
-            'tthh_cargo' => 'Director de TTHH - Observaciones',
-            'tthh_observaciones' => 'Encargado del área de nómina - Nombres y apellidos',
-            'area_nomina_nombres' => 'Encargado del área de nómina - Celular 1',
-            'area_nomina_celular' => 'Encargado del área de nómina - Email',
-            'area_nomina_email' => 'Encargado del área de nómina - Cargo',
-            'area_nomina_cargo' => 'Encargado del área de nómina - Observaciones',
-            'area_nomina_observaciones' => 'Observaciones/Proceso de visado/Radicado',
-            'observaciones_visado' => 'Archivos para radicación',
-            'archivos_radicacion' => 'Encargado del área de bienestar - Nombres y apellidos',
-            'ea_nombres' => 'Encargado del área de bienestar - Celular',
-            'ea_cel' => 'Encargado del área de bienestar - Email',
-            'ea_email' => 'Encargado del área de bienestar - Cargo',
-            'ea_cargo' => 'Encargado del área de bienestar - Observaciones',
-            'ea_observaciones' => 'Encargado del área de tesoreria - Nombre y apellido',
-            'at_nombres' => 'Encargado del área de tesoreria - Celular',
-            'at_cel' => 'Encargado del área de tesoreria - Email',
-            'at_email' => 'Encargado del área de tesoreria - Cargo',
-            'at_cargo' => 'Encargado del área de tesoreria - Observaciones',
-            'at_observaciones' => 'Observaciones - otros contactos',
-            'observaciones_c' => 'Autorizan código',
-            'codigo' => 'Permiten 1 a 1',
-            '1_1' => 'Ruta',
-            'ruta' => 'Zona',
-            'zona' => 'Código postal',
-            'codigo_postal' => 'Afiliados planta',
-            'afiliados_planta' => 'Afiliados contratistas',
-            'afiliados_contratistas' => 'Historial de afiliados',
-            'historial_afiliados' => 'Apertura',
-            'apertura' => 'Con código',
-            'c_codigo' => 'Observaciones - otros contactos',
+            'ambiente' => 'ambiente',
+            'department' => 'Departamento',
+            'empresas' => 'empresas',
+            'ciudad_expedicion' => 'Ciudad de expedición',
+            'pbx' => 'PBX',
+            'n_empleados' => 'Número de empleados de planta',
+            'n_contratistas' => 'Número de empleados contratista',
+            'p_salario' => 'Número de personas que ganan el salario mínimo',
+            'n_sedes' => 'Número de sedes',
+            'n_sedes' => 'Número de sedes',
+            't_orden_empresa' => 'Tipo de orden empresa',
+            'arl_empresa' => 'ARL de la empresa',
+            'm_hibrido' => 'Modalidad híbrida',
+            'd_asistencia' => 'Dínamica de asistencia',
+            'd_numero_personas' => 'Día de la semana donde hay mayor número de personas en la entidad',
+            'v_salario_minimo' => 'Valor mínimo de la entidad',
+            'v_salario_maximo' => 'Valor del salario máximo en la entidad',
+            'pago_nomina' => 'Pago de nómina',
+            'm_socializacion' => 'Metodología de socialización beneficio',
+            'tthh_nombres' => 'Director de TTHH - Nombres y apellidos',
+            'tthh_cel1' => 'Director de TTHH - Celular 1',
+            'tthh_cel2' => 'Director de TTHH - Celular 2',
+            'tthh_cel3' => 'Director de TTHH - Celular 3',
+            'tthh_email' => 'Director de TTHH - Email',
+            'tthh_cargo' => 'Director de TTHH - Cargo',
+            'tthh_observaciones' => 'Director de TTHH - Observaciones',
+            'area_nomina_nombres' => 'Encargado del área de nómina - Nombres y apellidos',
+            'area_nomina_celular' => 'Encargado del área de nómina - Celular 1',
+            'area_nomina_email' => 'Encargado del área de nómina - Email',
+            'area_nomina_cargo' => 'Encargado del área de nómina - Cargo',
+            'area_nomina_observaciones' => 'Encargado del área de nómina - Observaciones',
+            'observaciones_visado' => 'Observaciones / Proceso de visado / Radicado',
+            'archivos_radicacion' => 'Archivos para radicación',
+            'ea_nombres' => 'Encargado del área de bienestar - Nombres y apellidos',
+            'ea_cel' => 'Encargado del área de bienestar - Celular',
+            'ea_email' => 'Encargado del área de bienestar - Email',
+            'ea_cargo' => 'Encargado del área de bienestar - Cargo',
+            'ea_observaciones' => 'Encargado del área de bienestar - Observaciones',
+            'at_nombres' => 'Encargado del área de tesorería - Nombre y apellido',
+            'at_cel' => 'Encargado del área de tesorería - Celular',
+            'at_email' => 'Encargado del área de tesorería - Email',
+            'at_cargo' => 'Encargado del área de tesorería - Cargo',
+            'at_observaciones' => 'Encargado del área de tesorería - Observaciones',
+            'observaciones_c' => 'Observaciones - otros contactos',
+            'codigo' => 'Autorizan código',
+            '1_1' => 'Permiten 1 a 1',
+            'ruta' => 'Ruta',
+            'zona' => 'Zona',
+            'codigo_postal' => 'Código postal',
+            'afiliados_planta' => 'Afiliados planta',
+            'afiliados_contratistas' => 'Afiliados contratistas',
+            'historial_afiliados' => 'Historial de afiliados',
+            'apertura' => 'Apertura',
+            'c_codigo' => 'Con código'
         ];
 
         return view('general.entities.index', compact('entities', 'camposEntidad'));
@@ -356,5 +358,35 @@ class EntityController extends Controller
         }
 
         return Excel::download(new EntidadesSeleccionadasExport($ids), 'entidades_seleccionadas.xlsx');
+    }
+
+    public function showEntitiesAsign(Request $request)
+    {
+        $vendedores = User::role('ventas')->get();
+        $entities = collect();
+        $vendedorSeleccionado = null;
+
+        if ($request->filled('filtro_tipo') && $request->filtro_tipo !== 'all') {
+            $vendedorSeleccionado = User::find($request->filtro_tipo);
+
+            if ($vendedorSeleccionado && !empty($vendedorSeleccionado->empresas)) {
+                // Decodificar JSON a array
+                $empresaIds = json_decode($vendedorSeleccionado->empresas, true);
+
+                // Validar que sea un array y tenga datos
+                if (is_array($empresaIds) && count($empresaIds) > 0) {
+                    $entities = Entity::whereIn('id', $empresaIds)->get();
+                }
+            }
+        } else {
+            // Si no hay filtro o es "all", mostrar todas
+            $entities = Entity::all();
+        }
+
+        return view('general.entities.entitiesasign', [
+            'entities' => $entities,
+            'vendedores' => $vendedores,
+            'vendedorSeleccionado' => $vendedorSeleccionado
+        ]);
     }
 }

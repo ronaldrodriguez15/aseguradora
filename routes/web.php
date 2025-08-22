@@ -22,6 +22,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AtmosphereController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\ScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -141,6 +142,11 @@ Route::middleware([
 
     Route::get('/get-cities/{department}', [CityController::class, 'getCities'])->name('get-cities');
     Route::post('/entidades/exportar', [EntityController::class, 'exportarSeleccionadas'])->name('entidades.exportar');
+    Route::get('/entities-asign', [EntityController::class, 'showEntitiesAsign'])
+        ->name('entities.asign');
+
+    //Horario
+    Route::resource('horario', ScheduleController::class);
 });
 
 Auth::routes();

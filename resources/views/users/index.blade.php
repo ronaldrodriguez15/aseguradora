@@ -53,13 +53,13 @@
                                 <td>{{ $usuario['birthdate'] }}</td>
                                 <td>
                                     @php
-                                    $roles = $usuario->getRoleNames(); // Obtener los roles del usuario
-                                    $roleColor = 'badge-secondary'; // Color por defecto para "sin definir"
-                                    $roleName = 'Sin definir'; // Valor por defecto
+                                    $roles = $usuario->getRoleNames(); 
+                                    $roleColor = 'badge-secondary'; 
+                                    $roleName = 'Sin definir'; 
 
                                     if ($roles->isNotEmpty()) {
-                                    $roleName = $roles->first(); // Tomar el primer rol
-                                    // Definir el color según el rol
+                                    $roleName = $roles->first(); 
+                                    
                                     if ($roleName === 'Administrador') {
                                     $roleColor = 'badge-success'; // Azul
                                     } else {
