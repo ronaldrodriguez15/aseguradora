@@ -6,72 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\Schedule;
+use App\Models\Schedule; 
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
+    /**
+     * Redirección después del login.
+     *
+     * @var string
+     */
     protected $redirectTo = RouteServiceProvider::HOME;
 
+    /**
+     * Crear nueva instancia del controlador.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * Sobrescribimos el login para validar el horario antes de autenticar.
+     */
     public function login(Request $request)
     {
         $this->validateLogin($request);
 
-        $schedule = Schedule::latest()->first();
-
-        if (!$schedule) {
+        // Verificar horario
+        if (!$this->checkAccessBySchedule()) {
             return back()->withErrors([
-                'email' => 'No hay un horario configurado para el acceso.',
-            ]);
-        }
-
-        Carbon::setLocale('es');
-        date_default_timezone_set('America/Bogota');
-
-        $now = Carbon::now();
-        $diaActual = ucfirst($now->dayName);
-
-        $diasSemana = [
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado",
-            "Domingo"
-        ];
-
-        $indexDia1 = array_search($schedule->dia1, $diasSemana);
-        $indexDia2 = array_search($schedule->dia2, $diasSemana);
-        $indexActual = array_search($diaActual, $diasSemana);
-
-        $diaPermitido = false;
-        if ($indexDia1 !== false && $indexDia2 !== false) {
-            if ($indexDia1 <= $indexDia2) {
-                $diaPermitido = $indexActual >= $indexDia1 && $indexActual <= $indexDia2;
-            } else {
-                $diaPermitido = $indexActual >= $indexDia1 || $indexActual <= $indexDia2;
-            }
-        }
-
-        $horaInicio = Carbon::createFromFormat('H:i', $schedule->hora_inicio, 'America/Bogota');
-        $horaFinal  = Carbon::createFromFormat('H:i', $schedule->hora_final, 'America/Bogota');
-
-        $horaPermitida = $now->between($horaInicio, $horaFinal);
-
-        $horaInicioStr = $horaInicio->format('g:i A');
-        $horaFinalStr  = $horaFinal->format('g:i A');
-
-        if (!$diaPermitido || !$horaPermitida) {
-            return back()->withErrors([
-                'email' => "Acceso restringido de {$schedule->dia1} a {$schedule->dia2}, entre {$horaInicioStr} y {$horaFinalStr}.",
+                'email' => 'Acceso restringido según la configuración de horarios.',
             ]);
         }
 
@@ -80,5 +50,46 @@ class LoginController extends Controller
         }
 
         return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Validar acceso según la tabla horario.
+     */
+    protected function checkAccessBySchedule()
+    {
+        $schedule = Schedule::first(); // Asumo que solo tienes un registro
+
+        if (!$schedule) {
+            return true; // Si no hay configuración, dejamos entrar
+        }
+
+        $now = Carbon::now();
+        $diaActual = strtolower($now->locale('es')->dayName); // lunes, martes, etc.
+        $horaActual = $now->format('H:i:s');
+
+        $dia1 = strtolower($schedule->dia1);
+        $dia2 = strtolower($schedule->dia2);
+
+        $diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+        $posDia1 = array_search($dia1, $diasSemana);
+        $posDia2 = array_search($dia2, $diasSemana);
+        $posHoy  = array_search($diaActual, $diasSemana);
+
+        // Validación de días
+        $enRangoDias = false;
+        if ($posDia1 !== false && $posDia2 !== false && $posHoy !== false) {
+            if ($posDia1 <= $posDia2) {
+                $enRangoDias = ($posHoy >= $posDia1 && $posHoy <= $posDia2);
+            } else {
+                // Caso cuando cruza semana (ej: viernes a martes)
+                $enRangoDias = ($posHoy >= $posDia1 || $posHoy <= $posDia2);
+            }
+        }
+
+        // Validación de horas
+        $enRangoHoras = ($horaActual >= $schedule->hora_inicio && $horaActual <= $schedule->hora_final);
+
+        return $enRangoDias && $enRangoHoras;
     }
 }

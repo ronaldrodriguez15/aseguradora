@@ -195,20 +195,20 @@
     <script>
         $(document).ready(function() {
 
-            // Limpiar las claves específicas del localStorage cuando la página se carga
-            // localStorage.removeItem('firmadoIniciado');
-            // localStorage.removeItem('pdfGenerated');
-            // localStorage.removeItem('pdfGeneratedPositiva');
-            // localStorage.removeItem('pdfGeneratedLibranza');
-            // localStorage.removeItem('pdfGeneratedDebito');
-            // localStorage.removeItem('pdfGeneratedConfianza');
+            //Limpiar las claves específicas del localStorage cuando la página se carga
+            localStorage.removeItem('firmadoIniciado');
+            localStorage.removeItem('pdfGenerated');
+            localStorage.removeItem('pdfGeneratedPositiva');
+            localStorage.removeItem('pdfGeneratedLibranza');
+            localStorage.removeItem('pdfGeneratedDebito');
+            localStorage.removeItem('pdfGeneratedConfianza');
 
-            // $('#generar-pdf').show();
-            // $('#iniciar-firmado').show();
-            // $('#btn-positiva').show();
-            // $('#btn-libranza').show();
-            // $('#btn-debito').show();
-            // $('#btn-confianza').show();
+            //$('#generar-pdf').show();
+            //$('#iniciar-firmado').show();
+            //$('#btn-positiva').show();
+            //$('#btn-libranza').show();
+            //$('#btn-debito').show();
+            //$('#btn-confianza').show();
 
             if (localStorage.getItem('firmadoIniciado') === 'true') {
                 $('#iniciar-firmado').hide();
@@ -333,19 +333,19 @@
             // Acción del botón "Cerrar" para redirigir al usuario
             $('#closeModalBtn').on('click', function() {
                 // Limpiar las claves específicas del localStorage que usamos para los botones
-                localStorage.removeItem('firmadoIniciado');
-                localStorage.removeItem('pdfGenerated');
-                localStorage.removeItem('pdfGeneratedPositiva');
-                localStorage.removeItem('pdfGeneratedLibranza');
-                localStorage.removeItem('pdfGeneratedDebito');
-                localStorage.removeItem('pdfGeneratedConfianza');
+                //localStorage.removeItem('firmadoIniciado');
+                //localStorage.removeItem('pdfGenerated');
+                //localStorage.removeItem('pdfGeneratedPositiva');
+                //localStorage.removeItem('pdfGeneratedLibranza');
+                //localStorage.removeItem('pdfGeneratedDebito');
+                //localStorage.removeItem('pdfGeneratedConfianza');
 
-                $('#generar-pdf').show();
-                $('#iniciar-firmado').show();
-                $('#btn-positiva').show();
-                $('#btn-libranza').show();
-                $('#btn-debito').show();
-                $('#btn-confianza').show();
+                //$('#generar-pdf').show();
+                //$('#iniciar-firmado').show();
+                //$('#btn-positiva').show();
+                //$('#btn-libranza').show();
+                //$('#btn-debito').show();
+                //$('#btn-confianza').show();
 
                 // Redirigir al usuario a la ruta deseada
                 window.location.href = "{{ route('incapacidades.index') }}";

@@ -309,8 +309,6 @@ class InabilityController extends Controller
 
         $this->validate($request, $rules, $messages);
 
-        dd($request->all());
-
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');
         $inability = Inability::find($inabilityId);
@@ -326,6 +324,7 @@ class InabilityController extends Controller
         $inability->telefono_fijo = $request->telefono_fijo;
         $inability->celular = $request->celular;
         $inability->ciudad_residencia = $request->ciudad_residencia;
+        $inability->residence_department = $request->residence_department;
         $inability->fuente_recursos = $request->fuente_recursos;
         $inability->ocupacion_asegurado = $request->ocupacion_asegurado;
         $inability->entidad_pagadora_sucursal = $request->entidad_pagadora_sucursal;

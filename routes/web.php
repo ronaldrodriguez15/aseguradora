@@ -68,6 +68,19 @@ Route::get('seed-roles', function () {
     }
 });
 
+Route::get('/force-clear', function () {
+    // Limpia caches de Laravel
+    Artisan::call('optimize:clear');
+
+    // Borra manualmente vistas compiladas
+    foreach (glob(storage_path('framework/views/*.php')) as $viewFile) {
+        @unlink($viewFile);
+    }
+
+    return "Caches y vistas compiladas eliminadas";
+});
+
+
 Route::get('seed-users', function () {
     try {
         // Ejecutar el seeder

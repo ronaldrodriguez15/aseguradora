@@ -61,6 +61,7 @@ class UserController extends Controller
         $user->birthdate = $request->birthdate;
         $user->password = Hash::make($request->password);
         $user->ambiente = $request->has('ambiente') ? 1 : 0;
+        $user->permisos_entidades = $request->has('habilitar_permisos_empresa') ? 1 : 0;
 
         $user->name_entity = $request->has('name_entity') ? 1 : 0;
         $user->nemo = $request->has('nemo') ? 1 : 0;
@@ -189,6 +190,7 @@ class UserController extends Controller
         $user->birthdate = $request->get('birthdate');
         $user->password = Hash::make($request->get('password'));
         $user->ambiente = $request->has('ambiente') ? 1 : 0;
+        $user->permisos_entidades = $request->has('habilitar_permisos_empresa') ? 1 : 0;
 
         $user->name_entity = $request->has('name_entity') ? 1 : 0;
         $user->nemo = $request->has('nemo') ? 1 : 0;
@@ -258,6 +260,10 @@ class UserController extends Controller
 
         $user->status = 1; //1: Activo, 0: Inactivo
         $user->save();
+
+        if ($request->filled('role_id')) {
+            $user->syncRoles([$request->get('role_id')]);
+        }
 
         return redirect()->route('usuarios.index')->with('success', 'Excelente!!, El usuario ha sido actualizado.');
     }

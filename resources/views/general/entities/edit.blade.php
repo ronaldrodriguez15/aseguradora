@@ -58,10 +58,10 @@
                         required>
                         <option value="" disabled
                             {{ old('n_apertura', $entity->n_apertura) == null ? 'selected' : '' }}>
-                            Seleccione un departamento
+                            Seleccione un asesor
                         </option>
                         @foreach ($asesors as $asesor)
-                            <option value="{{ $asesor->id }}"
+                            <option value="{{ $asesor->name }}"
                                 {{ old('n_apertura', $entity->n_apertura) == $asesor->id ? 'selected' : '' }}>
                                 {{ $asesor->name }}
                             </option>
@@ -111,35 +111,43 @@
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="department">Departamento </label>
-                    <select class="form-control @error('department') is-invalid @enderror" id="department" name="department"
-                        >
-                        <option value="" disabled
-                            {{ old('department', $entity->department) == null ? 'selected' : '' }}>
-                            Seleccione un departamento
+                <label for="department">Departamento</label>
+                <select class="form-control @error('department') is-invalid @enderror" 
+                        id="department" 
+                        name="department"
+                        data-old-name="{{ old('department', $entity->department) }}">
+            
+                    <option value="">Selecciona un departamento</option>
+            
+                    @foreach ($departments as $department)
+                        <option value="{{ $department->id_departamento }}"
+                                data-name="{{ $department->descripcion }}"
+                                {{ old('department', $entity->department) == $department->descripcion ? 'selected' : '' }}>
+                            {{ $department->descripcion }}
                         </option>
-                        @foreach ($departments as $department)
-                            <option value="{{ $department->id_departamento }}"
-                                {{ old('department', $entity->department) == $department->id_departamento ? 'selected' : '' }}>
-                                {{ $department->descripcion }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('department')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="ciudad_expedicion">Ciudad</label>
-                    <select class="form-control @error('ciudad_expedicion') is-invalid @enderror" id="ciudad_expedicion"
-                        name="ciudad_expedicion">
-                        <option value="" disabled selected>Seleccione una ciudad</option>
-                    </select>
-                    @error('ciudad_expedicion')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                    @endforeach
+                </select>
+            
+                @error('department')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+            
+            <div class="form-group col-md-6">
+                <label for="ciudad_expedicion">Ciudad</label>
+                <select class="form-control @error('ciudad_expedicion') is-invalid @enderror" 
+                        id="ciudad_expedicion" 
+                        name="ciudad_expedicion">
+                    <option value="">Selecciona la ciudad</option>
+                    {{-- aquí se cargan las ciudades vía AJAX --}}
+                </select>
+                @error('ciudad_expedicion')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            </div>
+
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="pbx">PBX</label>
@@ -699,30 +707,41 @@
     <script>
         $(document).ready(function() {
             $('input').attr('autocomplete', 'off');
+        
+            $('#department').change(function() {
+                let departmentId = $(this).val(); // aquí sí viene el ID
+                let departmentName = $(this).find(':selected').data('name'); // nombre real
+                let citySelect = $('#ciudad_expedicion');
+        
+                // ⚡️ Hack: cambiamos el "name" del select para enviar el NOMBRE a BD
+                if (departmentName) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'department',
+                        value: departmentName
+                    }).appendTo('form');
+                }
+        
+                citySelect.empty().append('<option value="">Selecciona la ciudad</option>');
+        
+                if (departmentId) {
+                    $.ajax({
+                        url: `/get-cities/${departmentId}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            $.each(data, function(key, city) {
+                                citySelect.append(
+                                    `<option value="${city.name}">${city.name}</option>`
+                                );
+                            });
+                        },
+                        error: function() {
+                            alert('Hubo un error al cargar las ciudades.');
+                        }
+                    });
+                }
+            });
         });
-
-        $('#department').change(function() {
-            let departmentId = $(this).val();
-            let citySelect = $('#ciudad_expedicion');
-            citySelect.empty();
-            citySelect.append('<option value="">Selecciona la ciudad</option>');
-
-            if (departmentId) {
-                $.ajax({
-                    url: `/get-cities/${departmentId}`,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        $.each(data, function(key, city) {
-                            citySelect.append(
-                                `<option value="${city.id}">${city.name}</option>`);
-                        });
-                    },
-                    error: function() {
-                        alert('Hubo un error al cargar las ciudades.');
-                    }
-                });
-            }
-        });
-    </script>
+        </script>
 @stop

@@ -71,14 +71,14 @@
                                 </td>
                                 <td>{{ $usuario['created_at']->format('Y-m-d') }}</td>
                                 <td>
-                                    @if($usuario['status'] === 1)
+                                    @if($usuario['status'] === '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($usuario['status'] === 1)
+                                    @if($usuario['status'] === '1')
                                     @if($usuario['id'] === Auth::user()->id)
                                     <span class="badge badge-info">Logueado</span>
                                     @else

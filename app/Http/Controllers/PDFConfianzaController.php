@@ -6,7 +6,8 @@ use App\Models\Insurer;
 use App\Models\Inability;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
+use App\Models\City;
+use App\Models\Departments;
 
 class PDFConfianzaController extends Controller
 {
@@ -21,8 +22,6 @@ class PDFConfianzaController extends Controller
 
         $insurer = Insurer::find($inability->insurer_id);
 
-        Log::info('Ruta encontrada: ', ['insurer_id' => $inability->insurer_id]);
-
         $pdfFilePath = public_path("storage/" . $insurer->document_path);
 
         if (!file_exists($pdfFilePath)) {
@@ -34,8 +33,6 @@ class PDFConfianzaController extends Controller
 
         // Generar la URL pública del archivo PDF generado
         $pdfUrl = asset('storage/' . $inability->path_aseguradora);
-
-        Log::info('Ruta encontrada: ', ['pdfUrl' => $pdfUrl]);
 
         // Retornar la URL del PDF generado
         return response()->json(['pdf_url' => $pdfUrl]);
@@ -113,11 +110,13 @@ class PDFConfianzaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // Ciudad
+                $residence_city = City::where('id', $inability->ciudad_residencia)->first();
                 $pdf->SetXY(62, 52.5);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($residence_city->name));
 
+                $residence_department = Departments::where('id_departamento', $inability->residence_department)->first();
                 $pdf->SetXY(100, 52.5);
-                $pdf->Write(0, convertToISO88591('Cundinamarca'));
+                $pdf->Write(0, convertToISO88591($residence_department->descripcion));
 
                 // Telefono
                 $pdf->SetXY(133, 52.5);
@@ -167,7 +166,7 @@ class PDFConfianzaController extends Controller
                 $pdf->SetXY(170, 83);
                 $pdf->Write(0, '$ ' . $inability->amparo_basico);
 
-                // prima_pago_prima_seguro
+                // prima_pago_prima_seguro 
                 $pdf->SetXY(170, 93);
                 $pdf->Write(0, '$ ' . $inability->prima_pago_prima_seguro);
 
@@ -237,23 +236,23 @@ class PDFConfianzaController extends Controller
                 }
 
                 // tipo identidad
-                $pdf->SetXY(29.4, 112.5);
+                $pdf->SetXY(20, 114.3);
                 $pdf->Write(0, convertToISO88591($documento_abreviado));
 
                 // no identificacion
-                $pdf->SetXY(30, 112.5);
+                $pdf->SetXY(30, 114.3);
                 $pdf->Write(0, convertToISO88591($inability->n_identificacion_s2));
 
                 // nombres y apellidos
-                $pdf->SetXY(90, 112.5);
+                $pdf->SetXY(90, 114.3);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s2 . ' ' . $inability->apellidos_s2));
 
                 // parentesco
-                $pdf->SetXY(153, 112.5);
+                $pdf->SetXY(153, 114.3);
                 $pdf->Write(0, convertToISO88591($inability->parentesco_s2));
 
                 // %
-                $pdf->SetXY(180, 112.5);
+                $pdf->SetXY(180, 114.3);
                 $pdf->Write(0, $inability->porcentaje_s2);
 
                 // ------------------ Referido 3
@@ -279,34 +278,36 @@ class PDFConfianzaController extends Controller
                 }
 
                 // tipo identidad
-                $pdf->SetXY(29.4, 112.5);
+                $pdf->SetXY(20, 118.8);
                 $pdf->Write(0, convertToISO88591($documento_abreviado));
 
                 // no identificacion
-                $pdf->SetXY(30, 112.5);
+                $pdf->SetXY(30, 118.8);
                 $pdf->Write(0, convertToISO88591($inability->n_identificacion_s3));
 
                 // nombres y apellidos
-                $pdf->SetXY(90, 112.5);
+                $pdf->SetXY(90, 118.8);
                 $pdf->Write(0, convertToISO88591($inability->nombres_s3 . ' ' . $inability->apellidos_s3));
 
                 // parentesco
-                $pdf->SetXY(153, 112.5);
+                $pdf->SetXY(153, 118.8);
                 $pdf->Write(0, convertToISO88591($inability->parentesco_s3));
 
                 // %
-                $pdf->SetXY(180, 112.5);
+                $pdf->SetXY(180, 118.8);
                 $pdf->Write(0, $inability->porcentaje_s3);
 
                 // ------------------ Declaraciòn de asegurabilidad
 
                 // cardiovasculares
-                $pdf->SetXY(67, 148.4);
-                $pdf->Write(0, 'X');
-
-                $pdf->SetXY(77, 148.4);
-                $pdf->Write(0, 'X');
-
+                if ($inability->corazon === 'si') {
+                    $pdf->SetXY(67, 148.4);
+                    $pdf->Write(0, 'X');
+                } else {
+                    $pdf->SetXY(77, 148.4);
+                    $pdf->Write(0, 'X');    
+                }
+                
                 // enf_cerebrovasculares
                 if ($inability->enf_cerebrovasculares === 'si') {
                     $pdf->SetXY(67, 152.4);

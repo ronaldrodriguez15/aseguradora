@@ -29,7 +29,7 @@ class EntityController extends Controller
 
         if (Auth::user()->hasRole('Ventas')) {
             if (empty($user->empresas)) {
-                $query = Entity::whereRaw('0=1'); // vacío
+                $query = Entity::whereRaw('0=1');
             } else {
                 $empresasIds = is_array($user->empresas)
                     ? $user->empresas
@@ -37,11 +37,15 @@ class EntityController extends Controller
 
                 $query = Entity::whereIn('id', $empresasIds)
                     ->where('apertura', '!=', 'Si')
-                    ->orderBy('status', 'DESC')
-                    ->orderBy('created_at', 'DESC');
+                    ->orderBy('status', 'ASC')
+                    ->orderBy('created_at', 'ASC');
             }
         } else {
-            $query = Entity::where('status', 1);
+            $subquery = Entity::selectRaw('MAX(id) as id')
+                ->where('status', 1)
+                ->groupBy('cnitpagador');
+
+            $query = Entity::whereIn('id', $subquery);
         }
 
         if ($filtroTipo && $buscar) {
@@ -235,11 +239,24 @@ class EntityController extends Controller
         if (!is_numeric($id)) {
             abort(404);
         }
-
+    
         $entity = Entity::findOrFail($id);
-
-        return view('general.entities.show', compact('entity'));
+    
+        $history = Entity::query()
+            ->where('cnitpagador', $entity->cnitpagador)
+            ->when(!empty($entity->sucursal), function ($q) use ($entity) {
+                $q->where('sucursal', $entity->sucursal);
+            })
+            ->orderByRaw('CASE WHEN created_at IS NULL THEN 1 ELSE 0 END, created_at DESC')
+            ->orderBy('id', 'DESC')
+            ->get();
+    
+    
+        return view('general.entities.show', compact('entity', 'history'));
     }
+
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -265,7 +282,11 @@ class EntityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $entity = Entity::find($id);
+        $oldEntity = Entity::findOrFail($id);
+
+        $entity = $oldEntity->replicate();
+        $entity->parent_id = $oldEntity->parent_id ?? $oldEntity->id;
+        $entity->status = 1;
         $entity->nemo = $request->nemo;
         $entity->sucursal = $request->sucursal;
         $entity->n_apertura = $request->n_apertura;

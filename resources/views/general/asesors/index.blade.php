@@ -60,14 +60,14 @@
                                 <td>{{ $asesor['name'] }}</td>
                                 <td>{{ $asesor['created_at']->format('Y-m-d - H:m') }}</td>
                                 <td>
-                                    @if($asesor['status'] === 1)
+                                    @if($asesor['status'] === '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($asesor['status'] === 1)
+                                    @if($asesor['status'] === '1')
                                     <div class="button-container">
                                         <form action="{{ route('asesores.destroy', $asesor['id']) }}" method="POST" id="formDelete-{{ $asesor['id'] }}">
                                             @method('DELETE')

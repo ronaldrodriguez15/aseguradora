@@ -43,17 +43,17 @@
 
             <!-- Botones de acción -->
             @if (Auth::user()->hasRole('Administrador'))
-            <div class="col-12 col-lg-4 mt-3 mt-lg-0">
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-2">
-                    <a href="{{ route('entidades.create') }}"
-                        class="btn btn-success d-inline-flex align-items-center">
-                        <i class="fas fa-plus-circle mr-2"></i> Nueva Entidad
-                    </a>
-                    <a href="{{ route('entities.asign') }}" class="btn btn-info d-inline-flex align-items-center mt-2 ml-2">
-                        <i class="fas fa-building mr-2"></i> Consulta Entidades Asociadas
-                    </a>
+                <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-2">
+                        <a href="{{ route('entidades.create') }}" class="btn btn-success d-inline-flex align-items-center">
+                            <i class="fas fa-plus-circle mr-2"></i> Nueva Entidad
+                        </a>
+                        <a href="{{ route('entities.asign') }}"
+                            class="btn btn-info d-inline-flex align-items-center mt-2 ml-2">
+                            <i class="fas fa-building mr-2"></i> Consulta Entidades Asociadas
+                        </a>
+                    </div>
                 </div>
-            </div>
             @endif
         </div>
 
@@ -91,32 +91,36 @@
                                     <tr>
                                         <td><input type="checkbox" class="row-checkbox" value="{{ $entity['id'] }}"></td>
 
-                                        @if (Auth::user()->name_entity === '1' || Auth::user()->hasRole('Administrador'))
+                                        @if (Auth::user()->name_entity === 1 ||
+                                                Auth::user()->hasRole('Administrador') ||
+                                                Auth::user()->hasRole('Jefe de ventas'))
                                             <td>{{ $entity['name'] }}</td>
                                         @else
                                             <td class="text-muted"><i>No disponible</i></td>
                                         @endif
 
-                                        @if (Auth::user()->nemo === '1' || Auth::user()->hasRole('Administrador'))
+                                        @if (Auth::user()->nemo === 1 || Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Jefe de ventas') || Auth::user()->hasRole('Ventas'))
                                             <td>{{ $entity['nemo'] }}</td>
                                         @else
                                             <td class="text-muted"><i>No disponible</i></td>
                                         @endif
 
-                                        @if (Auth::user()->cnitpagador === '1' || Auth::user()->hasRole('Administrador'))
+                                        @if (Auth::user()->cnitpagador === 1 ||
+                                                Auth::user()->hasRole('Administrador') ||
+                                                Auth::user()->hasRole('Jefe de ventas'))
                                             <td><span class="badge bg-info">{{ $entity['cnitpagador'] }}</span></td>
                                         @else
                                             <td class="text-muted"><i>No disponible</i></td>
                                         @endif
 
-                                        @if (Auth::user()->sucursal === '1' || Auth::user()->hasRole('Administrador'))
+                                        @if (Auth::user()->sucursal === 1 || Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Jefe de ventas') || Auth::user()->hasRole('Ventas'))
                                             <td>{{ $entity['sucursal'] }}</td>
                                         @else
                                             <td class="text-muted"><i>No disponible</i></td>
                                         @endif
 
                                         <td>
-                                            @if ($entity['status'] === 1 || Auth::user()->hasRole('Administrador'))
+                                            @if ($entity['status'] === 1 || Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Jefe de ventas') || Auth::user()->hasRole('Ventas'))
                                                 <span class="badge badge-success">Activo</span>
                                             @else
                                                 <span class="badge badge-danger">Inactivo</span>
@@ -132,7 +136,7 @@
                                         </td>
 
                                         <td>
-                                            @if ($entity['status'] === 1)
+                                            @if ($entity['status'] === '1')
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-light dropdown-toggle" type="button"
                                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -145,13 +149,16 @@
                                                                 <i class="fas fa-eye me-1"></i> Ver detalles
                                                             </a>
                                                         </li>
-                                                        @if (Auth::user()->hasRole('Administrador'))
+
+                                                        @if (Auth::user()->permisos_entidades === '1' || Auth::user()->hasRole('Administrador'))
                                                             <li>
                                                                 <a class="dropdown-item text-success"
                                                                     href="{{ route('entidades.edit', $entity['id']) }}">
                                                                     <i class="fas fa-edit me-1"></i> Editar
                                                                 </a>
                                                             </li>
+                                                        @endif
+                                                        @if (Auth::user()->hasRole('Administrador'))
                                                             <li>
                                                                 <form
                                                                     action="{{ route('entidades.destroy', $entity['id']) }}"

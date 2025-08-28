@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Atmosphere;
 use App\Models\Inability;
+use App\Models\DocumentSigned;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Models\DocumentSigned;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,60 +16,45 @@ class DocumentsApiController extends Controller
     public function sendToViaFirma(Request $request)
     {
         try {
-            // Validar el ID de la incapacidad
             $validated = $request->validate([
                 'id' => 'required|exists:inabilities,id',
             ]);
 
-            // Encontrar la incapacidad por ID
             $inability = Inability::find($validated['id']);
 
-            // Registrar el valor de path_aseguradora en el log
             Log::info('Valor de path_aseguradora: ' . $inability->path_aseguradora);
 
-            // Obtener los documentos
             $documents = [
                 $inability->path_estasseguro,
                 $inability->path_aseguradora,
                 $inability->path_pago
             ];
 
-            // Verificar que existen los documentos
             if (count($documents) !== 3) {
                 return response()->json(['error' => 'Faltan documentos'], 400);
             }
 
-            // Preparar los datos para la solicitud a la API de Via Firma
             $messages = array_map(function ($documentPath) use ($inability) {
                 $fullPath = Storage::disk('public')->path($documentPath);
                 if (!file_exists($fullPath)) {
                     throw new \Exception("El archivo no existe: " . $fullPath);
                 }
                 $pdfContent = base64_encode(file_get_contents($fullPath));
-
-                // Obtener el nombre del archivo
                 $fileName = basename($documentPath);
 
                 $templateCode = '';
                 if ($documentPath === $inability->path_estasseguro) {
                     $templateCode = "Afiliacion1estaSSeguro";
                 } elseif ($documentPath === $inability->path_aseguradora) {
-
-                    // Verifica si la ruta contiene 'documentos_positiva/'
-                    if (strpos($documentPath, 'documentos_positiva/') !== false) {
-                        $templateCode = "Afiliacion2Positiva";
-                    } else {
-                        $templateCode = "Afiliacion2SegConfianza";
-                    }
+                    $templateCode = strpos($documentPath, 'documentos_positiva/') !== false
+                        ? "Afiliacion2Positiva"
+                        : "Afiliacion2SegConfianza";
                 } elseif ($documentPath === $inability->path_pago) {
-
-                    // Verifica si la ruta contiene 'documentos_libranza/'
-                    if (strpos($documentPath, 'documentos_libranza/') !== false) {
-                        $templateCode = "Afiliacion3DescuentoporNomina";
-                    } else {
-                        $templateCode = "Afiliacion3DebitoAutomatico";
-                    }
+                    $templateCode = strpos($documentPath, 'documentos_libranza/') !== false
+                        ? "Afiliacion3DescuentoporNomina"
+                        : "Afiliacion3DebitoAutomatico";
                 }
+
                 return [
                     "document" => [
                         "templateCode" => $templateCode,
@@ -81,7 +65,11 @@ class DocumentsApiController extends Controller
                 ];
             }, $documents);
 
-            // Construir la solicitud
+            $user = Auth::user();
+            $baseUrl = $user->ambiente == 1
+                ? 'https://documents.viafirma.com/documents/api/v3'
+                : 'https://sandbox.viafirma.com/documents/api/v3';
+
             $data = [
                 "groupCode" => "svgseguros",
                 "title" => "SVG_PDFs",
@@ -90,7 +78,7 @@ class DocumentsApiController extends Controller
                     [
                         "key" => "signer" . $validated['id'],
                         "mail" => $inability->email_corporativo,
-                        "name" => $inability->nombres_completos . $inability->primer_apellido . ' ' . $inability->segundo_apellido,
+                        "name" => $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido,
                         "id" => $validated['id']
                     ]
                 ],
@@ -102,16 +90,8 @@ class DocumentsApiController extends Controller
                 "messages" => $messages
             ];
 
-            // $atmosphere = Atmosphere::latest()->first();
-
-            // Ambiente
-            $atmosphere = ($ambiente === null || $ambiente === '0' || $ambiente === 'sandbox')
-                ? 'sandbox'
-                : 'documents';
-
-            // Enviar los datos a ViaFirma usando Guzzle
             $client = new Client();
-            $response = $client->post('https://' . $atmosphere . '.viafirma.com/documents/api/v3/set', [
+            $response = $client->post($baseUrl . '/set', [
                 'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -121,7 +101,6 @@ class DocumentsApiController extends Controller
 
             $responseData = json_decode($response->getBody()->getContents());
 
-            // Guardar los codes y templateCodes en la sesión
             $codes = [];
             foreach ($responseData->messages as $message) {
                 $codes[] = [
@@ -130,16 +109,17 @@ class DocumentsApiController extends Controller
                 ];
             }
 
-            session(['via_firma_codes' => $codes]); // Almacena en la sesión
+            session(['via_firma_codes' => $codes]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'El correo fue enviado exitosamente.',
                 'data' => $responseData
             ]);
+
         } catch (\Exception $e) {
             Log::error('Error en sendToViaFirma: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred'], 500);
+            return response()->json(['error' => 'Ocurrió un error inesperado'], 500);
         }
     }
 
@@ -153,59 +133,49 @@ class DocumentsApiController extends Controller
             ]);
 
             $inability = Inability::find($validated['id']);
-
-            // Recuperar los codes y templateCodes de la sesión
             $codes = session('via_firma_codes', []);
 
             if (empty($codes)) {
                 return response()->json(['error' => 'No hay códigos disponibles para descargar.'], 400);
             }
 
-            // $atmosphere = Atmosphere::latest()->first();
-
-            $atmosphere = ($ambiente === null || $ambiente === '0' || $ambiente === 'sandbox')
-                ? 'sandbox'
-                : 'documents';
+            $user = Auth::user();
+            $baseUrl = $user->ambiente == 1
+                ? 'https://documents.viafirma.com/documents/api/v3'
+                : 'https://sandbox.viafirma.com/documents/api/v3';
 
             $client = new Client();
             $allResponses = [];
 
             foreach ($codes as $code) {
                 if (isset($code['messagesCode'])) {
-                    $response = $client->get('https://' . $atmosphere . '.viafirma.com/documents/api/v3/documents/download/signed/' . $code['messagesCode'], [
+                    $response = $client->get($baseUrl . '/documents/download/signed/' . $code['messagesCode'], [
                         'headers' => [
                             'Content-Type' => 'application/json',
                             'Authorization' => 'Basic ' . env('VIAFIRMA_API_KEY'),
                         ],
                     ]);
 
-                    // Decodificar la respuesta y agregarla al array
                     $decodedResponse = json_decode($response->getBody()->getContents(), true);
-                    $allResponses[] = $decodedResponse; // Guardar cada respuesta en el array
+                    $allResponses[] = $decodedResponse;
 
-                    // Extraer los campos necesarios del objeto de respuesta
                     $fileName = $decodedResponse['fileName'];
                     $link = $decodedResponse['link'];
                     $signedID = $decodedResponse['signedID'];
                     $expires = Carbon::createFromTimestampMs($decodedResponse['expires']);
 
-                    // Descargar el archivo desde el link de la API
                     $fileContent = file_get_contents($link);
-
-                    // Guardar el archivo en la carpeta 'documents_signed' dentro de storage
                     $storagePath = 'documents_signed/' . $fileName;
                     Storage::disk('public')->put($storagePath, $fileContent);
 
-                    // Almacenar el documento en la base de datos
                     $documentSigned = new DocumentSigned();
                     $documentSigned->file_name = $fileName;
                     $documentSigned->signed_id = $signedID;
                     $documentSigned->expires = $expires;
-                    $documentSigned->inability_id = $validated['id']; // Corregido el campo 'inability_id'
-                    $documentSigned->document_path = $storagePath; // Guardamos la ruta de almacenamiento
+                    $documentSigned->inability_id = $validated['id'];
+                    $documentSigned->document_path = $storagePath;
                     $documentSigned->save();
 
-                    // Log para mostrar lo que se almacena en la base de datos
                     Log::info('Documento firmado almacenado en la BD:', [
                         'file_name' => $fileName,
                         'signed_id' => $signedID,
@@ -218,13 +188,13 @@ class DocumentsApiController extends Controller
                 }
             }
 
-            // Obtiene el primer documento firmado guardado para mostrar en la vista
             $firstSignedDocument = DocumentSigned::where('inability_id', $validated['id'])->first();
 
             return response()->json([
                 'allResponses' => $allResponses,
-                'firstDocument' => $firstSignedDocument // Devuelve el primer documento firmado
+                'firstDocument' => $firstSignedDocument
             ]);
+
         } catch (\Exception $e) {
             Log::error('Error en la descarga de documentos firmados: ' . $e->getMessage());
             return response()->json(['error' => 'Ocurrió un error inesperado.'], 500);

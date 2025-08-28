@@ -83,14 +83,14 @@
                                         <td>{{ $insurer['val_banco'] }}</td>
                                         <td>{{ $insurer['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
-                                            @if ($insurer['status'] === 1)
+                                            @if ($insurer['status'] === '1')
                                                 <span class="badge badge-success">Activo</span>
                                             @else
                                                 <span class="badge badge-danger">Inactivo</span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($insurer['status'] === 1)
+                                            @if ($insurer['status'] === '1')
                                                 <div class="button-container">
 
                                                     <button class="btn btn-success btn-sm edit-btn"

@@ -94,6 +94,16 @@
                     @enderror
                 </div>
 
+                <div id="permisos_empresa_container" class="col-md-6" style="display: none; margin-top: 32px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" class="js-switch" name="habilitar_permisos_empresa"
+                            id="habilitar_permisos_empresa">
+                        <label class="form-check-label" for="habilitar_permisos_empresa">
+                            Habilitar permisos empresa
+                        </label>
+                    </div>
+                </div>
+
                 <div class="form-group input-entities col-md-6" id="empresas-wrapper" style="display:none;">
                     <label for="empresas">Empresas asignadas</label>
                     <select id="empresas" name="empresas[]"
@@ -453,6 +463,18 @@
             const checkbox = document.getElementById('ambiente');
             const label = document.getElementById('ambiente-label');
             const empresasSelect = document.getElementById('empresas');
+            const permisosContainer = document.getElementById("permisos_empresa_container");
+
+            roleSelect.addEventListener("change", function() {
+                const selectedText = roleSelect.options[roleSelect.selectedIndex].text;
+
+                if (selectedText.toLowerCase() === "jefe de ventas") {
+                    permisosContainer.style.display = "block";
+                } else {
+                    permisosContainer.style.display = "none";
+                    document.getElementById("habilitar_permisos_empresa").checked = false; // desmarcar
+                }
+            });
 
             $('.select2').select2({
                 placeholder: "Buscar",

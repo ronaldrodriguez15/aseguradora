@@ -7,6 +7,8 @@ use App\Models\Inability;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Docuuments;
 use Illuminate\Support\Facades\Log;
+use App\Models\City;
+use App\Models\Departments;
 
 class PDFController extends Controller
 {
@@ -123,12 +125,14 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // ciudad
+                $city = City::where('id', $inability->ciudad_expedicion)->first();
                 $pdf->SetXY(140, 57.5);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($city->name));
 
                 // N identificacion
+                $department = Departments::where('id_departamento', $inability->department)->first();
                 $pdf->SetXY(170, 57.5);
-                $pdf->Write(0, "Cundinamarca");
+                $pdf->Write(0, convertToISO88591($department->descripcion));
 
                 // Genero
                 if ($inability->genero === 'masculino') {
@@ -152,12 +156,14 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->celular));
 
                 // ciudad
+                $residence_city = City::where('id', $inability->ciudad_residencia)->first();
                 $pdf->SetXY(122, 66);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($residence_city->name));
 
                 // departamento
+                $residence_department = Departments::where('id_departamento', $inability->residence_department)->first();
                 $pdf->SetXY(164, 66);
-                $pdf->Write(0, "Cundinamarca");
+                $pdf->Write(0, convertToISO88591($residence_department->descripcion));
 
                 // ocupacion
                 $pdf->SetXY(50, 69.5);

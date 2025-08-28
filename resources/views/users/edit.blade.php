@@ -78,7 +78,7 @@
                 <div class="form-group col-md-6">
                     <label for="password">Contraseña</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password"
-                        name="password" placeholder="Introduce tu contraseña" autocomplete="new-password" required>
+                        name="password" placeholder="Introduce tu contraseña" autocomplete="new-password">
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -87,23 +87,33 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="role_id">Rol <span class="required">*</span></label>
-                    @php
-                        $userRoleId = $usuario->roles->first()?->id;
-                    @endphp
+                <label for="role_id">Rol <span class="required">*</span></label>
+                @php
+                    $userRoleId = optional($usuario->roles->first())->id;
+                @endphp
+            
+                <select id="role_id" name="role_id" class="form-control @error('role_id') is-invalid @enderror" required>
+                    <option value="">Seleccione un rol</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->id }}" {{ $userRoleId == $role->id ? 'selected' : '' }}>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('role_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-                    <select id="role_id" name="role_id" class="form-control @error('role_id') is-invalid @enderror"
-                        required>
-                        <option value="">Seleccione un rol</option>
-                        @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" {{ $userRoleId == $role->id ? 'selected' : '' }}>
-                                {{ $role->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('role_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+
+                <div id="permisos_empresa_container" class="col-md-6" style="display: none; margin-top: 32px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" class="js-switch" name="habilitar_permisos_empresa"
+                            id="habilitar_permisos_empresa" {{ $usuario->permisos_entidades == '1' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="habilitar_permisos_empresa">
+                            Habilitar permisos empresa
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-group input-entities col-md-6">
@@ -520,6 +530,18 @@
             const $empresas = $('#empresas');
             const checkbox = document.getElementById('ambiente');
             const label = document.getElementById('ambiente-label');
+            const permisosContainer = document.getElementById("permisos_empresa_container");
+
+            roleSelect.addEventListener("change", function() {
+                const selectedText = roleSelect.options[roleSelect.selectedIndex].text;
+
+                if (selectedText.toLowerCase() === "jefe de ventas") {
+                    permisosContainer.style.display = "block";
+                } else {
+                    permisosContainer.style.display = "none";
+                    document.getElementById("habilitar_permisos_empresa").checked = false; // desmarcar
+                }
+            });
 
             // Función para saber si es ventas
             function isVentas() {

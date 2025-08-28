@@ -385,12 +385,6 @@ return [
                     'icon' => 'fa fa-clock',
                     'can' => 'manage-system',
                 ],
-                // [
-                //     'text' => 'Ambiente',
-                //     'url' => 'ambiente',
-                //     'icon' => 'fa fa-laptop-code',
-                //     'can' => 'manage-system',
-                // ],
             ],
         ],
         [
