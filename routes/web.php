@@ -21,6 +21,7 @@ use App\Http\Controllers\DocumentsApiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AtmosphereController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ScheduleController;
 
@@ -152,6 +153,16 @@ Route::middleware([
     Route::post('/descargar-pdfs', [ReportController::class, 'descargarPDFs']);
     Route::post('/descargar-plano-focus', [ReportController::class, 'descargarPlanoFocus']);
     Route::post('/descargar-seguimiento-ventas', [ReportController::class, 'descargarSeguimientoVentas']);
+
+    //Geolocation
+    // Ruta para mostrar el módulo
+    Route::get('/geolocalizacion', [LocationController::class, 'index'])->name('geolocalizacion');
+
+    // Ruta para actualizar ubicación
+    Route::post('/update-location', [LocationController::class, 'update'])->name('update-location');
+
+    // retorna los usuarios para ver la geolocalizacion
+    Route::get('/locations', [LocationController::class, 'getLocations'])->name('get-locations');
 
     Route::get('/get-cities/{department}', [CityController::class, 'getCities'])->name('get-cities');
     Route::post('/entidades/exportar', [EntityController::class, 'exportarSeleccionadas'])->name('entidades.exportar');

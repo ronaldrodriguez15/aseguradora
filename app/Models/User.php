@@ -88,6 +88,9 @@ class User extends Authenticatable
         'historial_afiliados',
         'apertura',
         'c_codigo',
+        'vendedores_id',
+        'latitude',
+        'longitude',
     ];
 
     /**

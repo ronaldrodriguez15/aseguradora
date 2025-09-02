@@ -319,6 +319,11 @@ return [
             'can' => 'manage-system',
         ],
         [
+            'text' => 'Geolocalización',
+            'url' => 'geolocalizacion',
+            'icon' => 'fa fa-map',
+        ],
+        [
             'text' => 'Afiliaciones',
             'icon' => 'fas fa-handshake',
             'submenu' => [

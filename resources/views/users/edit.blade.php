@@ -87,23 +87,24 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6">
-                <label for="role_id">Rol <span class="required">*</span></label>
-                @php
-                    $userRoleId = optional($usuario->roles->first())->id;
-                @endphp
-            
-                <select id="role_id" name="role_id" class="form-control @error('role_id') is-invalid @enderror" required>
-                    <option value="">Seleccione un rol</option>
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->id }}" {{ $userRoleId == $role->id ? 'selected' : '' }}>
-                            {{ $role->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('role_id')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+                    <label for="role_id">Rol <span class="required">*</span></label>
+                    @php
+                        $userRoleId = optional($usuario->roles->first())->id;
+                    @endphp
+
+                    <select id="role_id" name="role_id" class="form-control @error('role_id') is-invalid @enderror"
+                        required>
+                        <option value="">Seleccione un rol</option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}" {{ $userRoleId == $role->id ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('role_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
 
                 <div id="permisos_empresa_container" class="col-md-6" style="display: none; margin-top: 32px;">
@@ -535,7 +536,10 @@
             roleSelect.addEventListener("change", function() {
                 const selectedText = roleSelect.options[roleSelect.selectedIndex].text;
 
-                if (selectedText.toLowerCase() === "jefe de ventas") {
+                if (
+                    selectedText.trim().toLowerCase() === "jefe de ventas" ||
+                    selectedText.trim().toLowerCase() === "ventas"
+                ) {
                     permisosContainer.style.display = "block";
                 } else {
                     permisosContainer.style.display = "none";
