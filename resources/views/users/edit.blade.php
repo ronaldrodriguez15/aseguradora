@@ -519,37 +519,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css" />
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
-        .select2-container--default .select2-selection--multiple,
-        .select2-container--default .select2-selection--single {
-            height: calc(2.25rem + 2px);
-            /* altura como bootstrap */
-            border: 1px solid #ced4da;
-            /* borde bootstrap */
-            border-radius: .25rem;
-            /* bordes redondeados */
-            padding: .375rem .75rem;
-            /* espaciado interno */
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            background-clip: padding-box;
-        }
-
+        /* Que las opciones se acomoden en varias filas */
         .select2-container--default .select2-selection--multiple .select2-selection__rendered {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
+            /* espacio entre chips */
         }
 
-        .select2-container--default .select2-selection__choice {
-            color: #000 !important;
+        /* Cada opción como un "chip" */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: #e9ecef;
-            /* gris bootstrap */
             border: 1px solid #ced4da;
-            border-radius: .2rem;
+            border-radius: 4px;
             padding: 2px 6px;
-            font-size: .875rem;
+            margin: 2px 0;
+            font-size: 13px;
+            color: #000;
+        }
+
+        /* Input que se agrande dinámicamente */
+        .select2-container--default .select2-selection--multiple {
+            min-height: 38px;
+            /* altura inicial como los otros inputs */
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px;
+            cursor: text;
+        }
+
+        /* Evitar que se corte y permitir que crezca */
+        .select2-container--default .select2-selection--multiple .select2-search__field {
+            width: auto !important;
         }
     </style>
 @stop

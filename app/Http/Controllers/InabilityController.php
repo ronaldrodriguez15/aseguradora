@@ -253,7 +253,6 @@ class InabilityController extends Controller
     {
         // Recuperar el ID del registro desde la sesión
         $inabilityId = $request->session()->get('inability_id');
-
         $inability = Inability::find($inabilityId);
 
         $val_total_desc_mensual = $inability->val_total_desc_mensual;
@@ -263,12 +262,30 @@ class InabilityController extends Controller
         $cities = City::orderBy('name', 'ASC')->get();
         $departments = Departments::orderBy('descripcion', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
-        $companies = Entity::where('status', 1)->get();
+
+        $usuario = auth()->user();
+
+        $empresasIds = json_decode($usuario->empresas, true) ?? [];
+
+        $companies = Entity::whereIn('id', $empresasIds)
+            ->where('status', 1)
+            ->get();
+
         $message = "La información se guardó correctamente.";
 
         return view(
             'affiliations.inabilities.step3',
-            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'departments', 'epss', 'companies', 'message')
+            compact(
+                'val_total_desc_mensual',
+                'tu_pierdes',
+                'te_pagamos',
+                'edad',
+                'cities',
+                'departments',
+                'epss',
+                'companies',
+                'message'
+            )
         );
     }
 
@@ -471,7 +488,15 @@ class InabilityController extends Controller
         $edad = $inability->edad;
         $cities = City::orderBy('name', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
-        $companies = Entity::where('status', 1)->get();
+
+        $usuario = auth()->user();
+        $empresasIds = json_decode($usuario->empresas, true) ?? [];
+
+        // Filtrar solo esas entidades
+        $companies = Entity::whereIn('id', $empresasIds)
+            ->where('status', 1)
+            ->get();
+            
         $message = "La información se guardó correctamente.";
 
         return view(
