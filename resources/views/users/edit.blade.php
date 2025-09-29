@@ -117,20 +117,50 @@
                     </div>
                 </div>
 
+                <div class="form-group col-md-6 input-vendedores" id="container-vendedores" style="display: none;">
+                    <label for="vendedores">Vendedores asignados</label>
+                    <select id="vendedores" name="vendedores[]"
+                        class="form-control select2 @error('vendedores') is-invalid @enderror" multiple>
+                        @foreach ($vendedores as $vendedor)
+                            <option value="{{ $vendedor->id }}"
+                                {{ in_array((string) $vendedor->id, $selectedVendedores) ? 'selected' : '' }}>
+                                {{ $vendedor->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('vendedores')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="form-group input-entities col-md-6">
                     <label for="empresas">Empresas asignadas</label>
                     <select id="empresas" name="empresas[]"
                         class="form-control select2 @error('empresas') is-invalid @enderror" multiple required>
-                        @foreach ($entities as $entity)
-                            <option value="{{ $entity->id }}"
-                                {{ in_array((string) $entity->id, json_decode($usuario->empresas, true) ?? []) ? 'selected' : '' }}>
-                                {{ $entity->cnitpagador . ' - ' . $entity->name }}
-                            </option>
+                        @foreach ($entities as $group => $groupEntities)
+                            <optgroup label="{{ $group }}">
+                                @foreach ($groupEntities as $entity)
+                                    <option value="{{ $entity->id }}"
+                                        {{ in_array((string) $entity->id, $selectedEmpresas) ? 'selected' : '' }}>
+                                        {{ $entity->cnitpagador . ' - ' . $entity->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     @error('empresas')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <div id="geolocalizacion_container" class="col-md-6 mb-3" style="margin-top: 32px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" class="js-switch" name="geolocalizacion" id="geolocalizacion"
+                            {{ $usuario->geolocalizacion == '1' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="geolocalizacion">
+                            Permitir geolocalización
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -489,27 +519,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css" />
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
-        .select2-selection__choice {
-            max-width: 250px;
-            /* Ajusta según tu diseño */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-            vertical-align: middle;
-            font-size: 12px;
+        .select2-container--default .select2-selection--multiple,
+        .select2-container--default .select2-selection--single {
+            height: calc(2.25rem + 2px);
+            /* altura como bootstrap */
+            border: 1px solid #ced4da;
+            /* borde bootstrap */
+            border-radius: .25rem;
+            /* bordes redondeados */
+            padding: .375rem .75rem;
+            /* espaciado interno */
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
         }
 
-        .select2-selection__rendered {
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
         }
 
-        .select2-selection__choice {
+        .select2-container--default .select2-selection__choice {
             color: #000 !important;
-            background-color: #e0e0e0;
-            border-color: #aaa;
+            background-color: #e9ecef;
+            /* gris bootstrap */
+            border: 1px solid #ced4da;
+            border-radius: .2rem;
+            padding: 2px 6px;
+            font-size: .875rem;
         }
     </style>
 @stop
@@ -532,17 +572,23 @@
             const checkbox = document.getElementById('ambiente');
             const label = document.getElementById('ambiente-label');
             const permisosContainer = document.getElementById("permisos_empresa_container");
+            const vendedoresContainer = document.getElementById("container-vendedores");
 
             roleSelect.addEventListener("change", function() {
                 const selectedText = roleSelect.options[roleSelect.selectedIndex].text;
 
-                if (
-                    selectedText.trim().toLowerCase() === "jefe de ventas" ||
-                    selectedText.trim().toLowerCase() === "ventas"
-                ) {
+                if (selectedText.trim().toLowerCase() === "jefe de ventas") {
+                    // jefe de ventas -> permisos + vendedores
                     permisosContainer.style.display = "block";
+                    vendedoresContainer.style.display = "block";
+                } else if (selectedText.trim().toLowerCase() === "ventas") {
+                    // ventas -> solo permisos
+                    permisosContainer.style.display = "block";
+                    vendedoresContainer.style.display = "none";
                 } else {
+                    // cualquier otro -> ocultar todo
                     permisosContainer.style.display = "none";
+                    vendedoresContainer.style.display = "none";
                     document.getElementById("habilitar_permisos_empresa").checked = false; // desmarcar
                 }
             });
@@ -550,6 +596,10 @@
             // Función para saber si es ventas
             function isVentas() {
                 return roleSelect.options[roleSelect.selectedIndex].text.trim().toLowerCase() === 'ventas';
+            }
+
+            function isJefeVentas() {
+                return roleSelect.options[roleSelect.selectedIndex].text.trim().toLowerCase() === 'jefe de ventas';
             }
 
             // Función para aplicar visibilidad y atributos
@@ -568,8 +618,17 @@
                 }
             }
 
+            function toggleVendedores() {
+                if (isJefeVentas()) {
+                    vendedoresContainer.style.display = "block";
+                } else {
+                    vendedoresContainer.style.display = "none";
+                }
+            }
+
             // Estado inicial (vista edit)
             toggleEmpresas();
+            toggleVendedores();
 
             // Inicializamos Select2
             $('.select2').select2({
@@ -580,6 +639,7 @@
             // Cambio de rol
             roleSelect.addEventListener('change', function() {
                 toggleEmpresas();
+                toggleVendedores();
             });
 
             // Cambio de ambiente

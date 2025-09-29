@@ -12,7 +12,6 @@
     <br>
     <div class="row">
         @if (Auth::user()->hasRole('Administrador'))
-            
             <div class="col-lg-4 col-sm-12 col-12">
                 <div class="small-box bg-info">
                     <div class="inner">
@@ -22,7 +21,8 @@
                     <div class="icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <a href="{{ route('aseguradoras.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ route('aseguradoras.index') }}" class="small-box-footer">Más información <i
+                            class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-4 col-sm-12 col-12">
@@ -34,7 +34,8 @@
                     <div class="icon">
                         <i class="fas fa-handshake"></i>
                     </div>
-                    <a href="{{ route('incapacidades.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ route('incapacidades.index') }}" class="small-box-footer">Más información <i
+                            class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-4 col-sm-12 col-12">
@@ -46,7 +47,8 @@
                     <div class="icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <a href="{{ route('usuarios.index') }}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ route('usuarios.index') }}" class="small-box-footer">Más información <i
+                            class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         @endif
@@ -104,5 +106,28 @@
 @section('js')
     <script>
         console.log("Hi, I'm using the Laravel-AdminLTE package!");
+        function startGlobalTracking() {
+            if (navigator.geolocation) {
+                setInterval(() => {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        let lat = position.coords.latitude;
+                        let lng = position.coords.longitude;
+
+                        fetch("{{ route('update-location') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                latitude: lat,
+                                longitude: lng
+                            })
+                        }).catch(err => console.error("Error enviando ubicación:", err));
+                    });
+                }, 5000); // cada 5 segundos
+            }
+        }
+        startGlobalTracking();
     </script>
 @stop

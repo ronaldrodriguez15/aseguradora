@@ -33,8 +33,11 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $entities = Entity::where('status', 1)->get();
+        $vendedores = User::role('Ventas')
+            ->where('status', 1)
+            ->get();
 
-        return view('users.create', compact('roles', 'entities'));
+        return view('users.create', compact('roles', 'entities', 'vendedores'));
     }
 
     /**
@@ -128,6 +131,7 @@ class UserController extends Controller
         $user->historial_afiliados = $request->has('historial_afiliados') ? 1 : 0;
         $user->apertura = $request->has('apertura') ? 1 : 0;
         $user->c_codigo = $request->has('c_codigo') ? 1 : 0;
+        $$user->geolocalizacion = $request->has('geolocalizacion') ? 1 : 0;
 
         $user->status = 1; // 1: Activo, 0: Inactivo
         $user->save();
@@ -161,11 +165,23 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $usuario = User::find($id);
+        $usuario = User::findOrFail($id);
         $roles = Role::all();
-        $entities = Entity::where('status', 1)->get();
+        $entities = Entity::where('status', 1)->get()->groupBy('name');
+        $vendedores = User::role('Ventas')->where('status', 1)->get();
 
-        return view('users.edit', compact('usuario', 'roles', 'entities'));
+        // Decodificar empresas y vendedores en arrays de STRINGS
+        $selectedEmpresas   = array_map('strval', json_decode($usuario->empresas, true) ?? []);
+        $selectedVendedores = array_map('strval', json_decode($usuario->vendedores_id, true) ?? []);
+
+        return view('users.edit', compact(
+            'usuario',
+            'roles',
+            'entities',
+            'vendedores',
+            'selectedEmpresas',
+            'selectedVendedores'
+        ));
     }
 
     /**
@@ -255,8 +271,10 @@ class UserController extends Controller
         $user->afiliados_planta = $request->has('afiliados_planta') ? 1 : 0;
         $user->afiliados_contratistas = $request->has('afiliados_contratistas') ? 1 : 0;
         $user->historial_afiliados = $request->has('historial_afiliados') ? 1 : 0;
+        $user->vendedores_id = json_encode($request->vendedores);
         $user->apertura = $request->has('apertura') ? 1 : 0;
         $user->c_codigo = $request->has('c_codigo') ? 1 : 0;
+        $user->geolocalizacion = $request->has('geolocalizacion') ? 1 : 0;
 
         $user->status = 1; //1: Activo, 0: Inactivo
         $user->save();

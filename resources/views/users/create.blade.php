@@ -119,6 +119,16 @@
                 </div>
             </div>
 
+            <div id="geolocalizacion_container" class="col-md-6 mb-3" style="margin-top: 32px">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" class="js-switch" name="geolocalizacion" id="geolocalizacion"
+                        {{ $usuario->geolocalizacion == '1' ? 'checked' : '' }}>
+                    <label class="form-check-label" for="geolocalizacion">
+                        Permitir geolocalización
+                    </label>
+                </div>
+            </div>
+
             <div class="form-group"
                 style="background-color: #fff8e1; border: 1px solid #f0ad4e; padding: 12px; border-radius: 8px;">
                 <label for="ambiente" style="color: #a05d00; font-weight: bold;">Ambiente</label><br>

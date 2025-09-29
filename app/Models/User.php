@@ -91,6 +91,7 @@ class User extends Authenticatable
         'vendedores_id',
         'latitude',
         'longitude',
+        'geolocalizacion',
     ];
 
     /**

@@ -32,11 +32,11 @@
 
         <!-- Page Heading -->
         @if (isset($header))
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {{ $header }}
-            </div>
-        </header>
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header }}
+                </div>
+            </header>
         @endif
 
         <!-- Page Content -->
@@ -48,6 +48,75 @@
     @stack('modals')
 
     @livewireScripts
+
+    @if (Auth::check())
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let lastLat = null;
+                let lastLng = null;
+                const MIN_DISTANCE_METERS = 8;
+
+                // Calcular distancia entre dos coordenadas (Haversine)
+                function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+                    const R = 6371; // km
+                    const dLat = (lat2 - lat1) * Math.PI / 180;
+                    const dLon = (lon2 - lon1) * Math.PI / 180;
+                    const a =
+                        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    return R * c;
+                }
+
+                function sendLocation(lat, lng) {
+                    fetch("{{ route('update-location') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            latitude: lat,
+                            longitude: lng
+                        })
+                    }).catch(err => console.error("❌ Error enviando ubicación:", err));
+                }
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.watchPosition(
+                        (pos) => {
+                            let lat = pos.coords.latitude;
+                            let lng = pos.coords.longitude;
+
+                            if (lastLat === null || lastLng === null) {
+                                // primera vez → guardar ubicación
+                                sendLocation(lat, lng);
+                                lastLat = lat;
+                                lastLng = lng;
+                            } else {
+                                let dist = getDistanceFromLatLonInKm(lastLat, lastLng, lat, lng) * 1000; // m
+                                if (dist >= MIN_DISTANCE_METERS) {
+                                    sendLocation(lat, lng);
+                                    lastLat = lat;
+                                    lastLng = lng;
+                                }
+                            }
+                        },
+                        (err) => {
+                            console.error("❌ Error obteniendo ubicación:", err);
+                        }, {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    console.warn("Geolocalización no soportada en este navegador.");
+                }
+            });
+        </script>
+    @endif
 </body>
 
 <style>
@@ -59,3 +128,6 @@
 </style>
 
 </html>
+
+
+

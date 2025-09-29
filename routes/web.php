@@ -171,6 +171,11 @@ Route::middleware([
 
     //Horario
     Route::resource('horario', ScheduleController::class);
+
+    // Almacenar cada hora
+    Route::post('/store-hour-location', [LocationController::class, 'storeHourLocation'])->name('store-hour-location');
+    Route::post('/geolocations/report', [LocationController::class, 'generateReport'])
+        ->name('geolocations.report');
 });
 
 Auth::routes();

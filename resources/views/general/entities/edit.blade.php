@@ -26,6 +26,16 @@
             @method('PUT')
             @csrf
             <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="observaciones_c">Observaciones - Otros contactos</label>
+                    <textarea class="form-control @error('observaciones_c') is-invalid @enderror" id="observaciones_c"
+                        name="observaciones_c" rows="3">{{ $entity->observaciones_c }}</textarea>
+                    @error('observaciones_c')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group col-md-6">
                     <h6><b>Nombre de la entidad:</b> {{ $entity['name'] }} </h6>
                 </div>
@@ -670,16 +680,6 @@
                         </option>
                     </select>
                     @error('apertura')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-12">
-                    <label for="observaciones_c">Observaciones - Otros contactos</label>
-                    <textarea class="form-control @error('observaciones_c') is-invalid @enderror" id="observaciones_c"
-                        name="observaciones_c" rows="3">{{ $entity->observaciones_c }}</textarea>
-                    @error('observaciones_c')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

@@ -136,7 +136,7 @@
                                         </td>
 
                                         <td>
-                                            @if ($entity['status'] === '1')
+                                            @if ($entity['status'] === 1)
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-light dropdown-toggle" type="button"
                                                         data-bs-toggle="dropdown" aria-expanded="false">
