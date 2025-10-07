@@ -13,8 +13,27 @@
     <br>
     <div class="row">
         <div class="col-md-12">
+            @if (session()->get('success'))
+                <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
+                    {{ session()->get('success') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+        </div>
+        <div class="col-md-12">
             <div class="card-body">
                 <div class="row">
+                    <div class="col-md-12 text-right">
+                        <!-- Botón que abre el modal -->
+                        @if (Auth::user()->hasRole('Administrador'))
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#modalLimpiarHistorico">
+                                <i class="fas fa-trash mr-2"></i> Limpiar histórico
+                            </button>
+                        @endif
+                    </div>
                     <div class="col-md-12">
                         <div class="card shadow-sm">
                             <div class="card-body p-2">
@@ -48,21 +67,22 @@
                                     </div>
 
                                     <div class="row g-2">
-                                        <!-- Select usuarios -->
-                                        <div class="col-12 col-md-8">
-                                            <select id="users_geolocation" name="user_id" class="form-control">
-                                                <option value="all">Todos los usuarios</option>
+                                        <select id="usuarios" name="usuarios[]" class="form-control" multiple>
+                                            @if ($usersReport->isNotEmpty())
+                                                @if (Auth::user()->hasRole('Administrador'))
+                                                    <option value="all">Todos los usuarios</option>
+                                                @endif
                                                 @foreach ($usersReport as $value)
                                                     <option value="{{ $value->id }}"
-                                                        {{ old('user_id') == $value->id ? 'selected' : '' }}>
+                                                        {{ old('usuarios') && in_array($value->id, old('usuarios')) ? 'selected' : '' }}>
                                                         {{ $value->name . ' (C.C ' . $value->document . ')' }}
                                                     </option>
                                                 @endforeach
-                                            </select>
-                                        </div>
+                                            @endif
+                                        </select>
 
                                         <!-- Botón generar -->
-                                        <div class="col-12 col-md-4">
+                                        <div class="col-12 col-md-4 mt-3">
                                             <button type="submit" class="btn btn-danger w-100" style="min-width: 140px;">
                                                 <i class="fas fa-file-pdf"></i> Generar Reporte
                                             </button>
@@ -72,6 +92,65 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- modal limpiar historico --}}
+        <div class="modal fade" id="modalLimpiarHistorico" tabindex="-1" aria-labelledby="modalLimpiarHistoricoLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <!-- Encabezado -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLimpiarHistoricoLabel">Limpiar histórico</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form method="POST" action="{{ route('historico.limpiar') }}">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-body">
+                            <div class="row">
+                                <!-- Fecha inicial -->
+                                <div class="form-group col-md-6">
+                                    <label for="fecha_inicial">Fecha inicial</label>
+                                    <input type="date" class="form-control" id="fecha_inicial" name="fecha_inicial"
+                                        required>
+                                </div>
+
+                                <!-- Fecha final -->
+                                <div class="form-group col-md-6">
+                                    <label for="fecha_final">Fecha final</label>
+                                    <input type="date" class="form-control" id="fecha_final" name="fecha_final" required>
+                                </div>
+                            </div>
+
+                            <!-- Multiselect de usuarios -->
+                            <div class="form-group mt-3">
+                                <label for="usuarios">Usuarios</label>
+                                <select id="usuarios" name="usuarios[]" class="form-control select2" multiple required>
+                                    <option value="all">Todos los usuarios</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">
+                                            {{ $user->name }} ({{ $user->document }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Footer con botones -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger">Limpiar</button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </div>
@@ -132,6 +211,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .card {
             transition: box-shadow 0.3s ease;
@@ -206,6 +286,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4b5563;
         }
+
+        #usuarios {
+            max-width: 400px !important;
+            width: 100% !important;
+            margin-top: 5px !important;
+        }
     </style>
 
 @stop
@@ -218,9 +304,31 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
 
     <script>
+        $(document).ready(function() {
+            $('#usuarios').select2({
+                placeholder: "Seleccione usuarios",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#usuarios').on('change', function() {
+                let values = $(this).val();
+
+                if (values && values.includes("all")) {
+
+                    $(this).val(["all"]).select2('destroy').select2({
+                        placeholder: "Seleccione usuarios",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                }
+            });
+        });
+
         var map = L.map('map').setView([4.60971, -74.08175], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -346,7 +454,6 @@
                 .catch(err => console.error("Error cargando ubicaciones:", err));
         }
 
-        // --- Botón de actualizar ubicación manual ---
         const btn = document.getElementById("btnActualizarUbicacion");
         if (btn) {
             btn.addEventListener("click", function() {

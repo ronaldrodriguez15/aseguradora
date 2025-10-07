@@ -13,16 +13,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+    <!-- TailwindCSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Material Tailwind CSS -->
+    <link href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css" rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     @livewireStyles
 
-    <!-- Scripts -->
+    <!-- Scripts de Laravel -->
     <script src="{{ mix('js/app.js') }}" defer></script>
 </head>
+
 
 <body class="font-sans antialiased">
     <x-jet-banner />
@@ -95,7 +100,7 @@
                                 lastLat = lat;
                                 lastLng = lng;
                             } else {
-                                let dist = getDistanceFromLatLonInKm(lastLat, lastLng, lat, lng) * 1000; // m
+                                let dist = getDistanceFromLatLonInKm(lastLat, lastLng, lat, lng) * 1000; 
                                 if (dist >= MIN_DISTANCE_METERS) {
                                     sendLocation(lat, lng);
                                     lastLat = lat;
@@ -117,6 +122,10 @@
             });
         </script>
     @endif
+
+    <!-- Material Tailwind JS -->
+    <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/script.js"></script>
+
 </body>
 
 <style>
@@ -128,6 +137,3 @@
 </style>
 
 </html>
-
-
-

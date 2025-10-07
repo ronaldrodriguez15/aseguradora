@@ -167,12 +167,19 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
         $roles = Role::all();
-        $entities = Entity::where('status', 1)->get()->groupBy('name');
-        $vendedores = User::role('Ventas')->where('status', 1)->get();
 
-        // Decodificar empresas y vendedores en arrays de STRINGS
+        // Empresas seleccionadas por el usuario (array de strings)
         $selectedEmpresas   = array_map('strval', json_decode($usuario->empresas, true) ?? []);
         $selectedVendedores = array_map('strval', json_decode($usuario->vendedores_id, true) ?? []);
+
+        $entities = Entity::select('id', 'name', 'cnitpagador')
+            ->where('status', 1)
+            ->distinct('name')
+            ->get();
+
+
+        // Vendedores (usuarios con rol "Ventas")
+        $vendedores = User::role('Ventas')->where('status', 1)->get();
 
         return view('users.edit', compact(
             'usuario',

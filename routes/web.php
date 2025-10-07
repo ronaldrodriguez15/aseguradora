@@ -176,6 +176,10 @@ Route::middleware([
     Route::post('/store-hour-location', [LocationController::class, 'storeHourLocation'])->name('store-hour-location');
     Route::post('/geolocations/report', [LocationController::class, 'generateReport'])
         ->name('geolocations.report');
+
+    // Limpiar cada hora
+    Route::delete('/historico/limpiar', [LocationController::class, 'cleanReports'])
+        ->name('historico.limpiar');
 });
 
 Auth::routes();

@@ -17,19 +17,30 @@ class LocationController extends Controller
         $user = Auth::user();
 
         if ($user->hasRole('Administrador')) {
-
+            // Admin ve todos los usuarios
             $usersReport = User::where('status', 1)->get();
         } elseif ($user->hasRole('Ventas')) {
-
+            // Vendedor solo se ve a sí mismo
             $usersReport = User::where('id', $user->id)
                 ->where('status', 1)
                 ->get();
+        } elseif ($user->hasRole('Jefe de ventas')) {
+            // Jefe de ventas ve solo a los vendedores que tiene asignados
+            $idsVendedores = json_decode($user->vendedores_id, true) ?? [];
+
+            $usersReport = User::whereIn('id', $idsVendedores)
+                ->where('status', 1)
+                ->get();
         } else {
+            // Otros no ven nada
             $usersReport = collect();
         }
 
-        return view('geolocation.index', compact('usersReport'));
+        $users = User::where('status', 1)->get();
+
+        return view('geolocation.index', compact('usersReport', 'users'));
     }
+
 
 
     public function update(Request $request)
@@ -149,5 +160,24 @@ class LocationController extends Controller
             $pdf = Pdf::loadView('reports.all_geolocation', compact('users', 'locations'));
             return $pdf->stream("Reporte_Todos.pdf");
         }
+    }
+
+    public function cleanReports(Request $request)
+    {
+        $fechaInicial = $request->input('fecha_inicial');
+        $fechaFinal   = $request->input('fecha_final');
+        $usuarios     = $request->input('usuarios', []);
+
+        $query = \DB::table('user_locations')
+            ->whereBetween('fecha', [$fechaInicial, $fechaFinal]);
+
+        // Si NO es "all", filtra por usuarios
+        if (!(count($usuarios) === 1 && $usuarios[0] === "all")) {
+            $query->whereIn('user_id', $usuarios);
+        }
+
+        $deleted = $query->delete();
+
+        return redirect()->back()->with('success', "Se eliminaron {$deleted} registros de geolocalización correctamente.");
     }
 }

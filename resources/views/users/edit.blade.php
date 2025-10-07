@@ -137,15 +137,11 @@
                     <label for="empresas">Empresas asignadas</label>
                     <select id="empresas" name="empresas[]"
                         class="form-control select2 @error('empresas') is-invalid @enderror" multiple required>
-                        @foreach ($entities as $group => $groupEntities)
-                            <optgroup label="{{ $group }}">
-                                @foreach ($groupEntities as $entity)
-                                    <option value="{{ $entity->id }}"
-                                        {{ in_array((string) $entity->id, $selectedEmpresas) ? 'selected' : '' }}>
-                                        {{ $entity->cnitpagador . ' - ' . $entity->name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
+                        @foreach ($entities as $entity)
+                            <option value="{{ $entity->id }}"
+                                {{ in_array((string) $entity->id, $selectedEmpresas) ? 'selected' : '' }}>
+                                {{ $entity->cnitpagador . ' - ' . $entity->name }}
+                            </option>
                         @endforeach
                     </select>
                     @error('empresas')
