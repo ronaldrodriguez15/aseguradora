@@ -46,14 +46,14 @@
                                 <td>{{ $bank['name'] }}</td>
                                 <td>{{ $bank['created_at']->format('Y-m-d - H:m') }}</td>
                                 <td>
-                                    @if($bank['status'] === 1)
+                                    @if($bank['status'] === '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($bank['status'] === 1)
+                                    @if($bank['status'] === '1')
                                     <div class="button-container">
                                         <form action="{{ route('bancos.destroy', $bank['id']) }}" method="POST" id="formDelete-{{ $bank['id'] }}">
                                             @method('DELETE')

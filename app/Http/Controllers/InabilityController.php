@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Asesor;
 use App\Models\Bank;
 use App\Models\City;
+use App\Models\Departments;
 use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
@@ -12,6 +13,10 @@ use App\Models\Eps;
 use App\Models\Entity;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
+use App\Models\DocumentSigned;
+use App\Models\Salary;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class InabilityController extends Controller
 {
@@ -22,10 +27,42 @@ class InabilityController extends Controller
      */
     public function index()
     {
-        $inabilities = Inability::orderBy('status', 'DESC')
-            ->orderBy('created_at', 'DESC')
-            ->paginate();
+        $user = Auth::user();
 
+        // Iniciar la consulta
+        $query = Inability::orderBy('status', 'DESC')
+            ->orderBy('created_at', 'DESC');
+
+        // Aplicar el filtro si el usuario tiene el rol 'Ventas'
+        if ($user->hasRole('Ventas')) {
+            $salesFilterData = $this->buildSalesFilterData($user);
+            $normalizedNameKey = $salesFilterData['nameKey'];
+            $normalizedCodes = $salesFilterData['codes'];
+            $codigoExpression = $this->normalizedColumnExpression('inabilities.codigo_asesor');
+            $nombreExpression = $this->normalizedColumnExpression('inabilities.nombre_asesor');
+
+            $query->where(function ($builder) use ($user, $normalizedNameKey, $normalizedCodes, $codigoExpression, $nombreExpression) {
+                $builder->where('inabilities.user_id', $user->id);
+
+                if ($normalizedCodes->isNotEmpty()) {
+                    $builder->orWhere(function ($codeBuilder) use ($normalizedCodes, $codigoExpression) {
+                        foreach ($normalizedCodes as $index => $code) {
+                            $method = $index === 0 ? 'whereRaw' : 'orWhereRaw';
+                            $codeBuilder->{$method}($codigoExpression . ' = ?', [$code]);
+                        }
+                    });
+                }
+
+                if ($normalizedNameKey !== '') {
+                    $builder->orWhereRaw($nombreExpression . ' = ?', [$normalizedNameKey]);
+                }
+            });
+        }
+
+        // Finalizar la consulta con la paginación
+        $inabilities = $query->paginate();
+
+        // Retornar la vista con los datos filtrados
         return view('affiliations.inabilities.index', compact('inabilities'));
     }
 
@@ -40,9 +77,14 @@ class InabilityController extends Controller
         $asesors = Asesor::where('status', 1)->get();
         $epss = Eps::where('status', 1)->get();
         $banks = Bank::where('status', 1)->get();
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
+        $salary = Salary::latest('created_at')->first();
+        $fondoEntities = Entity::where('operador_libranza', true)
+            ->where('status', 1)
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
-        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities'));
+        return view('affiliations.inabilities.step1', compact('insurers', 'asesors', 'epss', 'banks', 'cities', 'salary', 'fondoEntities'));
     }
 
     /**
@@ -108,6 +150,7 @@ class InabilityController extends Controller
     {
         $rules = [
             'aseguradora' => 'required',
+            'fondo_entity_id' => 'required|exists:entities,id',
             'no_poliza' => 'required',
             'codigo_asesor' => 'required',
             'nombre_asesor' => 'required',
@@ -127,51 +170,53 @@ class InabilityController extends Controller
             'val_total_desc_mensual' => 'required',
             'tu_pierdes' => 'required',
             'te_pagamos' => 'required',
+            'no_identificacion' => 'required',
             'forma_pago' => 'required|string|in:debito_automatico,mensual_libranza',
         ];
 
         $messages = [
-            'aseguradora.required' => 'El campo aseguradora es obligatorio.',
-            'no_poliza.required' => 'El campo número de póliza es obligatorio.',
-            'codigo_asesor.required' => 'El campo código de asesor es obligatorio.',
-            'nombre_asesor.required' => 'El campo nombre del asesor es obligatorio.',
-            'nombre_eps.required' => 'El campo nombre de la EPS es obligatorio.',
-            'fecha_nacimiento_asesor.required' => 'El campo fecha de nacimiento del asesor es obligatorio.',
-            'email_corporativo.required' => 'El campo correo corporativo es obligatorio.',
-            'descuento_eps.required' => 'El campo descuento EPS es obligatorio.',
-            'numero_dias.required' => 'El campo número de días es obligatorio.',
-            'valor_ibc_basico.required' => 'El campo valor IBC básico es obligatorio.',
-            'desea_valor.required' => 'El campo desea valor es obligatorio.',
-            'total.required' => 'El campo total es obligatorio.',
-            'amparo_basico.numeric' => 'El campo amparo básico debe ser numérico.',
-            'val_prevexequial_eclusivo.required' => 'El campo valor previ-exequial exclusivo es obligatorio.',
-            'prima_pago_prima_seguro.required' => 'El campo prima de pago prima de seguro es obligatorio.',
-            'val_total_desc_mensual.required' => 'El campo valor total descuento mensual es obligatorio.',
-            'tu_pierdes.required' => 'El campo tú pierdes es obligatorio.',
-            'te_pagamos.required' => 'El campo te pagamos es obligatorio.',
-            'forma_pago.required' => 'El campo forma de pago es obligatorio.',
-            'forma_pago.string' => 'La forma de pago debe ser una cadena de texto.',
-            'forma_pago.in' => 'La forma de pago seleccionada no es válida.',
+            //
         ];
 
         $this->validate($request, $rules, $messages);
 
+        // Buscar afiliaciones con el mismo número de cédula
+        $afiliacionesPrevias = Inability::where('no_identificacion', $request->no_identificacion)->get();
+
+        // Recorrer todas las afiliaciones previas y verificar el estado firmado
+        foreach ($afiliacionesPrevias as $afiliacion) {
+            // Contar los documentos relacionados con la afiliación actual
+            $documentosFirmados = DocumentSigned::where('inability_id', $afiliacion->id)->count();
+
+            if ($documentosFirmados >= 3) {
+                return redirect()->back()->with('error', 'Esta persona ya tiene una afiliación en estado firmado.');
+            }
+        }
+
+        // Si llegó hasta aquí, significa que no hay afiliaciones firmadas, por lo tanto, eliminar todas las afiliaciones anteriores
+        Inability::where('no_identificacion', $request->no_identificacion)->delete();
+
         try {
             $inability = new Inability();
 
-            // Obtener el número máximo de solicitud actual
-            $maxSolicitud = Inability::pluck('no_solicitud')->max();
+            $identificador = $request->identificador;
 
-            // Determinar el nuevo número de solicitud
-            if ($request->identificador > $maxSolicitud) {
-                $newSolicitudNumber = $request->identificador;
-            } else {
-                $newSolicitudNumber = $maxSolicitud ? $maxSolicitud + 1 : 1;
-            }
+            // Obtener el asesor
+            $asesor = Asesor::where('asesor_code', $request->codigo_asesor)->first();
 
-            // Asignar el nuevo número de solicitud al modelo
-            $inability->no_solicitud = $newSolicitudNumber;
+            // Asignar el nuevo consecutivo al asesor
+            $identificador += 1;
+            $inability->no_solicitud = $identificador;
+            $asesor->consecutivo = $identificador;
+            $asesor->save();
+
             $inability->insurer_id = $request->aseguradora;
+            $inability->user_id = Auth::id();
+            $inability->ambiente_firma = (int) Auth::user()->ambiente === 1 ? 'produccion' : 'sandbox';
+
+            $fondoEntity = Entity::find($request->fondo_entity_id);
+            $inability->fondo_entity_id = $fondoEntity->id;
+            $inability->fondo_entity_name = $fondoEntity->name;
 
             $insurer = Insurer::find($request->aseguradora);
             $inability->aseguradora = $insurer->name;
@@ -197,6 +242,7 @@ class InabilityController extends Controller
             $inability->prima_pago_prima_seguro = $request->prima_pago_prima_seguro;
             $inability->gastos_administrativos = $request->gastos_administrativos;
             $inability->val_total_desc_mensual = $request->val_total_desc_mensual;
+            $inability->no_identificacion = $request->no_identificacion;
 
             // TIPO PAGO
             $inability->forma_pago = $request->forma_pago;
@@ -214,12 +260,6 @@ class InabilityController extends Controller
             // Guardar el incapacidad
             $inability->save();
 
-            // Actualizar el identificador de la aseguradora
-            if ($insurer) {
-                $insurer->identificador = $newSolicitudNumber; // Asignar el nuevo número
-                $insurer->save();
-            }
-
             // Guardar el ID en la sesión
             $request->session()->put('inability_id', $inability->id);
 
@@ -229,7 +269,7 @@ class InabilityController extends Controller
             $te_pagamos = $request->te_pagamos;
             $edad = $request->edad;
             $banks = Bank::where('status', 1)->get();
-            $cities = City::where('status', 1)->get();
+            $cities = City::orderBy('name', 'ASC')->get();
             $message = "La información se guardó correctamente.";
 
             return view(
@@ -244,7 +284,6 @@ class InabilityController extends Controller
         }
     }
 
-
     public function formStepTree(Request $request)
     {
         // Recuperar el ID del registro desde la sesión
@@ -256,14 +295,22 @@ class InabilityController extends Controller
         $tu_pierdes = $inability->tu_pierdes;
         $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
+        $departments = Departments::orderBy('descripcion', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
-        $companies = Entity::where('status', 1)->get();
+        
+        $usuario = auth()->user();
+        $empresasIds = json_decode($usuario->empresas, true) ?? [];
+
+        // Filtrar solo esas entidades
+        $companies = Entity::whereIn('id', $empresasIds)
+            ->where('status', 1)
+            ->get();
         $message = "La información se guardó correctamente.";
 
         return view(
             'affiliations.inabilities.step3',
-            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'epss', 'companies', 'message')
+            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'cities', 'departments', 'epss', 'companies', 'message')
         );
     }
 
@@ -275,7 +322,6 @@ class InabilityController extends Controller
             'segundo_apellido' => 'required',
             'nombres_completos' => 'required',
             'tipo_identificacion' => 'required',
-            'no_identificacion' => 'required',
             'ciudad_expedicion' => 'required',
             'genero' => 'required',
             'direccion_residencia' => 'required',
@@ -292,7 +338,6 @@ class InabilityController extends Controller
             'segundo_apellido.required' => 'El campo segundo apellido es obligatorio.',
             'nombres_completos.required' => 'El campo nombres completos es obligatorio.',
             'tipo_identificacion.required' => 'El campo tipo de identificación es obligatorio.',
-            'no_identificacion.required' => 'El campo número de identificación es obligatorio.',
             'ciudad_expedicion.required' => 'El campo ciudad de expedición es obligatorio.',
             'genero.required' => 'El campo género es obligatorio.',
             'direccion_residencia.required' => 'El campo dirección de residencia es obligatorio.',
@@ -313,14 +358,15 @@ class InabilityController extends Controller
         $inability->segundo_apellido = $request->segundo_apellido;
         $inability->nombres_completos = $request->nombres_completos;
         $inability->tipo_identificacion = $request->tipo_identificacion;
-        $inability->no_identificacion = $request->no_identificacion;
         $inability->ciudad_expedicion = $request->ciudad_expedicion;
+        $inability->department = $request->department;
         $inability->genero = $request->genero;
         $inability->fecha_nacimiento_asegurado = $request->fecha_nacimiento_asegurado;
         $inability->direccion_residencia = $request->direccion_residencia;
         $inability->telefono_fijo = $request->telefono_fijo;
         $inability->celular = $request->celular;
         $inability->ciudad_residencia = $request->ciudad_residencia;
+        $inability->residence_department = $request->residence_department;
         $inability->fuente_recursos = $request->fuente_recursos;
         $inability->ocupacion_asegurado = $request->ocupacion_asegurado;
         $inability->entidad_pagadora_sucursal = $request->entidad_pagadora_sucursal;
@@ -465,9 +511,16 @@ class InabilityController extends Controller
         $tu_pierdes = $inability->tu_pierdes;
         $te_pagamos = $inability->te_pagamos;
         $edad = $inability->edad;
-        $cities = City::where('status', 1)->get();
+        $cities = City::orderBy('name', 'ASC')->get();
         $epss = Eps::where('status', 1)->get();
-        $companies = Entity::where('status', 1)->get();
+        
+        $usuario = auth()->user();
+        $empresasIds = json_decode($usuario->empresas, true) ?? [];
+
+        // Filtrar solo esas entidades
+        $companies = Entity::whereIn('id', $empresasIds)
+            ->where('status', 1)
+            ->get();
         $message = "La información se guardó correctamente.";
 
         return view(
@@ -574,9 +627,72 @@ class InabilityController extends Controller
         $aseguradora = $inability->aseguradora;
         $pago = $inability->forma_pago;
 
+        $fondoEntityName = $inability->fondo_entity_name;
+
         return view(
             'affiliations.inabilities.step6',
-            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'message', 'inabilityId', 'aseguradora', 'pago')
+            compact('val_total_desc_mensual', 'tu_pierdes', 'te_pagamos', 'edad', 'message', 'inabilityId', 'aseguradora', 'pago', 'fondoEntityName')
         );
+    }
+
+    private function buildSalesFilterData($user): array
+    {
+        $normalizedNameKey = $this->normalizeComparableString($user->name ?? '');
+
+        $codes = collect();
+
+        if (!empty($user->codigo)) {
+            $codes->push($this->normalizeComparableString($user->codigo));
+        }
+
+        $matchingCodes = Asesor::all()
+            ->filter(fn ($asesor) => $this->normalizeComparableString($asesor->name ?? '') === $normalizedNameKey)
+            ->pluck('asesor_code')
+            ->filter()
+            ->map(fn ($code) => $this->normalizeComparableString($code))
+            ->filter();
+
+        $codes = $codes
+            ->merge($matchingCodes)
+            ->unique()
+            ->values();
+
+        return [
+            'nameKey' => $normalizedNameKey,
+            'codes' => $codes,
+        ];
+    }
+
+    private function normalizeComparableString(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        $normalizedWhitespace = preg_replace('/\s+/u', ' ', trim((string) $value));
+        $ascii = Str::ascii($normalizedWhitespace ?? '');
+
+        return strtolower(str_replace(' ', '', $ascii));
+    }
+
+    private function normalizedColumnExpression(string $column): string
+    {
+        $expression = "TRIM($column)";
+        $expression = "REPLACE($expression, ' ', '')";
+
+        $replacements = [
+            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'À' => 'A', 'È' => 'E', 'Ì' => 'I', 'Ò' => 'O', 'Ù' => 'U',
+            'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+            'Ñ' => 'N', 'ñ' => 'n',
+            'Ü' => 'U', 'ü' => 'u'
+        ];
+
+        foreach ($replacements as $search => $replace) {
+            $expression = "REPLACE($expression, '$search', '$replace')";
+        }
+
+        return "LOWER($expression)";
     }
 }

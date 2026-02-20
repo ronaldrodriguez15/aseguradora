@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const formaPago = document.getElementById("forma_pago");
     const gastosAdministrativos = document.getElementById("gastos_administrativos");
     const valTotalDescMensual = document.getElementById("val_total_desc_mensual");
+    const aseguradoraSelect = document.getElementById("aseguradora");
 
-    let seSumo1400 = false; // Bandera para controlar si se han sumado los 1400
+    let valBanco = 0; // Variable para almacenar el valor de val_banco
+    let seSumoBanco = false; // Variable de control para verificar si se sumó
 
     // Función para limpiar formato (elimina puntos y convierte a número)
     function limpiarFormato(valor) {
@@ -68,24 +70,101 @@ document.addEventListener("DOMContentLoaded", function () {
         return valor.toLocaleString('de-DE');
     }
 
-    formaPago.addEventListener("change", function () {
-        let valorTotal = limpiarFormato(valTotalDescMensual.value); // Limpiar formato del valor
+    // Evento para actualizar gastos administrativos al seleccionar la aseguradora
+    aseguradoraSelect.addEventListener("change", function () {
+        const selectedOption = aseguradoraSelect.options[aseguradoraSelect.selectedIndex];
+        valBanco = parseFloat(selectedOption.getAttribute("data-val-banco")) || 0;
 
-        if (this.value === "debito_automatico" && !seSumo1400) {
-            gastosAdministrativos.value = 1400;
-            gastosAdministrativos.readOnly = true;
-            valorTotal += 1400; // Sumar 1.400
-            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumo1400 = true;
-        } else if (this.value === "mensual_libranza" && seSumo1400) {
+        // Mostrar el valor de val_banco solo si la forma de pago es "Débito automático"
+        if (formaPago.value === "debito_automatico") {
+            gastosAdministrativos.value = valBanco;
+            if (!seSumoBanco) {
+                actualizarTotal(valBanco); // Sumar al total
+                seSumoBanco = true; // Marcar que se ha sumado
+            }
+        } else {
             gastosAdministrativos.value = 0;
-            gastosAdministrativos.readOnly = true;
-            valorTotal -= 1400; // Restar 1.400
-            valTotalDescMensual.value = formatearConPuntos(valorTotal); // Aplicar formato
-            seSumo1400 = false; // Marcar que los 1400 se han restado
-        } else if (this.value !== "debito_automatico" && this.value !== "mensual_libranza") {
-            gastosAdministrativos.value = 0;
-            gastosAdministrativos.readOnly = true;
+            if (seSumoBanco) {
+                actualizarTotal(-valBanco); // Restar del total
+                seSumoBanco = false; // Marcar que se ha restado
+            }
         }
+    });
+
+    // Evento para verificar la forma de pago y actualizar el valor de gastos administrativos
+    formaPago.addEventListener("change", function () {
+        if (this.value === "debito_automatico") {
+            gastosAdministrativos.value = valBanco;
+            if (!seSumoBanco) {
+                actualizarTotal(valBanco); // Sumar al total
+                seSumoBanco = true; // Marcar que se ha sumado
+            }
+        } else {
+            gastosAdministrativos.value = 0;
+            if (seSumoBanco) {
+                actualizarTotal(-valBanco); // Restar del total
+                seSumoBanco = false; // Marcar que se ha restado
+            }
+        }
+    });
+
+    // Función para actualizar el total de descuento mensual
+    function actualizarTotal(valor) {
+        let valorTotal = limpiarFormato(valTotalDescMensual.value);
+        valorTotal += valor;
+        valTotalDescMensual.value = formatearConPuntos(valorTotal);
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const noIdentificacion = document.getElementById("no_identificacion");
+    const confirmNoIdentificacion = document.getElementById("confirm_no_identificacion");
+
+    // Función para formatear el número con puntos al escribir
+    function formatearConPuntos(valor) {
+        return valor.replace(/\D/g, "") // Elimina todo excepto dígitos
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Agrega los puntos para miles
+    }
+
+    // Escuchar los eventos de entrada para formatear el campo
+    noIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    confirmNoIdentificacion.addEventListener("input", function () {
+        const valorFormateado = formatearConPuntos(this.value);
+        this.value = valorFormateado;
+        validarIdentificaciones();
+    });
+
+    // Función para validar si ambos campos coinciden
+    function validarIdentificaciones() {
+        const noIdentificacionValor = noIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+        const confirmNoIdentificacionValor = confirmNoIdentificacion.value.replace(/\./g, ''); // Eliminar puntos
+
+        if (noIdentificacionValor !== "" && confirmNoIdentificacionValor !== "") {
+            if (noIdentificacionValor === confirmNoIdentificacionValor) {
+                noIdentificacion.classList.add("is-valid");
+                noIdentificacion.classList.remove("is-invalid");
+                confirmNoIdentificacion.classList.add("is-valid");
+                confirmNoIdentificacion.classList.remove("is-invalid");
+            } else {
+                noIdentificacion.classList.add("is-invalid");
+                noIdentificacion.classList.remove("is-valid");
+                confirmNoIdentificacion.classList.add("is-invalid");
+                confirmNoIdentificacion.classList.remove("is-valid");
+            }
+        }
+    }
+
+    // Bloquear copiar/pegar en el campo de confirmación
+    confirmNoIdentificacion.addEventListener('paste', function (e) {
+        e.preventDefault(); // Evita que se pegue contenido
+    });
+    confirmNoIdentificacion.addEventListener('copy', function (e) {
+        e.preventDefault(); // Evita que se copie contenido
     });
 });

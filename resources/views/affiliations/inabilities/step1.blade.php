@@ -52,13 +52,17 @@
                 <div class="card-body">
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="aseguradora">Aseguradora <span class="required">*</span></label>
+                            <label for="aseguradora">Selecciona la aseguradora <span class="required">*</span></label>
                             <select class="form-control @error('aseguradora') is-invalid @enderror" id="aseguradora"
                                 name="aseguradora" required>
                                 <option value="">Selecciona la aseguradora</option>
                                 @foreach ($insurers as $insurer)
                                     <option value="{{ $insurer['id'] }}" data-poliza="{{ $insurer['no_poliza'] }}"
-                                        data-identificador="{{ $insurer['identificador'] }}">
+                                        data-val-prevexequial="{{ $insurer['val_previexequial'] }}"
+                                        data-val-incapacidad="{{ $insurer['val_incapacidad'] }}"
+                                        data-val-vida="{{ $insurer['val_vida'] }}"
+                                        data-val-banco="{{ $insurer['val_banco'] }}"
+                                        {{ old('aseguradora') == $insurer['id'] ? 'selected' : '' }}>
                                         {{ $insurer['name'] }}
                                     </option>
                                 @endforeach
@@ -67,7 +71,24 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
+                        <div class="form-group col-md-6">
+                            <label for="fondo_entity_id">Selecciona la entidad Operadora <span class="required">*</span></label>
+                            <select class="form-control @error('fondo_entity_id') is-invalid @enderror" id="fondo_entity_id"
+                                name="fondo_entity_id" required>
+                                <option value="">Selecciona la entidad Operadora</option>
+                                @foreach ($fondoEntities as $fondoEntity)
+                                    <option value="{{ $fondoEntity->id }}"
+                                        {{ old('fondo_entity_id') == $fondoEntity->id ? 'selected' : '' }}>
+                                        {{ $fondoEntity->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('fondo_entity_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group col-md-3">
                             <label for="identificador">Consecutivo <span class="required">*</span></label>
                             <input type="text" class="form-control @error('identificador') is-invalid @enderror"
@@ -94,7 +115,8 @@
                                 name="codigo_asesor" required>
                                 <option value="">Selecciona el código del asesor</option>
                                 @foreach ($asesors as $asesor)
-                                    <option value="{{ $asesor['asesor_code'] }}" data-name="{{ $asesor['name'] }}">
+                                    <option value="{{ $asesor['asesor_code'] }}" data-name="{{ $asesor['name'] }}"
+                                        data-identificador="{{ $asesor['consecutivo'] }}">
                                         {{ $asesor['asesor_code'] }}
                                     </option>
                                 @endforeach
@@ -140,16 +162,17 @@
                                     class="required">*</span></label>
                             <input type="date"
                                 class="form-control @error('fecha_nacimiento_asesor') is-invalid @enderror"
-                                id="fecha_nacimiento_asesor" max="2005-12-31" name="fecha_nacimiento_asesor"
-                                placeholder="Selecciona la fecha del cliente" required>
+                                id="fecha_nacimiento_asesor" max="{{ \Carbon\Carbon::now()->subYears(18)->format('Y-m-d') }}" name="fecha_nacimiento_asesor"
+                                placeholder="Selecciona la fecha" required>
                             @error('fecha_nacimiento_asesor')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="form-group col-md-2">
                             <label for="edad">Edad</label>
                             <input type="number" id="edad" name="edad" class="form-control" readonly>
+                            <small id="edadError" class="text-danger" style="display: none;"></small>
+                            <!-- Mensaje de error -->
                         </div>
                     </div>
                     <div class="form-row">
@@ -199,10 +222,10 @@
                                 <input type="text" class="form-control" name="valor_ibc_basico" id="valor_ibc_basico"
                                     placeholder="sin comas ni puntos" required>
                             </div>
-                            @error('valor_ibc_basico')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small id="errorValor" class="text-danger" style="display: none;">El valor debe estar entre
+                                $1.300.000 y $32.500.000.</small>
                         </div>
+
                     </div>
 
                     <div class="form-row">
@@ -289,7 +312,7 @@
                                     <span class="input-group-text">$</span>
                                 </div>
                                 <input type="text" class="form-control" name="val_prevexequial_eclusivo"
-                                    id="val_prevexequial_eclusivo" value="2400" placeholder="sin comas ni puntos"
+                                    id="val_prevexequial_eclusivo" placeholder="sin comas ni puntos"
                                     required readonly>
                             </div>
                             @error('val_prevexequial_eclusivo')
@@ -307,6 +330,32 @@
                                     id="prima_pago_prima_seguro" placeholder="sin comas ni puntos" required readonly>
                             </div>
                             @error('prima_pago_prima_seguro')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="no_identificacion">No identificación <span class="required">*</span></label>
+                            <input type="text" class="form-control @error('no_identificacion') is-invalid @enderror"
+                                id="no_identificacion" name="no_identificacion" placeholder="sin comas ni puntos"
+                                required>
+                            <div class="valid-feedback">No identificación correcto.</div>
+                            <div class="invalid-feedback">Los números no coinciden.</div>
+                            @error('no_identificacion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="confirm_no_identificacion">Confirmación No identificación <span
+                                    class="required">*</span></label>
+                            <input type="text" class="form-control @error('no_identificacion') is-invalid @enderror"
+                                id="confirm_no_identificacion" name="confirm_no_identificacion"
+                                placeholder="sin comas ni puntos" required>
+                            <div class="valid-feedback">Los No de identificación coinciden.</div>
+                            <div class="invalid-feedback">Los números no coinciden.</div>
+                            @error('no_identificacion')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -358,6 +407,10 @@
                     </div>
                 </div>
             </div>
+            <input type="hidden" id="latest_salary" name="latest_salary" value="{{ $salary->valor ?? 0 }}">
+            <input type="hidden" id="val_incapacidad" name="val_incapacidad">
+            <input type="hidden" id="val_vida" name="val_vida">
+            <input type="hidden" id="val_banco" name="val_banco">
             <br>
             <div class="card" id="debito_automatico_fields" style="display: none">
                 <div class="card-body">
@@ -435,12 +488,7 @@
                 </div>
             </div>
             <div class="row mb-4">
-                <div class="col-md-6 mb-5">
-                    <a href="{{ route('incapacidades.index') }}" class="btn btn-info">
-                        <i class="fas fa-arrow-left mr-2"></i> Regresar
-                    </a>
-                </div>
-                <div class="col-md-6 text-right mb-5">
+                <div class="col-md-12 text-right mb-5">
                     <button type="submit" class="btn btn-success">
                         Siguiente<i class="fas fa-arrow-right ml-2"></i>
                     </button>
@@ -457,6 +505,21 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const signatureEnvironment = @json((int) auth()->user()->ambiente) === 1 ? 'Produccion' : 'Sandbox';
+            const environmentColor = signatureEnvironment === 'Produccion' ? '#dc3545' : '#17a2b8';
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Importante!!',
+                html: 'Recuerda que estas en el ambiente <strong style="color:' + environmentColor + ';">' +
+                    signatureEnvironment +
+                    '</strong>.<br>Ten en cuenta haber configurado los valores de la aseguradora para los calculos, de lo contrario los resultados no seran los correctos.',
+                confirmButtonText: 'Entendido'
+            });
+        });
+    </script>
     <!-- Tu archivo de script personalizado -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>

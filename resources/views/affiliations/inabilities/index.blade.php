@@ -14,7 +14,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12 text-right mb-4">
             <a class="btn btn-success" href="{{ route('incapacidades.create') }}">
-                <i class="fas fa-plus-circle mr-2"></i>Nueva afiliación
+                <i class="fas fa-plus-circle mr-2"></i>@php echo 'Nueva afiliación'; @endphp
             </a>
         </div>
         <div class="col-md-12">
@@ -42,6 +42,7 @@
                                     <th>EPS del asegurado</th>
                                     <th>Edad</th>
                                     <th>Forma de pago</th>
+                                    <th>Ambiente</th>
                                     <th>Fecha diligenciamiento</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -57,6 +58,15 @@
                                         <td>{{ $inability['nombre_eps'] }}</td>
                                         <td>{{ $inability['edad'] }}</td>
                                         <td>{{ $inability['forma_pago'] }}</td>
+                                        <td>
+                                            @if (($inability['ambiente_firma'] ?? '') === 'produccion')
+                                                <span class="badge badge-danger">Produccion</span>
+                                            @elseif(($inability['ambiente_firma'] ?? '') === 'sandbox')
+                                                <span class="badge badge-info">Sandbox</span>
+                                            @else
+                                                <span class="badge badge-secondary">No definido</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $inability['created_at']->format('Y-m-d - H:m') }}</td>
                                         <td>
                                             @if ($inability['status'] === "1")
@@ -68,6 +78,7 @@
                                         <td>
                                             @if ($inability['status'] === "1")
                                                 <div class="button-container">
+                                                    @if(Auth::user()->hasRole('Administrador'))
                                                     <form action="{{ route('incapacidades.destroy', $inability['id']) }}"
                                                         method="POST" id="formDelete-{{ $inability['id'] }}">
                                                         @method('DELETE')
@@ -78,7 +89,12 @@
                                                             <i class="fas fa-trash-alt"></i>
                                                         </button>
                                                     </form>
+                                                    @elseif(Auth::user()->hasRole('Ventas'))
+                                                    <span class="text-muted">No disponible</span>
+                                                    @endif
                                                 </div>
+                                            @else
+                                                <span class="text-muted">No disponible</span>
                                             @endif
                                         </td>
                                     </tr>

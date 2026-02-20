@@ -93,7 +93,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="cedula">Cédula</label>
-                        <input type="number" class="form-control @error('cedula') is-invalid @enderror" id="cedula"
+                        <input type="text" class="form-control @error('cedula') is-invalid @enderror" id="cedula"
                             name="cedula" placeholder="Introduce la cédula">
                         @error('cedula')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -149,7 +149,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="col-md-11">
-        @if(session('error'))
+        @if (session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -176,14 +176,17 @@
                                 <th>Cédula</th>
                                 <th>Valor</th>
                                 <th>Asesor</th>
+                                <th>Ambiente</th>
                                 <th>Estado firma</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
                             @forelse ($inabilities as $inability)
                             <tr>
                                 <td>
-                                    <input type="checkbox" class="record-checkbox" value="{{ $inability['id'] }}" />
+                                    <input type="checkbox" class="record-checkbox"
+                                        value="{{ $inability['id'] }}" />
                                 </td>
                                 <td>{{ $inability['created_at']->format('Y-m-d') }}</td>
                                 <td>{{ $inability['no_solicitud'] }}</td>
@@ -193,20 +196,41 @@
                                 <td class="text-warning">{{ $inability['val_total_desc_mensual'] }}</td>
                                 <td>{{ $inability['nombre_asesor'] }}</td>
                                 <td>
+                                    @if (($inability['ambiente_firma'] ?? '') === 'produccion')
+                                    <span class="badge badge-danger">Produccion</span>
+                                    @elseif(($inability['ambiente_firma'] ?? '') === 'sandbox')
+                                    <span class="badge badge-info">Sandbox</span>
+                                    @else
+                                    <span class="badge badge-secondary">No definido</span>
+                                    @endif
+                                </td>
+                                <td>
                                     @if ($inability['estado_firmado'] == 'Sin firmar')
                                     <span class="badge badge-danger">{{ $inability['estado_firmado'] }}</span>
                                     @elseif($inability['estado_firmado'] == 'Pendiente')
                                     <span class="badge badge-info">{{ $inability['estado_firmado'] }}</span>
                                     @elseif($inability['estado_firmado'] == 'Firmado')
-                                    <span class="badge badge-success">{{ $inability['estado_firmado'] }}</span>
+                                    <span
+                                        class="badge badge-success">{{ $inability['estado_firmado'] }}</span>
                                     @else
-                                    <span class="badge badge-warning">{{ $inability['estado_firmado'] }}</span>
+                                    <span
+                                        class="badge badge-warning">{{ $inability['estado_firmado'] }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if (in_array($inability['estado_firmado'], ['Sin firmar', 'Pendiente']))
+                                    <button type="button" class="btn btn-primary btn-sm verify-signature"
+                                        data-id="{{ $inability['id'] }}" title="Verificar firmas">
+                                        <i class="fas fa-signature mr-1"></i>
+                                    </button>
+                                    @else
+                                    <span class="text-muted">No disponible</span>
                                     @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="9" class="text-center">No hay información para mostrar</td>
+                                <td colspan="11" class="text-center">No hay información para mostrar</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -219,17 +243,52 @@
     <!-- Token CSRF -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @php
+        $authUser = Auth::user();
+        $isAdmin = $authUser->hasRole('Administrador');
+        $canDownloadPdf = $isAdmin || ($authUser->hasRole('Ventas') && $authUser->tipo_fondo);
+    @endphp
+
+    @if($canDownloadPdf)
     <div class="col-md-11">
-        <div class="mt-4" id="button-container" style="display: none;">
+        <div class="mt-4" id="button-container">
+            @if($isAdmin)
             <a class="btn btn-success mb-4" id="descargar-plano" href="#">
                 Descargar Plano Focus <i class="fas fa-file-excel ml-2"></i>
             </a>
-            <a class="btn btn-primary mb-4" id="descargar-seguimiento" href="#">
-                Descargar Seguimiento de ventas <i class="fas fa-file-invoice ml-2"></i>
+            <a class="btn btn-success mb-4" id="descargar-seguimiento" href="#">
+                Descargar Seguimiento Ventas <i class="fas fa-file-excel ml-2"></i>
             </a>
+            @endif
             <a class="btn btn-danger mb-4" id="descargar-pdfs" href="#">
                 Descargar PDFs <i class="fas fa-file-pdf ml-2"></i>
             </a>
+        </div>
+        <form id="downloadPdfsForm" action="{{ url('/descargar-pdfs') }}" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" name="selected_records" id="downloadPdfsInput">
+        </form>
+    </div>
+    @endif
+
+    <div class="modal fade" id="verifySignatureModal" tabindex="-1"
+        aria-labelledby="verifySignatureModalLabel" aria-hidden="true" data-backdrop="static"
+        data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="verifySignatureModalLabel">Visualización de documento firmado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="verifySignatureCanvas" style="width: 100%;"></canvas>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeVerifyModal">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -243,12 +302,20 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <!-- Tu archivo de script personalizado -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
-<script src="{{ asset('js/scriptReports.js') }}"></script>
+<script src="{{ asset('js/reports.js') }}"></script>
 <script>
+    // Formatear la cédula mientras se escribe
+    document.getElementById('cedula').addEventListener('input', function(e) {
+        let cedula = e.target.value.replace(/\D/g, ''); // Elimina todo lo que no sean dígitos
+        cedula = cedula.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Añade los puntos
+        e.target.value = cedula; // Actualiza el valor en el input
+    });
+
     // Seleccionar todos los checkboxes
     document.getElementById('select-all').addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.record-checkbox');

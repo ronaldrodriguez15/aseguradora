@@ -16,6 +16,10 @@ class DocumentSigned extends Model
         'signed_id',
         'expires',
         'document_path',
-        'inabilitiy_id'
+        'inability_id'
+    ];
+
+    protected $casts = [
+        'expires' => 'datetime',
     ];
 }

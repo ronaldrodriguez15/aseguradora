@@ -46,14 +46,14 @@
                                 <td>{{ $eps['name'] }}</td>
                                 <td>{{ $eps['created_at']->format('Y-m-d - H:m') }}</td>
                                 <td>
-                                    @if($eps['status'] === 1)
+                                    @if($eps['status'] === '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($eps['status'] === 1)
+                                    @if($eps['status'] === '1')
                                     <div class="button-container">
                                         <form action="{{ route('ciudades.destroy', $eps['id']) }}" method="POST" id="formDelete-{{ $eps['id'] }}">
                                             @method('DELETE')

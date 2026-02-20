@@ -38,6 +38,7 @@
                                 <th>Celular</th>
                                 <th>Correo electrónico</th>
                                 <th>Nacimiento</th>
+                                <th>Rol</th>
                                 <th>Creación</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -50,17 +51,35 @@
                                 <td>{{ $usuario['phone'] }}</td>
                                 <td>{{ $usuario['email'] }}</td>
                                 <td>{{ $usuario['birthdate'] }}</td>
+                                <td>
+                                    @php
+                                    $roles = $usuario->getRoleNames(); 
+                                    $roleColor = 'badge-secondary'; 
+                                    $roleName = 'Sin definir'; 
+
+                                    if ($roles->isNotEmpty()) {
+                                    $roleName = $roles->first(); 
+                                    
+                                    if ($roleName === 'Administrador') {
+                                    $roleColor = 'badge-success'; // Azul
+                                    } else {
+                                    $roleColor = 'badge-primary'; // Verde
+                                    }
+                                    }
+                                    @endphp
+                                    <span class="badge {{ $roleColor }}">{{ $roleName }}</span>
+                                </td>
                                 <td>{{ $usuario['created_at']->format('Y-m-d') }}</td>
                                 <td>
-                                    @if($usuario['status'] === 1)
+                                    @if($usuario['status'] == '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($usuario['status'] === 1)
-                                    @if($usuario['id'] === Auth::user()->id)
+                                    @if($usuario['status'] == '1')
+                                    @if($usuario['id'] == Auth::user()->id)
                                     <span class="badge badge-info">Logueado</span>
                                     @else
                                     <div class="button-container">

@@ -60,6 +60,34 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+    // Validación para el archivo Fondo de Empleados
+    var submitFondoEmpleados = document.getElementById(
+        "submitBtnFondoEmpleados"
+    );
+    if (submitFondoEmpleados) {
+        submitFondoEmpleados.addEventListener("click", function (e) {
+            var documentInput = document.getElementById(
+                "document_path_fondo_empleados"
+            );
+            var errorMessage = document.getElementById(
+                "document_path_fondo_empleados-error"
+            );
+
+            if (!documentInput || !errorMessage) {
+                return;
+            }
+
+            if (documentInput.files.length === 0) {
+                e.preventDefault();
+                errorMessage.style.display = "block";
+                documentInput.classList.add("is-invalid");
+            } else {
+                errorMessage.style.display = "none";
+                documentInput.classList.remove("is-invalid");
+            }
+        });
+    }
+
     // Mostrar nombre del archivo seleccionado para cada modal
     document
         .getElementById("document_path_estasseguro")
@@ -87,4 +115,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 : "Seleccionar archivo";
             e.target.nextElementSibling.innerHTML = fileName;
         });
+
+    var fondoEmpleadosInput = document.getElementById(
+        "document_path_fondo_empleados"
+    );
+    if (fondoEmpleadosInput) {
+        fondoEmpleadosInput.addEventListener("change", function (e) {
+            var fileName = e.target.files[0]
+                ? e.target.files[0].name
+                : "Seleccionar archivo";
+            e.target.nextElementSibling.innerHTML = fileName;
+        });
+    }
 });

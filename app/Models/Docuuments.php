@@ -15,5 +15,6 @@ class Docuuments extends Model
         'estasseguro_document',
         'libranza_document',
         'debito_document',
+        'fondo_empleados_document',
     ];
 }

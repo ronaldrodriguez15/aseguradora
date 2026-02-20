@@ -8,6 +8,7 @@ use Database\Seeders\CitiesTableSeeder;
 use Database\Seeders\BanksTableSeeder;
 use Database\Seeders\EntitiesTableSeeder;
 use Database\Seeders\EpsTableSeeder;
+use Database\Seeders\RolesTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,6 +24,8 @@ class DatabaseSeeder extends Seeder
         $this->call(BanksTableSeeder::class);
         $this->call(EntitiesTableSeeder::class);
         $this->call(EpsTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
+        $this->call(AtmosphereTableSeeder::class);
         // \App\Models\User::factory(10)->create();
     }
 }

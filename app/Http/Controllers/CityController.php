@@ -14,13 +14,11 @@ class CityController extends Controller
      */
     public function index()
     {
-        $cities = City::orderBy('status', 'DESC')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
+        $cities = City::orderBy('name', 'ASC')->get();
 
         return view('general.cities.index', compact('cities'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -117,5 +115,11 @@ class CityController extends Controller
         $city->delete();
 
         return redirect()->route('ciudades.index')->with('success', 'Excelente!!, La ciudad ha sido eliminada.');
+    }
+    
+    public function getCities($departmentId)
+    {
+        $cities = City::where('department_id', $departmentId)->get(['id', 'name']);
+        return response()->json($cities);
     }
 }

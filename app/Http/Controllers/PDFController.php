@@ -6,6 +6,9 @@ use setasign\Fpdi\Fpdi;
 use App\Models\Inability;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Docuuments;
+use Illuminate\Support\Facades\Log;
+use App\Models\City;
+use App\Models\Departments;
 
 class PDFController extends Controller
 {
@@ -15,49 +18,37 @@ class PDFController extends Controller
         $inability = Inability::find($id);
 
         if (!$inability) {
-            abort(404, 'Incapacidad no encontrada.');
+            return response()->json(['error' => 'Incapacidad no encontrada.'], 404);
         }
 
         // Obtener el documento desde el modelo Documents
         $document = Docuuments::first();
 
-        // Asegúrate de que exista el documento
+        // Verificar si el documento y el archivo PDF existen
         if (!$document || empty($document->estasseguro_document)) {
-            abort(404, 'Documento no encontrado.');
+            return response()->json(['error' => 'Documento no encontrado.'], 404);
         }
 
-        // Obtener la ruta del archivo PDF almacenado
+        // Obtener la ruta completa del archivo PDF en storage
         $pdfFilePath = $document->estasseguro_document;
 
-        // Verificar si el archivo existe en Storage
         if (!Storage::disk('public')->exists($pdfFilePath)) {
-            abort(404, 'Archivo PDF no encontrado.');
+            return response()->json(['error' => 'Archivo PDF no encontrado.'], 404);
         }
 
-        // Obtener la ruta completa del archivo
+        // Obtener la ruta completa en el sistema de archivos
         $fullPath = Storage::disk('public')->path($pdfFilePath);
 
-        // Obtener el consecutivo máximo en la tabla
-        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
-
-        // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
-
-        // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->consecutivo < $maxConsecutivo) {
-            // Actualizar el consecutivo al máximo + 1
-            $inability->consecutivo = $maxConsecutivo + 1;
-        } else {
-            // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->consecutivo += 1;
-        }
-
-        // Guardar los cambios en el registro
-        $inability->save();
-
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $fullPath);
+        $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $fullPath);
+
+        // Generar la URL pública del archivo PDF generado
+        $pdfUrl = asset('storage/' . $inability->path_estasseguro);
+
+        // Retornar la URL del PDF generado
+        return response()->json(['pdf_url' => $pdfUrl]);
     }
+
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
     {
@@ -96,10 +87,12 @@ class PDFController extends Controller
                 //Fecha diligenciamiento
                 $pdf->SetXY(89.5, 37.5);
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
-
-                //Ciudad
+                
+                //ciudad
+                $ciudadResidencia = City::find($inability->ciudad_residencia);
+                $nombreCiudadResidencia = $ciudadResidencia ? $ciudadResidencia->name : '';
                 $pdf->SetXY(133, 37.5);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($nombreCiudadResidencia));
 
                 // Primer apellido
                 $pdf->SetXY(48, 48.7);
@@ -134,12 +127,14 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // ciudad
+                $city = City::where('id', $inability->ciudad_expedicion)->first();
                 $pdf->SetXY(140, 57.5);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($city->name));
 
                 // N identificacion
+                $department = Departments::where('id_departamento', $inability->department)->first();
                 $pdf->SetXY(170, 57.5);
-                $pdf->Write(0, "Cundinamarca");
+                $pdf->Write(0, convertToISO88591($department->descripcion));
 
                 // Genero
                 if ($inability->genero === 'masculino') {
@@ -163,12 +158,14 @@ class PDFController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->celular));
 
                 // ciudad
+                $residence_city = City::where('id', $inability->ciudad_residencia)->first();
                 $pdf->SetXY(122, 66);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($residence_city->name));
 
                 // departamento
+                $residence_department = Departments::where('id_departamento', $inability->residence_department)->first();
                 $pdf->SetXY(164, 66);
-                $pdf->Write(0, "Cundinamarca");
+                $pdf->Write(0, convertToISO88591($residence_department->descripcion));
 
                 // ocupacion
                 $pdf->SetXY(50, 69.5);
@@ -407,11 +404,13 @@ class PDFController extends Controller
 
         $rutaArchivo = $rutaCarpeta . '/' . $nombreArchivo;
 
-        $pdf->Output('F', $rutaArchivo); // 'F' indica que se guarda en un archivo
+        $pdf->Output('F', $rutaArchivo); // Guarda el archivo
 
+        // Guardar la ruta en el modelo
         $inability->path_estasseguro = 'documentos_estasseguro/' . $nombreArchivo;
         $inability->save();
 
-        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
+        // Retorna la ruta del archivo
+        return $nombreArchivo;
     }
 }

@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Inability;
 use App\Models\Insurer;
 use setasign\Fpdi\Fpdi;
-    use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Models\City;
+use App\Models\Departments;
 
 class PDFPositivaController extends Controller
 {
@@ -34,26 +36,14 @@ class PDFPositivaController extends Controller
             abort(404, 'Archivo PDF no encontrado en la ruta especificada.');
         }
 
-        // Obtener el consecutivo máximo en la tabla inabilities
-        $maxInability = Inability::orderBy('consecutivo', 'desc')->first();
-
-        // Verificar el consecutivo máximo
-        $maxConsecutivo = $maxInability ? $maxInability->consecutivo : 0;
-
-        // Verificar si el consecutivo actual es menor que el máximo
-        if ($inability->consecutivo < $maxConsecutivo) {
-            // Actualizar el consecutivo al máximo + 1
-            $inability->consecutivo = $maxConsecutivo + 1;
-        } else {
-            // Si el consecutivo actual es mayor o igual, incrementar en 1
-            $inability->consecutivo += 1;
-        }
-
-        // Guardar los cambios en el registro
-        $inability->save();
-
         // Generar el PDF con la plantilla
-        $this->generarPDFConPlantilla($inability, $pdfFilePath);
+        $nombreArchivoGenerado = $this->generarPDFConPlantilla($inability, $pdfFilePath);
+
+        // Generar la URL pública del archivo PDF generado
+        $pdfUrl = asset('storage/' . $inability->path_aseguradora);
+
+        // Retornar la URL del PDF generado
+        return response()->json(['pdf_url' => $pdfUrl]);
     }
 
     private function generarPDFConPlantilla($inability, $pdfFilePath)
@@ -84,9 +74,8 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->fecha_diligenciamiento));
 
                 //consecutivo
-                $insurer = Insurer::find($inability->insurer_id);
                 $pdf->SetXY(134, 12.8);
-                $pdf->Write(0, convertToISO88591($insurer->identificador));
+                $pdf->Write(0, convertToISO88591($inability->no_solicitud));
 
                 // Nombre asesor
                 $pdf->SetXY(57, 43);
@@ -147,19 +136,22 @@ class PDFPositivaController extends Controller
                     $pdf->SetXY(79.5, 98);
                     $pdf->Write(0, 'X');
                 }
-
+                
                 // fecha de nacimiento
                 $pdf->SetXY(95, 98);
                 $pdf->Write(0, convertToISO88591($inability->fecha_nacimiento_asesor));
 
                 // ciudad
+                $city = City::where('id', $inability->ciudad_expedicion)->first();
                 $pdf->SetXY(137, 98);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($city->name));
+                
 
                 // departamento
+                $department = Departments::where('id_departamento', $inability->department)->first();
                 $pdf->SetXY(172, 98);
-                $pdf->Write(0, "Cundinamarca");
-
+                $pdf->Write(0, convertToISO88591($department->descripcion));
+                
                 // Genero
                 if ($inability->genero === 'masculino') {
                     $pdf->SetXY(46, 103.5);
@@ -182,12 +174,14 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->celular));
 
                 // ciudad
+                $residence_city = City::where('id', $inability->ciudad_residencia)->first();
                 $pdf->SetXY(120, 108);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_residencia));
+                $pdf->Write(0, convertToISO88591($residence_city->name));
 
                 // departamento
+                $residence_department = Departments::where('id_departamento', $inability->residence_department)->first();
                 $pdf->SetXY(175, 108);
-                $pdf->Write(0, "Cundinamarca");
+                $pdf->Write(0, convertToISO88591($residence_department->descripcion));
 
                 // ocupacion
                 $pdf->SetXY(39, 112.5);
@@ -261,7 +255,7 @@ class PDFPositivaController extends Controller
 
                 // no identificacion
                 $pdf->SetXY(179.5, 144.3);
-                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s2));
+                $pdf->Write(0, convertToISO88591($inability->n_identificacion_s2));
 
                 // ------------------ Referido 3
                 // nombres y apellidos
@@ -271,6 +265,10 @@ class PDFPositivaController extends Controller
                 // parentesco
                 $pdf->SetXY(100, 147.3);
                 $pdf->Write(0, convertToISO88591($inability->parentesco_s3));
+                
+                // %
+                $pdf->SetXY(121.5, 147.3);
+                $pdf->Write(0, $inability->porcentaje_s3);
 
                 // calidad
                 if ($inability->nombres_s3 !== null) {
@@ -284,7 +282,7 @@ class PDFPositivaController extends Controller
 
                 // no identificacion
                 $pdf->SetXY(179.5, 147.3);
-                $pdf->Write(0, convertToISO88591($inability->no_identificacion_s3));
+                $pdf->Write(0, convertToISO88591($inability->n_identificacion_s3));
 
                 // ------------------ Declaraciòn de asegurabilidad
 
@@ -435,8 +433,9 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 
                 // ciudad expedicion
+                $city_e = City::where('id', $inability->ciudad_expedicion)->first();
                 $pdf->SetXY(170, 287);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
+                $pdf->Write(0, convertToISO88591($city_e->name));
 
                 // ocupacion
                 $pdf->SetXY(39, 291);
@@ -469,8 +468,9 @@ class PDFPositivaController extends Controller
                 $pdf->Write(0, convertToISO88591($inability->no_identificacion));
 
                 // lugar expedicion
+                 $city_e2 = City::where('id', $inability->ciudad_expedicion)->first();
                 $pdf->SetXY(114, 194.5);
-                $pdf->Write(0, convertToISO88591($inability->ciudad_expedicion));
+                $pdf->Write(0, convertToISO88591($city_e2->name));
             }
         }
 
@@ -495,6 +495,8 @@ class PDFPositivaController extends Controller
         $inability->path_aseguradora = 'documentos_positiva/' . $nombreArchivo;
         $inability->save();
 
-        $pdf->Output('I', $nombreArchivo); // 'I' indica que se visualiza en el navegador
+        // Retorna la ruta del archivo
+        return $nombreArchivo;
+
     }
 }

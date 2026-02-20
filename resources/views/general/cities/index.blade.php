@@ -44,16 +44,16 @@
                             @foreach ($cities as $city)
                             <tr>
                                 <td>{{ $city['name'] }}</td>
-                                <td>{{ $city['created_at']->format('Y-m-d - H:m') }}</td>
+                                <td>{{ optional($city['created_at'])->format('Y-m-d - H:i') ?? 'No disponible' }}</td>
                                 <td>
-                                    @if($city['status'] === 1)
+                                    @if($city['status'] === '1')
                                     <span class="badge badge-success">Activo</span>
                                     @else
                                     <span class="badge badge-danger">Inactivo</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($city['status'] === 1)
+                                    @if($city['status'] === '1')
                                     <div class="button-container">
                                         <form action="{{ route('ciudades.destroy', $city['id']) }}" method="POST" id="formDelete-{{ $city['id'] }}">
                                             @method('DELETE')

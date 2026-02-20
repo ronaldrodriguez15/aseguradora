@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Exports\FocusExport;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
@@ -25,18 +27,42 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($request->all());
-        // Iniciamos la consulta base
+        $user = Auth::user();
+
         $query = Inability::select('inabilities.*', 'insurers.name as insurer_name', DB::raw('
             CASE
                 WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) >= 3 THEN "Firmado"
-                WHEN path_estasseguro IS NULL AND path_aseguradora IS NULL AND path_pago IS NULL THEN "Sin firmar"
-                WHEN path_estasseguro IS NOT NULL AND path_aseguradora IS NOT NULL AND path_pago IS NOT NULL THEN "Pendiente"
-                ELSE "En espera"
+                WHEN (SELECT COUNT(*) FROM documents_signed WHERE inability_id = inabilities.id) < 3 AND (path_estasseguro IS NOT NULL OR path_aseguradora IS NOT NULL OR path_pago IS NOT NULL) THEN "Pendiente"
+                ELSE "Sin firmar"
             END as estado_firmado
         '))
             ->leftJoin('insurers', 'inabilities.insurer_id', '=', 'insurers.id');
 
+
+        if ($user->hasRole('Ventas')) {
+            $salesFilterData = $this->buildSalesFilterData($user);
+            $normalizedNameKey = $salesFilterData['nameKey'];
+            $normalizedCodes = $salesFilterData['codes'];
+            $codigoExpression = $this->normalizedColumnExpression('inabilities.codigo_asesor');
+            $nombreExpression = $this->normalizedColumnExpression('inabilities.nombre_asesor');
+
+            $query->where(function ($builder) use ($user, $normalizedNameKey, $normalizedCodes, $codigoExpression, $nombreExpression) {
+                $builder->where('inabilities.user_id', $user->id);
+
+                if ($normalizedCodes->isNotEmpty()) {
+                    $builder->orWhere(function ($codeBuilder) use ($normalizedCodes, $codigoExpression) {
+                        foreach ($normalizedCodes as $index => $code) {
+                            $method = $index === 0 ? 'whereRaw' : 'orWhereRaw';
+                            $codeBuilder->{$method}($codigoExpression . ' = ?', [$code]);
+                        }
+                    });
+                }
+
+                if ($normalizedNameKey !== '') {
+                    $builder->orWhereRaw($nombreExpression . ' = ?', [$normalizedNameKey]);
+                }
+            });
+        }
 
         // Aplicamos los filtros si están presentes
         if ($request->filled('fecha_desde')) {
@@ -48,7 +74,7 @@ class ReportController extends Controller
         }
 
         if ($request->filled('vendedor')) {
-            $query->where('inabilities.nombre_asesor', $request->input('vendedor'));
+            $query->whereIn('inabilities.nombre_asesor', $request->input('vendedor'));
         }
 
         if ($request->filled('aseguradora')) {
@@ -77,6 +103,17 @@ class ReportController extends Controller
 
         if ($request->filled('edad')) {
             $query->where('inabilities.edad', $request->input('edad'));
+        }
+
+        // Mapeo de los valores de estado
+        $estadoMap = [
+            'sin_firmar' => 'Sin firmar',
+            'pendiente' => 'Pendiente',
+            'firmado' => 'Firmado'
+        ];
+
+        if ($request->filled('estado') && isset($estadoMap[$request->input('estado')])) {
+            $query->having('estado_firmado', $estadoMap[$request->input('estado')]);
         }
 
         // Finalizamos la consulta con los filtros aplicados
@@ -169,6 +206,14 @@ class ReportController extends Controller
         // Obtener los datos de los registros seleccionados como una colección
         $inabilities = Inability::whereIn('id', $selectedRecords)->get();
 
+        if ($inabilities->isEmpty()) {
+            // Si no se encontraron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontraron registros para descargar.'
+            ]);
+        }
+
         // Crear una instancia de FocusExport con la colección
         $export = new FocusExport($inabilities);
 
@@ -176,7 +221,6 @@ class ReportController extends Controller
         $spreadsheet = IOFactory::load(public_path('plano_focus/plantilla.xlsx'));
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Suponiendo que los datos comienzan en la fila 3 (la fila 1 puede ser el encabezado)
         $row = 3; // Fila donde comenzaremos a escribir los datos
 
         // Obtener la colección desde el export
@@ -185,18 +229,26 @@ class ReportController extends Controller
         // Agregar datos a la plantilla
         foreach ($data as $inability) {
             // Escribir datos en las celdas
-            $sheet->setCellValue('B' . $row, $inability->no_solicitud);
-            $sheet->setCellValue('C' . $row, $inability->no_identificacion);
-            $sheet->setCellValue('D' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
-            $sheet->setCellValue('A' . $row, $inability->fecha_nacimiento_asesor);
+            $sheet->setCellValue('A' . $row, $inability->no_solicitud);
+            $sheet->setCellValue('B' . $row, $inability->no_identificacion);
+            $sheet->setCellValue('C' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
+            $sheet->setCellValue('D' . $row, $inability->fecha_nacimiento_asesor);
             $sheet->setCellValue('E' . $row, $inability->edad);
             $sheet->setCellValue('F' . $row, $inability->prima_pago_prima_seguro);
-            $sheet->setCellValue('G' . $row, $inability->valor_ibc_basico);
+            $sheet->setCellValue('G' . $row, $inability->desea_valor);
             $sheet->setCellValue('H' . $row, $inability->valor_ibc_basico);
-            $sheet->setCellValue('I' . $row, $inability->gastos_administrativos);
-            $sheet->setCellValue('J' . $row, $inability->val_total_desc_mensual);
-            $sheet->setCellValue('K' . $row, $inability->val_total_desc_mensual);
-            $sheet->setCellValue('L' . $row, $inability->val_total_desc_mensual);
+            $sheet->setCellValue('I' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('J' . $row, $inability->total);
+            $sheet->setCellValue('K' . $row, $inability->amparo_basico);
+
+            // Convertir los valores de string a números quitando los puntos y cambiando las comas por puntos decimales
+            $total = str_replace(['.', ','], ['', '.'], $inability->total);
+            $amparo_basico = str_replace(['.', ','], ['', '.'], $inability->amparo_basico);
+            // Convertir a float para hacer la suma
+            $suma = (float)$total + (float)$amparo_basico;
+
+            // Escribir el resultado en la celda L
+            $sheet->setCellValue('L' . $row, number_format($suma, 2, ',', '.'));
             $sheet->setCellValue('M' . $row, $inability->entidad_pagadora_sucursal);
             $tipo_pago = '';
             if ($inability->forma_pago === 'mensual_libranza') {
@@ -204,13 +256,17 @@ class ReportController extends Controller
             } else {
                 $tipo_pago = 'Debito Automatico';
             }
-            $sheet->setCellValue('N' . $row, $tipo_pago);
-            $sheet->setCellValue('O' . $row, $inability->banco);
-            $sheet->setCellValue('P' . $row, $inability->ciudad_banco);
-            $sheet->setCellValue('Q' . $row, $inability->tipo_cuenta);
-            $sheet->setCellValue('R' . $row, $inability->no_cuenta);
+            $sheet->setCellValue('N' . $row, $tipo_pago ?? '0');
+            $sheet->setCellValue('O' . $row, $inability->banco ?? '0');
+            $sheet->setCellValue('P' . $row, $inability->ciudad_banco ?? '0');
+
+            if ($inability->forma_pago !== 'mensual_libranza') {
+                $sheet->setCellValue('Q' . $row, $inability->tipo_cuenta ?? '0');
+            }
+
+            $sheet->setCellValue('R' . $row, $inability->no_cuenta ?? '0');
             $sheet->setCellValue('S' . $row, $inability->val_prevexequial_eclusivo);
-            $sheet->setCellValue('T' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('T' . $row, $inability->gastos_administrativos);
             $sheet->setCellValue('U' . $row, $inability->val_total_desc_mensual);
             $sheet->setCellValue('v' . $row, $inability->created_at->format('Y-m-d'));
             $sheet->setCellValue('W' . $row, $inability->ciudad_residencia);
@@ -219,77 +275,77 @@ class ReportController extends Controller
             $sheet->setCellValue('Z' . $row, $inability->direccion_residencia);
             $sheet->setCellValue('AA' . $row, $inability->ciudad_residencia);
             $sheet->setCellValue('AB' . $row, 'Cundinamarca');
-            $sheet->setCellValue('AC' . $row, $inability->celular);
-            $sheet->setCellValue('AD' . $row, $inability->telefono_fijo);
-            $sheet->setCellValue('AE' . $row, $inability->email_corporativo);
-            $sheet->setCellValue('AF' . $row, $inability->ocupacion_asegurado);
-            $sheet->setCellValue('AG' . $row, $inability->eps_asegurado);
-            $sheet->setCellValue('AH' . $row, $inability->descuento_eps);
-            $sheet->setCellValue('AI' . $row, '');
-            $sheet->setCellValue('AJ' . $row, $inability->proteger_mascotas);
-            $sheet->setCellValue('AK' . $row, $inability->nombre_m1);
-            $sheet->setCellValue('AL' . $row, $inability->tipo_m1);
-            $sheet->setCellValue('AM' . $row, $inability->raza_m1);
-            $sheet->setCellValue('AN' . $row, $inability->color_m1);
-            $sheet->setCellValue('AO' . $row, $inability->genero_m1);
-            $sheet->setCellValue('AP' . $row, $inability->edad_m1);
-            $sheet->setCellValue('AQ' . $row, $inability->nombre_m2);
-            $sheet->setCellValue('AR' . $row, $inability->tipo_m2);
-            $sheet->setCellValue('AS' . $row, $inability->raza_m2);
-            $sheet->setCellValue('AT' . $row, $inability->color_m2);
-            $sheet->setCellValue('AU' . $row, $inability->genero_m2);
-            $sheet->setCellValue('AV' . $row, $inability->edad_m2);
-            $sheet->setCellValue('AW' . $row, $inability->nombre_m3);
-            $sheet->setCellValue('AX' . $row, $inability->tipo_m3);
-            $sheet->setCellValue('AY' . $row, $inability->raza_m3);
-            $sheet->setCellValue('AZ' . $row, $inability->color_m3);
+            $sheet->setCellValue('AC' . $row, $inability->celular ?? '0');
+            $sheet->setCellValue('AD' . $row, $inability->telefono_fijo ?? '0');
+            $sheet->setCellValue('AE' . $row, $inability->email_corporativo ?? '0');
+            $sheet->setCellValue('AF' . $row, $inability->ocupacion_asegurado ?? '0');
+            $sheet->setCellValue('AG' . $row, $inability->nombre_eps ?? '0');
+            $sheet->setCellValue('AH' . $row, $inability->descuento_eps ?? '0');
+            $sheet->setCellValue('AI' . $row, $inability->fuente_recursos ?? '0');
+            $sheet->setCellValue('AJ' . $row, $inability->proteger_mascotas ?? '0');
+            $sheet->setCellValue('AK' . $row, $inability->nombre_m1 ?? '0');
+            $sheet->setCellValue('AL' . $row, $inability->tipo_m1 ?? '0');
+            $sheet->setCellValue('AM' . $row, $inability->raza_m1 ?? '0');
+            $sheet->setCellValue('AN' . $row, $inability->color_m1 ?? '0');
+            $sheet->setCellValue('AO' . $row, $inability->genero_m1 ?? '0');
+            $sheet->setCellValue('AP' . $row, $inability->edad_m1 ?? '0');
+            $sheet->setCellValue('AQ' . $row, $inability->nombre_m2 ?? '0');
+            $sheet->setCellValue('AR' . $row, $inability->tipo_m2 ?? '0');
+            $sheet->setCellValue('AS' . $row, $inability->raza_m2 ?? '0');
+            $sheet->setCellValue('AT' . $row, $inability->color_m2 ?? '0');
+            $sheet->setCellValue('AU' . $row, $inability->genero_m2 ?? '0');
+            $sheet->setCellValue('AV' . $row, $inability->edad_m2 ?? '0');
+            $sheet->setCellValue('AW' . $row, $inability->nombre_m3 ?? '0');
+            $sheet->setCellValue('AX' . $row, $inability->tipo_m3 ?? '0');
+            $sheet->setCellValue('AY' . $row, $inability->raza_m3 ?? '0');
+            $sheet->setCellValue('AZ' . $row, $inability->color_m3 ?? '0');
 
-            $sheet->setCellValue('BA' . $row, $inability->genero_m3);
-            $sheet->setCellValue('BB' . $row, $inability->edad_m3);
-            $sheet->setCellValue('BC' . $row, $inability->nombres_s1 . ' ' . $inability->apellidos_s1);
-            $sheet->setCellValue('BD' . $row, $inability->parentesco_s1);
-            $sheet->setCellValue('BE' . $row, $inability->porcentaje_s1);
-            $sheet->setCellValue('BF' . $row, '');
-            $sheet->setCellValue('BH' . $row, $inability->tipo_identidad_s1);
-            $sheet->setCellValue('BG' . $row, $inability->n_identificacion_s1);
-            $sheet->setCellValue('BI' . $row, $inability->nombres_s2 . ' ' . $inability->apellidos_s2);
-            $sheet->setCellValue('BJ' . $row, $inability->parentesco_s2);
-            $sheet->setCellValue('BK' . $row, $inability->porcentaje_s2);
-            $sheet->setCellValue('BL' . $row, '');
-            $sheet->setCellValue('BM' . $row, $inability->tipo_identidad_s2);
-            $sheet->setCellValue('BN' . $row, $inability->n_identificacion_s2);
-            $sheet->setCellValue('BO' . $row, $inability->nombres_s3 . ' ' . $inability->apellidos_s3);
-            $sheet->setCellValue('BP' . $row, $inability->parentesco_s3);
-            $sheet->setCellValue('BQ' . $row, $inability->porcentaje_s3);
-            $sheet->setCellValue('BR' . $row, '');
-            $sheet->setCellValue('BS' . $row, $inability->tipo_identidad_s3);
-            $sheet->setCellValue('BT' . $row, $inability->n_identificacion_s3);
-            $sheet->setCellValue('BU' . $row, $inability->cancer);
-            $sheet->setCellValue('BV' . $row, $inability->corazon);
-            $sheet->setCellValue('BW' . $row, $inability->diabetes);
-            $sheet->setCellValue('BX' . $row, $inability->enf_hepaticas);
-            $sheet->setCellValue('BY' . $row, $inability->enf_neurologicas);
-            $sheet->setCellValue('BZ' . $row, $inability->pulmones);
+            $sheet->setCellValue('BA' . $row, $inability->genero_m3 ?? '0');
+            $sheet->setCellValue('BB' . $row, $inability->edad_m3 ?? '0');
+            $sheet->setCellValue('BC' . $row, $inability->nombres_s1 ?? '0');
+            $sheet->setCellValue('BD' . $row, $inability->parentesco_s1 ?? '0');
+            $sheet->setCellValue('BE' . $row, $inability->porcentaje_s1 ?? '0');
+            $sheet->setCellValue('BF' . $row, 'GRATUITO');
+            $sheet->setCellValue('BH' . $row, $inability->n_identificacion_s1 ?? '0');
+            $sheet->setCellValue('BG' . $row, $inability->tipo_identidad_s1 ?? '0');
+            $sheet->setCellValue('BI' . $row, $inability->nombres_s2 ?? '0');
+            $sheet->setCellValue('BJ' . $row, $inability->parentesco_s2 ?? '0');
+            $sheet->setCellValue('BK' . $row, $inability->porcentaje_s2 ?? '0');
+            $sheet->setCellValue('BL' . $row, 'GRATUITO');
+            $sheet->setCellValue('BM' . $row, $inability->tipo_identidad_s2 ?? '0');
+            $sheet->setCellValue('BN' . $row, $inability->n_identificacion_s2 ?? '0');
+            $sheet->setCellValue('BO' . $row, $inability->nombres_s3 ?? '0');
+            $sheet->setCellValue('BP' . $row, $inability->parentesco_s3 ?? '0');
+            $sheet->setCellValue('BQ' . $row, $inability->porcentaje_s3 ?? '0');
+            $sheet->setCellValue('BR' . $row, 'GRATUITO');
+            $sheet->setCellValue('BS' . $row, $inability->tipo_identidad_s3 ?? '0');
+            $sheet->setCellValue('BT' . $row, $inability->n_identificacion_s3 ?? '0');
+            $sheet->setCellValue('BU' . $row, $inability->cancer ?? '0');
+            $sheet->setCellValue('BV' . $row, $inability->corazon ?? '0');
+            $sheet->setCellValue('BW' . $row, $inability->diabetes ?? '0');
+            $sheet->setCellValue('BX' . $row, $inability->enf_hepaticas ?? '0');
+            $sheet->setCellValue('BY' . $row, $inability->enf_neurologicas ?? '0');
+            $sheet->setCellValue('BZ' . $row, $inability->pulmones ?? '0');
 
-            $sheet->setCellValue('CA' . $row, $inability->presion_arterial);
-            $sheet->setCellValue('CB' . $row, $inability->rinones);
-            $sheet->setCellValue('CC' . $row, $inability->infeccion_vih);
-            $sheet->setCellValue('CD' . $row, $inability->perdida_funcional_anatomica);
-            $sheet->setCellValue('CE' . $row, $inability->accidentes_labores_ocupacion);
-            $sheet->setCellValue('CF' . $row, $inability->hospitalizacion_intervencion_quirurgica);
-            $sheet->setCellValue('CG' . $row, $inability->enfermedad_diferente);
-            $sheet->setCellValue('CH' . $row, $inability->descripcion_de_enfermedades);
-            $sheet->setCellValue('CI' . $row, $inability->nombres_apellidos_r1);
-            $sheet->setCellValue('CJ' . $row, $inability->telefono_r1);
-            $sheet->setCellValue('CK' . $row, $inability->entidad_r1);
-            $sheet->setCellValue('CL' . $row, $inability->nombres_apellidos_r2);
-            $sheet->setCellValue('CM' . $row, $inability->telefono_r2);
-            $sheet->setCellValue('CN' . $row, $inability->entidad_r2);
-            $sheet->setCellValue('CO' . $row, $inability->nombres_apellidos_r3);
-            $sheet->setCellValue('CP' . $row, $inability->telefono_r3);
-            $sheet->setCellValue('CQ' . $row, $inability->entidad_r3);
-            $sheet->setCellValue('CR' . $row, $inability->nombre_asesor);
-            $sheet->setCellValue('CS' . $row, $inability->codigo_asesor);
+            $sheet->setCellValue('CA' . $row, $inability->presion_arterial ?? '0');
+            $sheet->setCellValue('CB' . $row, $inability->rinones ?? '0');
+            $sheet->setCellValue('CC' . $row, $inability->infeccion_vih ?? '0');
+            $sheet->setCellValue('CD' . $row, $inability->perdida_funcional_anatomica ?? '0');
+            $sheet->setCellValue('CE' . $row, $inability->accidentes_labores_ocupacion ?? '0');
+            $sheet->setCellValue('CF' . $row, $inability->hospitalizacion_intervencion_quirurgica ?? '0');
+            $sheet->setCellValue('CG' . $row, $inability->enfermedad_diferente ?? '0');
+            $sheet->setCellValue('CH' . $row, $inability->descripcion_de_enfermedades ?? '0');
+            $sheet->setCellValue('CI' . $row, $inability->nombres_apellidos_r1 ?? '0');
+            $sheet->setCellValue('CJ' . $row, $inability->telefono_r1 ?? '0');
+            $sheet->setCellValue('CK' . $row, $inability->entidad_r1 ?? '0');
+            $sheet->setCellValue('CL' . $row, $inability->nombres_apellidos_r2 ?? '0');
+            $sheet->setCellValue('CM' . $row, $inability->telefono_r2 ?? '0');
+            $sheet->setCellValue('CN' . $row, $inability->entidad_r2 ?? '0');
+            $sheet->setCellValue('CO' . $row, $inability->nombres_apellidos_r3 ?? '0');
+            $sheet->setCellValue('CP' . $row, $inability->telefono_r3 ?? '0');
+            $sheet->setCellValue('CQ' . $row, $inability->entidad_r3 ?? '0');
+            $sheet->setCellValue('CR' . $row, $inability->nombre_asesor ?? '0');
+            $sheet->setCellValue('CS' . $row, $inability->codigo_asesor ?? '0');
 
             $fontSize = 9; // Tamaño de fuente deseado
 
@@ -310,76 +366,310 @@ class ReportController extends Controller
         ]);
     }
 
-    public function descargarPDFs(Request $request)
+    public function descargarSeguimientoVentas(Request $request)
     {
-        // Obtener los IDs seleccionados
+        // Obtener los IDs seleccionados desde la solicitud
         $selectedRecords = json_decode($request->input('selected_records'));
 
+        // Log para verificar si los datos están llegando correctamente
+        Log::info('Registros seleccionados: ', ['selectedRecords' => $selectedRecords]);
+
+        // Validar si los registros seleccionados están vacíos
         if (empty($selectedRecords)) {
+            // Si no se seleccionaron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se han enviado registros seleccionados.'
+            ]);
+        }
+
+        // Obtener los datos de los registros seleccionados como una colección
+        $inabilities = Inability::whereIn('id', $selectedRecords)->get();
+
+        if ($inabilities->isEmpty()) {
+            // Si no se encontraron registros, retorna un mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontraron registros para descargar.'
+            ]);
+        }
+
+        try {
+            // Cargar la plantilla existente
+            $spreadsheet = IOFactory::load(public_path('plano_focus/seguimiento.xlsx'));
+        } catch (\Exception $e) {
+            // Manejar cualquier error al cargar el archivo Excel
+            Log::error('Error al cargar la plantilla de Excel: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar la plantilla de Excel.'
+            ], 500);
+        }
+
+        // Continuar con el proceso normal para agregar los datos al Excel
+        $sheet = $spreadsheet->getActiveSheet();
+        $row = 2; // Fila donde comenzaremos a escribir los datos
+
+        // Obtener la colección desde el export
+        $export = new FocusExport($inabilities);
+        $data = $export->collection();
+
+        // Agregar datos a la plantilla
+        foreach ($data as $inability) {
+            $sheet->setCellValue('A' . $row, $inability->no_solicitud);
+            $sheet->setCellValue('B' . $row, $inability->nombre_asesor);
+            $sheet->setCellValue('C' . $row, $inability->nombres_completos . ' ' . $inability->primer_apellido . ' ' . $inability->segundo_apellido);
+            $sheet->setCellValue('D' . $row, $inability->no_identificacion);
+            $sheet->setCellValue('E' . $row, $inability->updated_at->format('Y-m-d'));
+
+            $signedDocumentsCount = DocumentSigned::where('inability_id', $inability->id)->count();
+
+            // Determinar el estado del firmado
+            if ($signedDocumentsCount === 0) {
+                $estadoFirmado = 'Sin firmar';
+                $fechaFirmado = '';
+                $colorEstado = 'ff6961'; // Rojo
+            } elseif ($signedDocumentsCount < 3) {
+                $estadoFirmado = 'Pendiente';
+                $fechaFirmado = '';
+                $colorEstado = '84b6f4'; // Azul
+            } else {
+                $estadoFirmado = 'Firmado';
+                $ultimoDocumentoFirmado = DocumentSigned::where('inability_id', $inability->id)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $fechaFirmado = $ultimoDocumentoFirmado->created_at->format('Y-m-d');
+                $colorEstado = '77dd77'; // Verde
+            }
+
+            $sheet->setCellValue('F' . $row, $fechaFirmado);
+            $sheet->setCellValue('G' . $row, $estadoFirmado);
+
+            // Aplicar color a la celda de estado
+            $sheet->getStyle('G' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $sheet->getStyle('G' . $row)->getFill()->getStartColor()->setARGB($colorEstado);
+
+
+            $sheet->setCellValue('H' . $row, $inability->entidad_pagadora_sucursal);
+            $sheet->setCellValue('I' . $row, $inability->celular);
+            $sheet->setCellValue('J' . $row, $inability->email_corporativo);
+            $sheet->setCellValue('K' . $row, $inability->fecha_nacimiento_asesor);
+            $sheet->setCellValue('L' . $row, $inability->edad);
+            $sheet->setCellValue('M' . $row, $inability->valor_ibc_basico);
+            $sheet->setCellValue('N' . $row, $inability->valor_adicional);
+            $sheet->setCellValue('O' . $row, $inability->amparo_basico);
+            $sheet->setCellValue('P' . $row, $inability->val_total_desc_mensual);
+            $sheet->setCellValue('Q' . $row, $inability->gastos_administrativos);
+            $sheet->setCellValue('R' . $row, '0');
+
+            $tipo_pago = $inability->forma_pago === 'mensual_libranza' ? 'Mensual Libranza' : 'Debito Automatico';
+            $sheet->setCellValue('S' . $row, $tipo_pago);
+            $sheet->setCellValue('T' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->no_cuenta : '0');
+            $sheet->setCellValue('U' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->tipo_cuenta : '0');
+            $sheet->setCellValue('V' . $row, ($inability->forma_pago !== 'mensual_libranza') ? $inability->banco : '0');
+
+            $fontSize = 8; // Tamaño de fuente deseado
+            $sheet->getStyle('A' . $row . ':V' . $row)->getFont()->setSize($fontSize);
+
+            $row++;
+        }
+
+        // Crear el escritor de Excel
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        // Hacer que la respuesta sea una descarga
+        return response()->stream(function () use ($writer) {
+            $writer->save('php://output');
+        }, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="plano_seguimiento_' . time() . '.xlsx"',
+        ]);
+    }
+
+    public function descargarPDFs(Request $request)
+    {
+        $selectedRecords = collect(json_decode($request->input('selected_records'), true));
+
+        if ($selectedRecords->isEmpty()) {
             return redirect()->back()->with('error', 'No se seleccionaron registros.');
         }
 
-        // Crear un archivo ZIP en la ruta de almacenamiento
+        $selectedRecords = $selectedRecords
+            ->filter(fn ($value) => is_numeric($value))
+            ->map(fn ($value) => (int) $value)
+            ->unique();
+
+        if ($selectedRecords->isEmpty()) {
+            return redirect()->back()->with('error', 'No se seleccionaron registros válidos.');
+        }
+
+        $user = Auth::user();
+        $inabilities = Inability::whereIn('id', $selectedRecords)->get()->keyBy('id');
+
+        if ($inabilities->isEmpty()) {
+            return redirect()->back()->with('error', 'No se encontraron registros para descargar.');
+        }
+
+        if ($user->hasRole('Administrador')) {
+            $authorizedInabilities = $inabilities;
+        } elseif ($user->hasRole('Ventas') && $user->tipo_fondo) {
+            $salesFilterData = $this->buildSalesFilterData($user);
+            $normalizedNameKey = $salesFilterData['nameKey'];
+            $normalizedCodes = $salesFilterData['codes'];
+
+            $authorizedInabilities = $inabilities->filter(function ($inability) use ($user, $normalizedNameKey, $normalizedCodes) {
+                $ownsByUser = (string) $inability->user_id !== ''
+                    && (string) $inability->user_id === (string) $user->id;
+
+                $inabilityNameKey = $this->normalizeComparableString($inability->nombre_asesor ?? '');
+                $inabilityCodeKey = $this->normalizeComparableString($inability->codigo_asesor ?? '');
+
+                $ownsByName = $normalizedNameKey !== '' && $inabilityNameKey === $normalizedNameKey;
+                $ownsByCode = $normalizedCodes->isNotEmpty() && $normalizedCodes->contains($inabilityCodeKey);
+
+                return !is_null($inability->fondo_entity_id) && ($ownsByUser || $ownsByName || $ownsByCode);
+            });
+
+            if ($authorizedInabilities->isEmpty()) {
+                return redirect()->back()->with('error', 'No tienes afiliaciones de fondo autorizadas para descargar.');
+            }
+
+            if ($authorizedInabilities->count() !== $selectedRecords->count()) {
+                return redirect()->back()->with('error', 'Algunas afiliaciones seleccionadas no están autorizadas para la descarga.');
+            }
+        } else {
+            return redirect()->back()->with('error', 'No tienes permisos para descargar PDFs.');
+        }
+
         $zipFileName = 'afiliaciones_documentos.zip';
         $zipFilePath = public_path($zipFileName);
 
-        // Verificar si ya existe el archivo ZIP y eliminarlo antes de crear uno nuevo
         if (File::exists($zipFilePath)) {
             File::delete($zipFilePath);
         }
 
-        // Inicializar ZipArchive
         $zip = new ZipArchive();
 
-        // Intentar abrir el archivo ZIP
         if ($zip->open($zipFilePath, ZipArchive::CREATE) !== true) {
             Log::error('Error al abrir el archivo ZIP: ' . $zip->getStatusString());
             return redirect()->back()->with('error', 'No se pudo crear el archivo ZIP.');
         }
 
-        $hasDocuments = false; // Variable para verificar si hay documentos
+        $hasDocuments = false;
+        $isAdmin = $user->hasRole('Administrador');
 
-        foreach ($selectedRecords as $inabilityId) {
-            $inability = Inability::find($inabilityId);
+        foreach ($authorizedInabilities as $inability) {
+            $documentsQuery = DocumentSigned::where('inability_id', $inability->id)
+                ->orderByDesc('created_at')
+                ->orderByDesc('id');
 
-            if ($inability) {
-                // Obtener los documentos relacionados con la afiliación
-                $documents = DocumentSigned::where('inability_id', $inabilityId)->get();
+            // Si es usuario de Ventas, filtrar solo documentos de pago (libranza, fondo o débito automático)
+            if (!$isAdmin) {
+                $documentsQuery->where(function($query) {
+                    $query->where('document_path', 'like', '%documentos_libranza%')
+                          ->orWhere('document_path', 'like', '%documentos_fondo%')
+                          ->orWhere('document_path', 'like', '%documentos_debito%');
+                });
+                $documents = $documentsQuery->get()->take(1);
+            } else {
+                // Si es Administrador, obtener los 3 documentos
+                $documents = $documentsQuery->get()->take(3);
+            }
 
-                // Solo agregar carpeta si hay documentos
-                if ($documents->isNotEmpty()) {
-                    $hasDocuments = true; // Hay al menos un documento
-                    // Crear una carpeta dentro del ZIP con el número de solicitud como nombre
-                    $folderName = $inability->no_solicitud;
-                    $zip->addEmptyDir($folderName);
+            Log::info('Detalles de los documentos: ', ['inability' => $inability->id, 'role' => $isAdmin ? 'Admin' : 'Ventas', 'documents_count' => $documents->count()]);
 
-                    // Agregar cada documento al archivo ZIP
-                    foreach ($documents as $document) {
-                        $filePath = storage_path('app/' . $document->document_path);
+            if ($documents->isNotEmpty()) {
+                $hasDocuments = true;
+                $advisorName = Str::slug($inability->nombre_asesor ?? 'asesor', '_');
+                $dateSuffix = optional($inability->created_at)->format('Ymd') ?? now()->format('Ymd');
+                $folderName = trim($advisorName !== '' ? $advisorName : 'asesor') . '_' . $dateSuffix;
+                $zip->addEmptyDir($folderName);
 
-                        if (File::exists($filePath)) {
-                            $zip->addFile($filePath, "$folderName/" . basename($filePath));
-                        } else {
-                            // Registrar en el log si el archivo no existe
-                            Log::warning("Archivo no encontrado: $filePath");
-                        }
+                foreach ($documents as $document) {
+                    $filePath = public_path("storage/{$document->document_path}");
+
+                    Log::info('Ruta del archivo que se intenta agregar al ZIP: ', ['file_path' => $filePath]);
+
+                    if (File::exists($filePath)) {
+                        $zip->addFile($filePath, $folderName . '/' . basename($filePath));
+                    } else {
+                        Log::warning("Archivo no encontrado: $filePath");
                     }
                 }
             }
         }
 
-        // Cerrar el archivo ZIP
         if ($zip->close() === false) {
             Log::error('Error al cerrar el archivo ZIP: ' . $zip->getStatusString());
             return redirect()->back()->with('error', 'No se pudo cerrar el archivo ZIP.');
         }
 
-        // Verificar si no se han agregado documentos al ZIP
         if (!$hasDocuments) {
+            File::delete($zipFilePath);
             return redirect()->back()->with('error', 'No se encontraron documentos para los registros seleccionados.');
         }
 
-        // Descargar el archivo ZIP
         return response()->download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
+    private function buildSalesFilterData($user): array
+    {
+        $normalizedNameKey = $this->normalizeComparableString($user->name ?? '');
+
+        $codes = collect();
+
+        if (!empty($user->codigo)) {
+            $codes->push($this->normalizeComparableString($user->codigo));
+        }
+
+        $matchingCodes = Asesor::all()
+            ->filter(fn ($asesor) => $this->normalizeComparableString($asesor->name ?? '') === $normalizedNameKey)
+            ->pluck('asesor_code')
+            ->filter()
+            ->map(fn ($code) => $this->normalizeComparableString($code))
+            ->filter();
+
+        $codes = $codes
+            ->merge($matchingCodes)
+            ->unique()
+            ->values();
+
+        return [
+            'nameKey' => $normalizedNameKey,
+            'codes' => $codes,
+        ];
+    }
+
+    private function normalizeComparableString(?string $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        $normalizedWhitespace = preg_replace('/\s+/u', ' ', trim((string) $value));
+        $ascii = Str::ascii($normalizedWhitespace ?? '');
+
+        return strtolower(str_replace(' ', '', $ascii));
+    }
+
+    private function normalizedColumnExpression(string $column): string
+    {
+        $expression = "TRIM($column)";
+        $expression = "REPLACE($expression, ' ', '')";
+
+        $replacements = [
+            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'À' => 'A', 'È' => 'E', 'Ì' => 'I', 'Ò' => 'O', 'Ù' => 'U',
+            'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+            'Ñ' => 'N', 'ñ' => 'n',
+            'Ü' => 'U', 'ü' => 'u'
+        ];
+
+        foreach ($replacements as $search => $replace) {
+            $expression = "REPLACE($expression, '$search', '$replace')";
+        }
+
+        return "LOWER($expression)";
     }
 }

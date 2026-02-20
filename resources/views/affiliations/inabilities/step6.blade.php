@@ -85,19 +85,24 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-right">
-                        <a class="btn btn-danger mb-4 pdf-btn" id="btn-estasseguro"
-                            href="{{ route('incapacidades.generarPDF', $inabilityId) }}">
+                        @php
+                            $fondoOperatorName = trim($fondoEntityName ?? '');
+                            $requiresFondoTemplate = $pago === 'mensual_libranza'
+                                && $fondoOperatorName !== ''
+                                && strcasecmp($fondoOperatorName, 'ESTASSEGURO ADMINISTRADORA DE BENEFICIOS SAS') !== 0;
+                        @endphp
+                        <a class="btn btn-danger mb-4 pdf-btn" id="generar-pdf"
+                            data-url="{{ route('incapacidades.generarPDF', $inabilityId) }}">
                             <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Estasseguro)
                         </a>
-
                         @if ($aseguradora === 'Positiva Seguros')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-positiva"
-                                href="{{ route('incapacidades.generarPDFpositiva', $inabilityId) }}">
+                                data-url="{{ route('incapacidades.generarPDFpositiva', $inabilityId) }}">
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Positiva)
                             </a>
                         @elseif ($aseguradora === 'Confianza Seguros')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-confianza"
-                                href="{{ route('incapacidades.generarPDFconfianza', $inabilityId) }}" target="_blank">
+                                href="{{ route('incapacidades.generarPDFconfianza', $inabilityId) }}">
                                 <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Confianza)
                             </a>
                         @endif
@@ -105,7 +110,7 @@
                         @if ($pago === 'mensual_libranza')
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-libranza"
                                 href="{{ route('incapacidades.generarPDFLibranza', $inabilityId) }}">
-                                <i class="fas fa-file-pdf mr-2"></i>Generar PDF (Libranza)
+                                <i class="fas fa-file-pdf mr-2"></i>{{ $requiresFondoTemplate ? 'Generar PDF (Fondo Empleados)' : 'Generar PDF (Libranza)' }}
                             </a>
                         @else
                             <a class="btn btn-danger mb-4 pdf-btn" id="btn-debito"
@@ -147,6 +152,22 @@
         </div>
     </div>
 
+    <div class="modal fade" id="documentModalGenerate" tabindex="-1" aria-labelledby="documentModalLabel"
+        aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="documentModalLabel">Visualización del Documento Generado</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- Div que mostrará el documento PDF -->
+                    <canvas id="pdfViewerCanvasGenerate" style="width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @stop
 
 @section('css')
@@ -179,6 +200,26 @@
     <script src="{{ asset('js/step7.js') }}"></script>
     <script>
         $(document).ready(function() {
+
+            //Limpiar las claves específicas del localStorage cuando la página se carga
+            localStorage.removeItem('firmadoIniciado');
+            localStorage.removeItem('pdfGenerated');
+            localStorage.removeItem('pdfGeneratedPositiva');
+            localStorage.removeItem('pdfGeneratedLibranza');
+            localStorage.removeItem('pdfGeneratedDebito');
+            localStorage.removeItem('pdfGeneratedConfianza');
+
+            //$('#generar-pdf').show();
+            //$('#iniciar-firmado').show();
+            //$('#btn-positiva').show();
+            //$('#btn-libranza').show();
+            //$('#btn-debito').show();
+            //$('#btn-confianza').show();
+
+            if (localStorage.getItem('firmadoIniciado') === 'true') {
+                $('#iniciar-firmado').hide();
+            }
+
             $('#iniciar-firmado').on('click', function(e) {
                 e.preventDefault();
 
@@ -203,12 +244,19 @@
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        console.log('Respuesta de la API:', response);
-                        // Verificar si hay éxito o error en la respuesta
+                        // Verificar si hay éxito en la respuesta
                         if (response.success) {
                             Swal.fire('Éxito', response.message, 'success');
-                        } else if (response.error) {
-                            Swal.fire('Error', response.error, 'error');
+
+                            // Ocultar el botón y guardar el estado en localStorage
+                            $('#iniciar-firmado').hide();
+                            localStorage.setItem('firmadoIniciado', 'true');
+
+                            console.log(response
+                                .data); // Puedes usar los datos como lo necesites
+                        } else {
+                            Swal.fire('Error', response.message || 'Ocurrió un error.',
+                                'error');
                         }
                     },
                     error: function(xhr) {
@@ -277,12 +325,13 @@
                             // Abrir el modal
                             $('#documentModal').modal('show');
                         } else {
-                            Swal.fire('Error', 'No se encontró el documento firmado.', 'error');
+                            var infoMessage = response.message || 'No se encontraron documentos firmados para esta afiliacion.';
+                            Swal.fire('Informacion', infoMessage, 'info');
                         }
                     },
                     error: function(xhr) {
                         Swal.fire('Error',
-                            'Los documentos aún no han sido firmados o ocurrió un error. Por favor, intente nuevamente.',
+                            'Los documentos aun no han sido firmados o ocurrio un error. Por favor, intente nuevamente.',
                             'error');
                     }
                 });
@@ -290,14 +339,489 @@
 
             // Acción del botón "Cerrar" para redirigir al usuario
             $('#closeModalBtn').on('click', function() {
+                // Limpiar las claves específicas del localStorage que usamos para los botones
+                //localStorage.removeItem('firmadoIniciado');
+                //localStorage.removeItem('pdfGenerated');
+                //localStorage.removeItem('pdfGeneratedPositiva');
+                //localStorage.removeItem('pdfGeneratedLibranza');
+                //localStorage.removeItem('pdfGeneratedDebito');
+                //localStorage.removeItem('pdfGeneratedConfianza');
+
+                //$('#generar-pdf').show();
+                //$('#iniciar-firmado').show();
+                //$('#btn-positiva').show();
+                //$('#btn-libranza').show();
+                //$('#btn-debito').show();
+                //$('#btn-confianza').show();
+
                 // Redirigir al usuario a la ruta deseada
                 window.location.href = "{{ route('incapacidades.index') }}";
             });
+
 
             // Deshabilitar cerrar el modal con la X o al hacer clic fuera
             $('#documentModal').modal({
                 backdrop: 'static',
                 keyboard: false
+            });
+
+            if (localStorage.getItem('pdfGenerated') === 'true') {
+                $('#generar-pdf').hide(); // Ocultar el botón si ya fue presionado
+            }
+
+            $('#generar-pdf').on('click', function(e) {
+                // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
+
+                // Verifica si el botón ya ha sido ocultado
+                if ($(this).is(':hidden')) {
+                    return; // Si el botón ya está oculto, no hacer nada
+                }
+
+                var url = $(this).data('url');
+
+                // Cambiar el texto del botón a "Generando..."
+                $(this).html('<i class="fas fa-check mr-2"></i>Generando...');
+
+                // Ocultar el botón
+                $(this).hide(); // Ocultar el botón
+
+                localStorage.setItem('pdfGenerated', 'true');
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close();
+
+                        if (response.pdf_url) {
+                            var pdfUrl = response
+                                .pdf_url; // Asegúrate que esta URL sea correcta
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvasGenerate'
+                                    ); // Asegúrate de que este canvas exista en tu HTML
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            }).catch(function(error) {
+                                console.error('Error al cargar el PDF: ', error);
+                                Swal.fire('Error', 'No se pudo cargar el PDF.',
+                                    'error');
+                            });
+
+                            // Abrir el modal
+                            $('#documentModalGenerate').modal(
+                                'show'); // Asegúrate de que este modal exista en tu HTML
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON);
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            if (localStorage.getItem('pdfGeneratedPositiva') === 'true') {
+                $('#btn-positiva').hide(); // Ocultar el botón si ya fue presionado
+            }
+
+            $('#btn-positiva').on('click', function(e) {
+                // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
+
+                // Verifica si el botón ya ha sido ocultado
+                if ($(this).is(':hidden')) {
+                    return; // Si el botón ya está oculto, no hacer nada
+                }
+
+                var url = $(this).data('url');
+
+                // Cambiar el texto del botón a "Generando..."
+                $(this).html('<i class="fas fa-check mr-2"></i>Generando...');
+
+                // Ocultar el botón
+                $(this).hide(); // Ocultar el botón
+
+                localStorage.setItem('pdfGeneratedPositiva', 'true');
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close();
+
+                        // Suponiendo que el PDF se genera y la URL se devuelve
+                        if (response.pdf_url) {
+                            var pdfUrl = response
+                                .pdf_url; // Asegúrate que esta URL sea correcta
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvasGenerate'
+                                    ); // Asegúrate de que este canvas exista en tu HTML
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            }).catch(function(error) {
+                                console.error('Error al cargar el PDF: ', error);
+                                Swal.fire('Error', 'No se pudo cargar el PDF.',
+                                    'error');
+                            });
+
+                            // Abrir el modal
+                            $('#documentModalGenerate').modal(
+                                'show'); // Asegúrate de que este modal exista en tu HTML
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON);
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            if (localStorage.getItem('pdfGeneratedLibranza') === 'true') {
+                $('#btn-libranza').hide(); // Ocultar el botón si ya fue presionado
+            }
+
+            $('#btn-libranza').on('click', function(e) {
+                // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
+
+                // Verifica si el botón ya ha sido ocultado
+                if ($(this).is(':hidden')) {
+                    return; // Si el botón ya está oculto, no hacer nada
+                }
+
+                var url = $(this).attr('href'); // Obtiene la URL del atributo href
+
+                // Cambiar el texto del botón a "Generando..."
+                $(this).html('<i class="fas fa-check mr-2"></i>Generando...');
+
+                // Ocultar el botón
+                $(this).hide(); // Ocultar el botón
+
+                localStorage.setItem('pdfGeneratedLibranza', 'true');
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close();
+
+                        // Suponiendo que el PDF se genera y la URL se devuelve
+                        if (response.pdf_url) {
+                            var pdfUrl = response
+                                .pdf_url; // Asegúrate que esta URL sea correcta
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvasGenerate'
+                                    ); // Asegúrate de que este canvas exista en tu HTML
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            }).catch(function(error) {
+                                console.error('Error al cargar el PDF: ', error);
+                                Swal.fire('Error', 'No se pudo cargar el PDF.',
+                                    'error');
+                            });
+
+                            // Abrir el modal
+                            $('#documentModalGenerate').modal(
+                                'show'); // Asegúrate de que este modal exista en tu HTML
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON);
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            if (localStorage.getItem('pdfGeneratedDebito') === 'true') {
+                $('#btn-debito').hide(); // Ocultar el botón si ya fue presionado
+            }
+
+            $('#btn-debito').on('click', function(e) {
+                // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
+
+                // Verifica si el botón ya ha sido ocultado
+                if ($(this).is(':hidden')) {
+                    return; // Si el botón ya está oculto, no hacer nada
+                }
+
+                var url = $(this).attr('href'); // Obtiene la URL del atributo href
+
+                // Cambiar el texto del botón a "Generando..."
+                $(this).html('<i class="fas fa-check mr-2"></i>Generando...');
+
+                // Ocultar el botón
+                $(this).hide(); // Ocultar el botón
+
+                localStorage.setItem('pdfGeneratedDebito', 'true');
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close();
+
+                        // Suponiendo que el PDF se genera y la URL se devuelve
+                        if (response.pdf_url) {
+                            var pdfUrl = response
+                                .pdf_url; // Asegúrate que esta URL sea correcta
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvasGenerate'
+                                    ); // Asegúrate de que este canvas exista en tu HTML
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            }).catch(function(error) {
+                                console.error('Error al cargar el PDF: ', error);
+                                Swal.fire('Error', 'No se pudo cargar el PDF.',
+                                    'error');
+                            });
+
+                            // Abrir el modal
+                            $('#documentModalGenerate').modal(
+                                'show'); // Asegúrate de que este modal exista en tu HTML
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON);
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            if (localStorage.getItem('pdfGeneratedConfianza') === 'true') {
+                $('#btn-confianza').hide(); // Ocultar el botón si ya fue presionado
+            }
+
+            $('#btn-confianza').on('click', function(e) {
+                // Evita el comportamiento predeterminado del enlace
+                e.preventDefault();
+
+                // Verifica si el botón ya ha sido ocultado
+                if ($(this).is(':hidden')) {
+                    return; // Si el botón ya está oculto, no hacer nada
+                }
+
+                var url = $(this).attr('href'); // Obtiene la URL del atributo href
+
+                // Cambiar el texto del botón a "Generando..."
+                $(this).html('<i class="fas fa-spinner fa-spin mr-2"></i>Generando...');
+
+                // Ocultar el botón
+                $(this).hide(); // Ocultar el botón
+
+                localStorage.setItem('pdfGeneratedConfianza', 'true');
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    html: 'Por favor espera mientras generamos el documento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Swal.close();
+
+                        // Suponiendo que el PDF se genera y la URL se devuelve
+                        if (response.pdf_url) {
+                            var pdfUrl = response
+                                .pdf_url; // Asegúrate que esta URL sea correcta
+
+                            // Cargar el PDF usando PDF.js
+                            var loadingTask = pdfjsLib.getDocument(pdfUrl);
+                            loadingTask.promise.then(function(pdf) {
+                                // Renderizar la primera página del PDF en el canvas
+                                pdf.getPage(1).then(function(page) {
+                                    var scale = 1.5;
+                                    var viewport = page.getViewport({
+                                        scale: scale
+                                    });
+
+                                    var canvas = document.getElementById(
+                                        'pdfViewerCanvasGenerate'
+                                    ); // Asegúrate de que este canvas exista en tu HTML
+                                    var context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    var renderContext = {
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    };
+                                    page.render(renderContext);
+                                });
+                            }).catch(function(error) {
+                                console.error('Error al cargar el PDF: ', error);
+                                Swal.fire('Error', 'No se pudo cargar el PDF.',
+                                    'error');
+                            });
+
+                            // Abrir el modal
+                            $('#documentModalGenerate').modal(
+                                'show'); // Asegúrate de que este modal exista en tu HTML
+                        } else {
+                            Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseJSON);
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON.error ||
+                                'Ocurrió un error inesperado.',
+                            icon: 'error',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
             });
         });
     </script>

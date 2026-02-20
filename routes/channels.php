@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+// Canal público para las actualizaciones de ubicación en tiempo real
+Broadcast::channel('locations', function ($user) {
+    return true; // Todos los usuarios autenticados pueden escuchar
+});

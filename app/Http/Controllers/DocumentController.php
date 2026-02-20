@@ -21,7 +21,8 @@ class DocumentController extends Controller
             $documents = collect([new Docuuments([
                 'estasseguro_document' => null,
                 'libranza_document' => null,
-                'debito_document' => null
+                'debito_document' => null,
+                'fondo_empleados_document' => null,
             ])]);
         }
 
@@ -48,7 +49,7 @@ class DocumentController extends Controller
     {
         $rules = [
             'document_path' => 'required|file|mimes:pdf|max:2048', // Solo archivos PDF y máximo 2MB
-            'type_document' => 'required|string|in:estasseguro,libranza,debito', // Debe ser uno de los tipos permitidos
+            'type_document' => 'required|string|in:estasseguro,libranza,debito,fondo_empleados', // Debe ser uno de los tipos permitidos
         ];
 
         $messages = [
@@ -79,6 +80,8 @@ class DocumentController extends Controller
                 $oldFilePath = $documentFile->libranza_document;
             } elseif ($type === 'debito' && $documentFile->debito_document) {
                 $oldFilePath = $documentFile->debito_document;
+            } elseif ($type === 'fondo_empleados' && $documentFile->fondo_empleados_document) {
+                $oldFilePath = $documentFile->fondo_empleados_document;
             }
 
             // Eliminar el archivo anterior si existe
@@ -98,6 +101,8 @@ class DocumentController extends Controller
                     $documentFile->libranza_document = $newFilePath;
                 } elseif ($type === 'debito') {
                     $documentFile->debito_document = $newFilePath;
+                } elseif ($type === 'fondo_empleados') {
+                    $documentFile->fondo_empleados_document = $newFilePath;
                 }
             }
 

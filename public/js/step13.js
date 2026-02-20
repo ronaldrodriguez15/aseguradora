@@ -59,7 +59,7 @@ document
     });
 
 //campo identificador
-document.getElementById("aseguradora").addEventListener("change", function () {
+document.getElementById("asesor_code").addEventListener("change", function () {
     // Get the selected option
     var selectedOption = this.options[this.selectedIndex];
 

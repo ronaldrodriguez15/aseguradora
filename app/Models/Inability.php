@@ -133,6 +133,10 @@ class Inability extends Model
         'genero_m3',
         'edad_m3',
         'valor_prima_m3',
-        'status'
+        'status',
+        'fondo_entity_id',
+        'fondo_entity_name',
+        'user_id',
+        'ambiente_firma',
     ];
 }

@@ -19,6 +19,11 @@ use App\Http\Controllers\PDFLibranzaController;
 use App\Http\Controllers\PDFConfianzaController;
 use App\Http\Controllers\DocumentsApiController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AtmosphereController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\ScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,15 +40,6 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-// enlace simbolico
-Route::get('storage-link', function () {
-    Artisan::call('storage:link');
-
-    return response()->json([
-        'status' => 'Correctly Storage.',
-    ]);
-});
-
 Route::get('clear-caches', function () {
     Artisan::call('config:clear');
     Artisan::call('route:clear');
@@ -51,9 +47,69 @@ Route::get('clear-caches', function () {
     Artisan::call('view:clear');
 
     return response()->json([
-        'status' => 'Cachés limpiados correctamente.',
+        'status' => 'Caches limpiados correctamente.',
     ]);
 });
+
+Route::get('/optimize-clear', function () {
+    Artisan::call('optimize:clear');
+
+    return 'Optimize clear ejecutado correctamente';
+});
+
+Route::get('seed-roles', function () {
+    try {
+        // Ejecutar el seeder
+        Artisan::call('db:seed', [
+            '--class' => 'RolesTableSeeder'
+        ]);
+
+        return response()->json([
+            'status' => 'Se ejecutó el seeder correctamente.',
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'Hubo un error al ejecutar el seeder.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+
+Route::get('/force-clear', function () {
+    // Limpia caches de Laravel
+    Artisan::call('optimize:clear');
+
+    // Borra manualmente vistas compiladas
+    foreach (glob(storage_path('framework/views/*.php')) as $viewFile) {
+        @unlink($viewFile);
+    }
+
+    return "Caches y vistas compiladas eliminadas";
+});
+
+
+Route::get('seed-users', function () {
+    try {
+        // Ejecutar el seeder
+        Artisan::call('db:seed', [
+            '--class' => 'UsersTableSeeder'
+        ]);
+
+        // Capturar la salida del comando
+        $output = Artisan::output();
+
+        return response()->json([
+            'status' => 'Se ejecutó el seeder correctamente.',
+            'output' => utf8_encode($output), // Asegurarse que la salida esté codificada en UTF-8
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'Hubo un error al ejecutar el seeder.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+
 
 Route::middleware([
     'auth:sanctum',
@@ -61,9 +117,7 @@ Route::middleware([
     'verified'
 ])->group(function () {
 
-    Route::get('/bienvenido', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/bienvenido', [DashboardController::class, 'index'])->name('dashboard');;
 
     // General
     Route::resource('usuarios', UserController::class);
@@ -73,6 +127,8 @@ Route::middleware([
     Route::resource('aseguradoras', InsurerController::class);
     Route::resource('eps', EpsController::class);
     Route::resource('asesores', AsesorController::class);
+    Route::resource('ambiente', AtmosphereController::class);
+    Route::resource('salarios', SalaryController::class);
 
     // Documents
     Route::resource('documentos', DocumentController::class);
@@ -102,6 +158,33 @@ Route::middleware([
     Route::post('/reportes', [ReportController::class, 'index']);
     Route::post('/descargar-pdfs', [ReportController::class, 'descargarPDFs']);
     Route::post('/descargar-plano-focus', [ReportController::class, 'descargarPlanoFocus']);
+    Route::post('/descargar-seguimiento-ventas', [ReportController::class, 'descargarSeguimientoVentas']);
+
+    //Geolocation
+    // Ruta para mostrar el módulo
+    Route::get('/geolocalizacion', [LocationController::class, 'index'])->name('geolocalizacion');
+
+    // Ruta para actualizar ubicación
+    Route::post('/update-location', [LocationController::class, 'update'])->name('update-location');
+
+    // retorna los usuarios para ver la geolocalizacion
+    Route::get('/locations', [LocationController::class, 'getLocations'])->name('get-locations');
+
+    Route::get('/get-cities/{department}', [CityController::class, 'getCities'])->name('get-cities');
+    Route::post('/entidades/exportar', [EntityController::class, 'exportarSeleccionadas'])->name('entidades.exportar');
+    Route::get('/entities-asign', [EntityController::class, 'showEntitiesAsign'])
+        ->name('entities.asign');
+
+    //Horario
+    Route::resource('horario', ScheduleController::class);
+
+    // Almacenar cada hora
+    Route::post('/store-hour-location', [LocationController::class, 'storeHourLocation'])->name('store-hour-location');
+    Route::post('/geolocations/report', [LocationController::class, 'generateReport'])
+        ->name('geolocations.report');
+        
+    Route::delete('/historico/limpiar', [LocationController::class, 'cleanReports'])
+        ->name('historico.limpiar');
 });
 
 Auth::routes();
